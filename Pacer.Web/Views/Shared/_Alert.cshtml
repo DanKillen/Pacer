@@ -1,0 +1,12 @@
+<!-- AMC - alert partial to display any alerts via layout pacer -->
+@{
+    var message = TempData["Alert.Message"] ?? null;
+    var type    = TempData["Alert.Type"]    ?? null;
+}
+@if (message != null)
+{
+    <div class="alert alert-@type alert-dismissible fade show" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

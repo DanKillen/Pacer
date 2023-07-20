@@ -1,0 +1,63 @@
+﻿@model Paged<User>
+
+<h3 class="mb-3">User List</h3>
+  
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                Id
+                <a asp-action="Index" 
+                    asp-route-order="id" 
+                    asp-route-direction=@Model.Direction 
+                    asp-route-page=@Model.CurrentPage 
+                    asp-route-size=@Model.PageSize >
+                        <vc:sort-order field="id" orderby=@Model.OrderBy direction=@Model.Direction />  
+                </a>  
+
+            </th>
+            <th>
+                Name
+                <a asp-action="Index" 
+                    asp-route-order="name" 
+                    asp-route-direction=@Model.Direction 
+                    asp-route-page=@Model.CurrentPage 
+                    asp-route-size=@Model.PageSize >
+                    <vc:sort-order field="name" orderby=@Model.OrderBy direction=@Model.Direction />  
+                </a>  
+            </th>
+            <th>
+                Email
+                <a asp-action="Index" 
+                    asp-route-order="email" 
+                    asp-route-direction=@Model.Direction 
+                    asp-route-page=@Model.CurrentPage 
+                    asp-route-size=@Model.PageSize >
+                    <vc:sort-order field="email" orderby=@Model.OrderBy direction=@Model.Direction />  
+                </a>      
+            </th>
+            <th>Role</th>   
+            <th>Action</th>           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var u in Model.Data) {
+            <tr>
+                <td>@u.Id</td>
+                <td>@u.Name</td>
+                <td>@u.Email</td>
+                <td>@u.Role</td>  
+                <td>
+                    <a asp-action="Update" asp-route-id="@u.Id">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>                    
+                </td>                
+            </tr>
+        }        
+    </tbody>
+</table>
+
+<vc:paginator action="Index" rows=@Model.TotalRows pages=@Model.TotalPages current=@Model.CurrentPage size=@Model.PageSize  />
+
+
+

@@ -42,12 +42,29 @@ namespace Pacer.Data.Repositories
                 .HasOne(w => w.TrainingPlan)  // Workout has one TrainingPlan
                 .WithMany(tp => tp.Workouts)  // TrainingPlan has many Workouts
                 .HasForeignKey(w => w.TrainingPlanId);  // ForeignKey in Workout entity is TrainingPlanId
+
+            // RunningProfile entity configuration
+            modelBuilder.Entity<RunningProfile>()
+                .HasKey(rp => rp.Id);  // Setting the primary key for RunningProfile
+            modelBuilder.Entity<RunningProfile>()
+                .Property(rp => rp.Id)
+                .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new RunningProfile
+
+            // User entity configuration
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.Id);  // Setting the primary key for User
+            modelBuilder.Entity<User>()
+                .Property(u => u.Id)
+                .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new User
+
+
         }
 
 
         // Configure the context with logging - remove in production
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseSqlite("Filename=data.db");
             // remove in production 
             optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
         }

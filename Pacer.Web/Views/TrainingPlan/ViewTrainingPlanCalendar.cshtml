@@ -1,0 +1,70 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- The Calendar goes here -->
+            <div id="calendar"></div>
+        </div>
+        <div class="col-md-6">
+            <!-- The Workout Details goes here -->
+            <div id="workout-details">
+                <h4 id="workout-date"></h4>
+                <h5 id="workout-type"></h5>
+                <p id="workout-description"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/simple-jscalendar@1.4.4/source/jsCalendar.min.js"
+    integrity="sha384-0LaRLH/U5g8eCAwewLGQRyC/O+g0kXh8P+5pWpzijxwYczD3nKETIqUyhuA8B/UB"
+    crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/TrainingPlan/ViewTrainingPlanCalendar',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                generateCalendar(data.Workouts);
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+
+        function generateCalendar(workouts) {
+            // We initialize jsCalendar
+            const calendar = jsCalendar.new('#calendar');
+
+            // Prepare workouts by date for easier access
+            const workoutsByDate = workouts.reduce((acc, workout) => {
+                acc[workout.Date.substring(0, 10)] = workout;
+                return acc;
+            }, {});
+
+            // We add a custom day renderer to show workouts on the calendar
+            calendar.onDateRender((date, element, info) => {
+                const dateString = date.toISOString().substring(0, 10);
+                if (workoutsByDate.hasOwnProperty(dateString)) {
+                    element.style.backgroundColor = '#90ee90'; // light green
+                    element.style.cursor = 'pointer';
+                    element.addEventListener('click', function () {
+                        showWorkoutDetails(workoutsByDate[dateString]);
+                    });
+                }
+            });
+
+            // Finally we refresh the calendar to apply our custom day renderer
+            calendar.refresh();
+        }
+
+        function showWorkoutDetails(workout) {
+            $('#workout-date').text(workout.Date.substring(0, 10));
+            $('#workout-type').text(workout.Type);
+            $('#workout-description').text(workout.Description);
+            // You need to display other workout details as needed here.
+        }
+    });
+</script>

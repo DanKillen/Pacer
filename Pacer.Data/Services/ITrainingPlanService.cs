@@ -9,8 +9,9 @@ namespace Pacer.Data.Services
            // ---------------- Training Plan Management --------------
 
         // Create a new training plan
-        TrainingPlan CreatePlan(int RunningProfileId, RaceType targetRace, DateTime startDate, DateTime endDate, TimeSpan targetTime);
+        TrainingPlan CreatePlan(int RunningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
 
+        TrainingPlan GetPlanById(int Id);
         // Get a training plan by user
         TrainingPlan GetPlanByUserId(int userId);
 
@@ -19,6 +20,6 @@ namespace Pacer.Data.Services
 
         // Delete a training plan
         void DeletePlan(TrainingPlan plan);
-
+        void SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime);
     }
 }

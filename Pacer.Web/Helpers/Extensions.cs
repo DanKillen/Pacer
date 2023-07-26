@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -17,12 +20,13 @@ public static class Extensions
 
     // --------------------------- AUTHENTICATION Helper ----------------------------//
     // IServiceCollection extension method adding cookie authentication 
-    public static void AddCookieAuthentication(this IServiceCollection services, 
-                                                    string notAuthorised = "/User/ErrorNotAuthorised", 
-                                                    string notAuthenticated= "/User/ErrorNotAuthenticated")
+    public static void AddCookieAuthentication(this IServiceCollection services,
+                                                    string notAuthorised = "/User/ErrorNotAuthorised",
+                                                    string notAuthenticated = "/User/ErrorNotAuthenticated")
     {
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => {
+                .AddCookie(options =>
+                {
                     options.AccessDeniedPath = notAuthorised;
                     options.LoginPath = notAuthenticated;
                 });
@@ -33,22 +37,23 @@ public static class Extensions
     {
         // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies
 
-        services.AddAuthorization( options => {
+        services.AddAuthorization(options =>
+        {
             // add policies here
-            options.AddPolicy("RolePolicy", policy => 
-                policy.RequireRole("admin","manager")
-            ); 
-        
-            options.AddPolicy("IsManagerRoleOrIsGuestEmail", policy => 
-                policy.RequireAssertion(context => 
-                    context.User.HasOneOfRoles("manager") || 
+            options.AddPolicy("RolePolicy", policy =>
+                policy.RequireRole("admin", "manager")
+            );
+
+            options.AddPolicy("IsManagerRoleOrIsGuestEmail", policy =>
+                policy.RequireAssertion(context =>
+                    context.User.HasOneOfRoles("manager") ||
                     context.User.Claims
-                            .FirstOrDefault( c => c.Type == ClaimTypes.Email).Value == "guest@mail.com"
-                ) 
-            );  
+                            .FirstOrDefault(c => c.Type == ClaimTypes.Email).Value == "guest@mail.com"
+                )
+            );
             // for more sophisticated policies see resource based policies
             // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased  
-            
+
         });
     }
 
@@ -56,18 +61,38 @@ public static class Extensions
     // ClaimsPrincipal extension method to extract user id (sid) from claims
     public static int GetSignedInUserId(this ClaimsPrincipal user)
     {
-        if (user != null && user.Identity != null && user.Identity.IsAuthenticated) {
+        if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+        {
             // id stored as a string in the Sid claim - convert to an int and return
             Claim sid = user.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Sid) ?? throw new KeyNotFoundException("Sid Claim is not found in the identity");
             try
             {
-                return Int32.Parse(sid.Value);  
-            } catch (FormatException) {
-                throw new KeyNotFoundException("Sid Claim value is invalid - not an integer");  
+                return Int32.Parse(sid.Value);
+            }
+            catch (FormatException)
+            {
+                throw new KeyNotFoundException("Sid Claim value is invalid - not an integer");
             }
         }
         return 0;
     }
-    
+
+
+
 }
+
+public static class DateTimeExtensions
+{
+    public static int GetIso8601WeekOfYear(this DateTime date)
+    {
+        var day = (int)CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(date);
+        day = day >= 1 ? day : 7;
+
+        var jan4 = new DateTime(date.Year, 1, 4);
+
+        return (int)Math.Floor((date.Subtract(jan4).TotalDays + day - 1) / 7) + 1;
+    }
+}
+
+
 

@@ -16,7 +16,7 @@ namespace Pacer.Data.Services
         RunningProfile GetProfileByUserId(int userId);
 
         // Update a running profile
-        RunningProfile UpdateProfile(RunningProfile profile);
+        RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime);
 
         // Delete a running profile
         void DeleteProfile(RunningProfile profile);    

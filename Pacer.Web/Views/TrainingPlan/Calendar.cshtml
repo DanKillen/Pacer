@@ -1,0 +1,244 @@
+@model TrainingPlanCalendarViewModel
+
+@{
+    var viewModelJson = System.Text.Json.JsonSerializer.Serialize(Model);
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h2>@Model.PlanName Training Plan</h2>
+        </div>
+        <div class="col-md-12">
+            <div class="key">
+                <div class="key-item jsCalendar-RecoveryRun">
+                    Recovery Run
+                </div>
+                <div class="key-item jsCalendar-EasyRun">
+                    Easy Run
+                </div>
+                <div class="key-item jsCalendar-LongRun">
+                    Long Run
+                </div>
+                <div class="key-item jsCalendar-MarathonPace">
+                    Race Pace
+                </div>
+                <div class="key-item jsCalendar-IntervalTraining">
+                    Interval Training
+                </div>
+                <div class="key-item jsCalendar-TempoRun">
+                    Tempo Run
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="calendar" class="material-theme" data-month-format="month YYYY" data-day-format="DD"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="workout-details">
+                    <h4 id="workout-date"></h4>
+                    <h5 id="workout-type"></h5>
+                    <p id="workout-description">Click on the dates in the calendar to see your workouts</p>
+                    <form id="entry-form" method="post" style="display: none;"
+                        action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")">
+                        <input type="hidden" id="workoutId" name="WorkoutId" value="@Model.Id">
+                        <div>
+                            <label for="actualDistance">Actual Distance Ran (in miles):</label>
+                        </div>
+                        <div>
+                            <input type="number" id="actualDistance" name="ActualDistance" step="1" min="0" max="50"
+                                required>
+                        </div>
+                        <div>
+                            <label for="actualTime">Actual Duration:</label>
+                            <div style="display: flex; justify-content: space-between; max-width: 200px;">
+                                <div>
+                                    <label for="actualHours">Hours:</label>
+                                    <input type="number" id="actualHours" name="ActualHours" min="0" max="10" required
+                                        value="0">
+                                </div>
+                                <div>
+                                    <label for="actualMinutes">Minutes:</label>
+                                    <input type="number" id="actualMinutes" name="ActualMinutes" min="0" max="59"
+                                        required value="0">
+                                </div>
+                                <div>
+                                    <label for="actualSeconds">Seconds:</label>
+                                    <input type="number" id="actualSeconds" name="ActualSeconds" min="0" max="59"
+                                        required value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit">Save</button>
+                    </form>
+                    <div id="previous-results" style="display: none;">
+                        <h4>Previously Saved Workout Result</h4>
+                        <p id="prev-distance">Distance Ran: </p>
+                        <p id="prev-time">Duration: </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/simple-jscalendar@1.4.4/source/jsCalendar.min.js"></script>
+
+    <script>
+        var workout;
+        var workoutTypeNames = {
+            0: 'Recovery Run',
+            1: 'Easy Run',
+            2: 'Long Run',
+            3: 'Race Pace',
+            4: 'Interval Training',
+            5: 'Tempo Run',
+        };
+
+        $(function () {
+            var viewModel = @Html.Raw(viewModelJson);
+            var workouts = viewModel.Workouts;
+            var raceDate = viewModel.RaceDate.slice(0, 10);
+
+
+            var workoutMap = {};
+            workouts.forEach(w => {
+                if (isNaN(Date.parse(w.DateString))) {
+                    console.error('Invalid date:', w.DateString);
+                } else {
+                    var date = new Date(w.DateString);
+                    var dateString = date.toISOString().slice(0, 10);
+                    workoutMap[dateString] = w;
+                }
+            });
+
+            var calendar = new jsCalendar(document.querySelector('#calendar'));
+            var startMonth = viewModel.Month;  // replace with the actual month
+            var startYear = viewModel.Year;  // replace with the actual year
+
+            // Code to add classes to dates that have workouts TEST
+            calendar.onDateRender(function (date, element, instance) {
+                var localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+                var dateString = localDate.toISOString().slice(0, 10);
+
+                if (dateString === raceDate) {
+                    element.classList.add('jsCalendar-RaceDay');
+                }
+
+                // Check if there's a workout on the date
+                if (workoutMap[dateString]) {
+                    workout = workoutMap[dateString];
+                    switch (workout.Type) {
+                        case 0:
+                            element.classList.add('jsCalendar-RecoveryRun');
+                            break;
+                        case 1:
+                            element.classList.add('jsCalendar-EasyRun');
+                            break;
+                        case 2:
+                            element.classList.add('jsCalendar-LongRun');
+                            break;
+                        case 3:
+                            element.classList.add('jsCalendar-MarathonPace');
+                            break;
+                        case 4:
+                            element.classList.add('jsCalendar-IntervalTraining');
+                            break;
+                        case 5:
+                            element.classList.add('jsCalendar-TempoRun');
+                            break;
+                        // Add more cases as necessary
+                        default:
+                            break;
+                    }
+                }
+            });
+
+            calendar.refresh(new Date(startYear, startMonth - 1));
+
+            // Handle date click event
+            calendar.onDateClick(function (event, date) {
+                var localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+                var dateString = localDate.toISOString().slice(0, 10);
+
+                var workout = workoutMap[dateString];
+
+                if (dateString === raceDate) {
+                    $('#workout-date').text("Race Day!");
+                    $('#workout-type').text("@Model.PlanName");
+                    $('#workout-description').text("Today is the day! Good luck!\nRun the @Model.TargetRace.ToString() at @Model.TargetPace");
+                    $('#entry-form').hide();
+                    return;
+                }
+
+                if (workout) {
+                    console.log(workout);
+                    // Update the workout details on the page
+                    var workoutDate = new Date(workout.DateString); // Use DateString here
+                    var workoutDistance = workout.ActualDistance;
+
+                    // get the day suffix
+                    var day = workoutDate.getDate();
+                    var suffix = '';
+                    if (day > 3 && day < 21) suffix = 'th';
+                    else {
+                        switch (day % 10) {
+                            case 1: suffix = 'st'; break;
+                            case 2: suffix = 'nd'; break;
+                            case 3: suffix = 'rd'; break;
+                            default: suffix = 'th'; break;
+                        }
+                    }
+
+                    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    var formattedDate = days[workoutDate.getDay()] + ' ' + day + suffix + ' ' + months[workoutDate.getMonth()] + ' ' + workoutDate.getFullYear();
+                    $('#workout-date').text(formattedDate);
+                    $('#workout-type').text(workout.TargetDistance + ' mile ' + workoutTypeNames[workout.Type]);
+                    $('#workout-description').text(workout.WorkoutDescription);
+                    $('#entry-form').show();
+                    $('#workoutId').val(workout.Id);
+                    $('#actualDistance').val(workout.TargetDistance);
+
+                    if (workout.ActualDistance > 0) {
+                        $('#actualDistance').val(workout.ActualDistance);
+                        $('#prev-distance').text("Distance Ran: " + workout.ActualDistance + " miles");
+                        $('#previous-results').show();
+                    }
+                    else {
+                        $('#previous-results').hide();
+                    }
+
+                    if (workout.ActualTime) { // Assuming ActualTime is a serialized TimeSpan
+                        var actualTimeParts = workout.ActualTime.split(':');
+                        var hours = parseInt(actualTimeParts[0]);
+                        var minutes = parseInt(actualTimeParts[1]);
+                        var seconds = parseInt(actualTimeParts[2]);
+                        
+                        if (hours > 0 || minutes > 0 || seconds > 0) {
+                            $('#actualHours').val(hours);
+                            $('#actualMinutes').val(minutes);
+                            $('#actualSeconds').val(seconds);
+
+                            $('#prev-time').text("Duration: " + hours + "h " + minutes + "m " + seconds + "s");
+                            $('#previous-results').show();
+                        }
+                    }
+
+                }
+                else {
+                    $('#workout-date').text("");
+                    $('#workout-type').text("");
+                    $('#workout-description').text("No workout scheduled for this date.");
+                    $('#entry-form').hide();
+                }
+            });
+
+        }, function (error) {
+            console.log(error);
+        });
+    </script>

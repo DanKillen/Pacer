@@ -1,0 +1,28 @@
+@model TrainingPlanViewModel
+
+<div class="card shadow p-4 mt-5 mx-auto w-75">
+    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
+        <!-- your SVG logo goes here -->
+    </div>
+
+    <h3 class="my-3 mx-auto">@Model.PlanName Training Plan</h3>
+
+    @for (int i = 0; i < Model.Weeks.Count; i++)
+    {
+        var week = Model.Weeks[i];
+
+        <h4>Week @week.WeekNumber</h4>
+        <ul class="list-group mb-3">
+            @foreach (var workout in week.Workouts)
+            {
+                <li class="list-group-item">
+                    <h5>@workout.Date.ToString("D")</h5>
+                    <h6 class="text-muted">@workout.Type</h6>
+                    <p>@workout.WorkoutDescription</p>
+                    <p>Target Distance: @workout.TargetDistance</p>
+                    <p>Target Pace: @workout.TargetPaceMinMinutes:@workout.TargetPaceMinSeconds - @workout.TargetPaceMaxMinutes:@workout.TargetPaceMaxSeconds</p>
+                </li>
+            }
+        </ul>
+    }
+</div>

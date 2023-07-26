@@ -1,24 +1,61 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Pacer.Data.Extensions;
 
 namespace Pacer.Data.Entities
 {
     public enum WorkoutType
     {
+        [Display(Name = "Recovery Run")]
         RecoveryRun,
+        [Display(Name = "Easy Run")]
         EasyRun,
+        [Display(Name = "Long Run")]
         LongRun,
+        [Display(Name = "Race Pace")]
+        MarathonPace,
+        [Display(Name = "Interval Training")]
         IntervalTraining,
-        LactateThreshold,
-        Rest
+        [Display(Name = "Tempo Run")]
+        TempoRun,
     }
 
     public class TimeSpanRange
     {
-        public PaceTimeSpan Min { get; set; }
-        public PaceTimeSpan Max { get; set; }
 
-        public TimeSpanRange(PaceTimeSpan min, PaceTimeSpan max)
+        public int MinMinutes { get; set; }
+        public int MinSeconds { get; set; }
+
+        public int MaxMinutes { get; set; }
+        public int MaxSeconds { get; set; }
+        [NotMapped]
+        public PaceTime Min
+        {
+            get { return new PaceTime(new TimeSpan(0, MinMinutes, MinSeconds)); }
+            set
+            {
+                MinMinutes = value.Minutes;
+                MinSeconds = value.Seconds;
+            }
+        }
+
+        [NotMapped]
+        public PaceTime Max
+        {
+            get { return new PaceTime(new TimeSpan(0, MaxMinutes, MaxSeconds)); }
+            set
+            {
+                MaxMinutes = value.Minutes;
+                MaxSeconds = value.Seconds;
+            }
+        }
+
+
+
+        public TimeSpanRange() { }
+
+        public TimeSpanRange(PaceTime min, PaceTime max)
         {
             Min = min;
             Max = max;
@@ -41,8 +78,17 @@ namespace Pacer.Data.Entities
         // Workout specific properties
         public WorkoutType Type { get; set; }
         public DateTime Date { get; set; }
+        [NotMapped]
+        public string FormattedDate => Date.ToString("yyyy-MM-dd");
         public double TargetDistance { get; set; }
-        public TimeSpanRange TargetPace { get; set; }
+        public int TargetPaceMinMinutes { get; set; }
+        public int TargetPaceMinSeconds { get; set; }
+        public int TargetPaceMaxMinutes { get; set; }
+        public int TargetPaceMaxSeconds { get; set; }
+
         public string WorkoutDescription { get; set; }
+
+        public double ActualDistance { get; set; }
+        public TimeSpan ActualTime { get; set; }
     }
 }

@@ -18,9 +18,11 @@ builder.Services.AddDbContext<DatabaseContext>( options => {
     //options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });  
 
-// Add UserService to DI   
+// Add Services to DI   
 builder.Services.AddTransient<IUserService,UserServiceDb>();
 builder.Services.AddTransient<IMailService,SmtpMailService>();
+builder.Services.AddTransient<ITrainingPlanService, TrainingPlanServiceDb>();
+builder.Services.AddTransient<IRunningProfileService, RunningProfileServiceDb>();
 builder.Services.AddScoped<IScoreCalculator, ScoreCalculator>();
 
 // ** Required to enable asp-authorize Taghelper **            
@@ -42,7 +44,7 @@ else
 {
     // seed users in development mode - using service provider to get UserService from DI
     using var scope = app.Services.CreateScope();
-    Seeder.Seed(scope.ServiceProvider.GetService<IUserService>());
+    Seeder.Seed(scope.ServiceProvider.GetService<IUserService>(), scope.ServiceProvider.GetService<IRunningProfileService>(), scope.ServiceProvider.GetService<ITrainingPlanService>());
 }
 
 //app.UseHttpsRedirection();
@@ -60,5 +62,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

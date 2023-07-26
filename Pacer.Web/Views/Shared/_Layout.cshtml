@@ -17,8 +17,8 @@
             @* <nav class="navbar navbar-expand-md navbar-light bg-white shadow-lg rounded mb-3"> *@
             <div class="container">
                 <a class="navbar-brand" href="#" style="display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" 
-                        class="bi bi-exclude" viewBox="0 0 40 40" style="margin-right: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="bi bi-exclude"
+                        viewBox="0 0 40 40" style="margin-right: 5px;">
                         <image xlink:href="/images/LogoTrimWIP.png" width="50" height="50" />
                     </svg>
                     <span>Pacer</span>
@@ -35,6 +35,15 @@
                         <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         <a class="nav-link" asp-controller="Home" asp-action="Secure">Secure</a>
                         <a class="nav-link" asp-controller="User" asp-action="Index" asp-roles="admin">Users</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="nav-link" asp-controller="Profile" asp-action="CreateProfile">Create Running
+                                Profile</a>
+                            <a class="nav-link" asp-controller="TrainingPlan" asp-action="Index">Manage
+                                Training Plan</a>
+                            <a class="nav-link" asp-controller="TrainingPlan" asp-action="Calendar">
+                                Calendar View</a>
+                        }
                     </div>
                     <!-- AMC The login partial is added here for authentication -->
                     <partial name="_LoginPartial" />
@@ -53,11 +62,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    @* <footer class="border-top footer text-muted">
         <div class="container">
             &copy; @DateTime.Now.Year - Pacer.Web - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

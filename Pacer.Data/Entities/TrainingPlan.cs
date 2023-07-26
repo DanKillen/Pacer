@@ -25,8 +25,9 @@ namespace Pacer.Data.Entities
         public RaceType TargetRace { get; set; }
 
         public TimeSpan TargetTime { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string TargetPace { get; set; }
+
+        public DateTime RaceDate { get; set; }
 
         // Collection of workouts for this training plan
         public ICollection<Workout> Workouts { get; set; }

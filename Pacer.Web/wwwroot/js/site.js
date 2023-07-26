@@ -1,4 +1,7 @@
-﻿const displaysections = Array.from(document.getElementsByClassName('section'));
+﻿// Purpose: JavaScript for the site.
+
+// Intro Scroll JavaScript
+const displaysections = Array.from(document.getElementsByClassName('section'));
 let currentSection = 0;
 
 function handleWheel(event) {
@@ -26,4 +29,10 @@ function handleWheel(event) {
   });
 }
 
-window.addEventListener('wheel', handleWheel, { passive: false });
+if (document.querySelector('#index-page')) {
+  window.addEventListener('wheel', handleWheel, { passive: false });
+}
+
+// Calendar JavaScript
+
+

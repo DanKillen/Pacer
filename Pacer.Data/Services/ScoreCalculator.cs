@@ -1,47 +1,63 @@
-public interface IScoreCalculator
-{
-    double CalculateInitialAnaerobicScore(TimeSpan fiveKTime);
-    double CalculateInitialAerobicScore(int weeklyMileage, TimeSpan fiveKTime);
-}
-
 public class ScoreCalculator : IScoreCalculator
 {
-    public double CalculateInitialAnaerobicScore(TimeSpan fiveKTime)
+    private const double MinScore = 0;
+    private const double MaxScore = 50;
+    // MinTime is the fastest 5K time that will be considered, in minutes
+    private const double MinTime = 12.5;
+    // MaxTime is the slowest 5K time that will be considered, in minutes
+    private const double MaxTime = 40;
+
+    private double CalculateScore(double timeInMinutes, double logBase)
     {
-        // Convert the TimeSpan to total seconds for more precision
-        double timeInSeconds = fiveKTime.TotalSeconds;
-
-        // Set up the maximum and minimum time and score values for scaling
-        double minTimeInSeconds = 12.5 * 60; // 12.5 minutes in seconds
-        double maxTimeInSeconds = 40 * 60; // 40 minutes in seconds
-        double minScore = 0;
-        double maxScore = 50;
-
-        // Ensure the time is within the valid range
-        if (timeInSeconds < minTimeInSeconds)
+        if (timeInMinutes <= MinTime)
         {
-            return maxScore;
+            return MaxScore;
         }
-        if (timeInSeconds > maxTimeInSeconds)
+        if (timeInMinutes >= MaxTime)
         {
-            return minScore;
+            return MinScore;
         }
-        // Normalize the time within the range [0, 1]
-        double normalizedTime = (timeInSeconds - minTimeInSeconds) / (maxTimeInSeconds - minTimeInSeconds);
 
-        // Use a logarithmic function to calculate the score, ensuring it's within the range [minScore, maxScore]
-        double score = maxScore - ((Math.Log(normalizedTime * 9 + 1) / Math.Log(20)) * maxScore);
+        double normalizedTime = (timeInMinutes - MinTime) / (MaxTime - MinTime);
 
-        // Ensure the score is within the valid range
-        score = Math.Max(minScore, score);
-        score = Math.Min(maxScore, score);
+        double score = MaxScore - ((Math.Log(normalizedTime * 9 + 1) / Math.Log(logBase)) * MaxScore);
+
+        score = Math.Max(MinScore, score);
+        score = Math.Min(MaxScore, score);
 
         return Math.Round(score, 2); // Round to 2 decimal places
     }
+
+    /*
+        The anaerobic score calculation uses a logarithm base of 20. 
+        This base was chosen because anaerobic fitness is significantly impacted by shorter time differences in a 5K run. 
+        This base results in a steeper initial decline of the score as the 5K time increases, reflecting the rapid drop-off 
+        in anaerobic fitness for slower 5K times.
+    */
+    public double CalculateInitialAnaerobicScore(TimeSpan fiveKTime)
+    {
+        double timeInMinutes = fiveKTime.TotalMinutes;
+        double logBase = 20;
+
+        return CalculateScore(timeInMinutes, logBase);
+    }
+    /*
+        The aerobic score calculation uses a logarithm base of 10. 
+        This base was chosen because aerobic fitness is less sensitive to shorter time differences in a 5K run compared to anaerobic fitness. 
+        This base results in a less steep initial decline of the score as the 5K time increases, reflecting the slower drop-off in aerobic 
+        fitness for slower 5K times.
+    */
+    public double CalculateAerobicScoreFrom5KTime(TimeSpan fiveKTime)
+    {
+        double timeInMinutes = fiveKTime.TotalMinutes;
+        double logBase = 10;
+
+        return CalculateScore(timeInMinutes, logBase);
+    }
+    
     public double CalculateAerobicScoreFromWeeklyMileage(int weeklyMileage)
     {
         double score = 0;
-        double maxAerobicScore = 50;
         double maxWeeklyMileage = 120;
 
         // Scores for 20 miles and below
@@ -54,7 +70,7 @@ public class ScoreCalculator : IScoreCalculator
             // Calculate the score based on a linear scale
             score = 10 + (weeklyMileage / adjustedMaxMileage) * (adjustedMaxScore - 10);
         }
-        // Scores for above 30 miles
+        // Scores for above 20 miles
         else
         {
             // Adjusted score values and mileage for the shallow slope section
@@ -62,40 +78,8 @@ public class ScoreCalculator : IScoreCalculator
             double adjustedMinMileage = 20;
 
             // Calculate the score based on a linear scale
-            score = adjustedMinScore + ((weeklyMileage - adjustedMinMileage) / (maxWeeklyMileage - adjustedMinMileage)) * (maxAerobicScore - adjustedMinScore);
+            score = adjustedMinScore + ((weeklyMileage - adjustedMinMileage) / (maxWeeklyMileage - adjustedMinMileage)) * (MaxScore - adjustedMinScore);
         }
-
-        return Math.Round(score, 2); // Round to 2 decimal places
-    }
-
-    public double CalculateAerobicScoreFrom5KTime(TimeSpan fiveKTime)
-    {
-        double maxAerobicScore = 50;
-        double minFiveKTime = 12.5;
-        double maxFiveKTime = 40;
-
-        // Convert fiveKTime to total minutes for comparison
-        double timeInMinutes = fiveKTime.TotalMinutes;
-
-        // Ensure the time is within the valid range
-        if (timeInMinutes <= minFiveKTime)
-        {
-            return maxAerobicScore;
-        }
-        if (timeInMinutes >= maxFiveKTime)
-        {
-            return 0;
-        }
-
-        // Normalize the time within the range [0, 1]
-        double normalizedTime = (timeInMinutes - minFiveKTime) / (maxFiveKTime - minFiveKTime);
-
-        // Using a logarithmic function to calculate the score, ensuring it's within the range [0, maxScore]
-        double score = maxAerobicScore - ((Math.Log(normalizedTime * 9 + 1) / Math.Log(10)) * maxAerobicScore);
-
-        // Ensure the score is within the valid range
-        score = Math.Max(0, score);
-        score = Math.Min(maxAerobicScore, score);
 
         return Math.Round(score, 2); // Round to 2 decimal places
     }

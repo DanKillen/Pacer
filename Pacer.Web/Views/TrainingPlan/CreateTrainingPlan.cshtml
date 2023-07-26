@@ -1,0 +1,44 @@
+@model TrainingPlanCreateModel
+
+<div class="card shadow p-4 mt-5 mx-auto w-75">
+    <h3 class="my-3 mx-auto">Create Training Plan</h3>
+
+    <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post">
+
+        <input type="hidden" asp-for="RunningProfileId" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mt-3">
+            <label asp-for="TargetRace" class="form-label">Target Race</label>
+            <select asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()" class="form-control">
+                <option>Select Target Race</option>
+            </select>
+            <span asp-validation-for="TargetRace" class="text-danger"></span>
+        </div>
+
+        <div class="mt-3">
+            <label asp-for="RaceDate" class="form-label">Date of Race</label>
+            <input type="date" asp-for="RaceDate" class="form-control" />
+            <span asp-validation-for="RaceDate" class="text-danger"></span>
+        </div>
+
+        <div class="mt-3">
+            <label asp-for="TargetTime" class="form-label">Target Time</label>
+            <input type="time" step="1" asp-for="TargetTime" class="form-control" />
+            <span asp-validation-for="TargetTime" class="text-danger"></span>
+        </div>
+
+        <div class="mt-3">
+            <input type="submit" value="Create Plan" class="btn btn-primary" />
+            <a class="btn btn-link ms-3" asp-controller="Home" asp-action="Index">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

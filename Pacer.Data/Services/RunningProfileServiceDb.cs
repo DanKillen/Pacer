@@ -23,8 +23,6 @@ namespace Pacer.Data.Services
             _ctx.Initialise();
         }
 
-        // ------------------ Running Profile Related Operations ------------------------
-
         // ---------------- Running Profile Management --------------
 
         // Create a new running profile
@@ -62,22 +60,25 @@ namespace Pacer.Data.Services
             return _ctx.RunningProfiles.FirstOrDefault(rp => rp.User.Id == userId);
         }
         // Update a running profile
-        public RunningProfile UpdateProfile(RunningProfile profile)
+        public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // Check if the profile exists in the context
-            RunningProfile existingProfile = _ctx.RunningProfiles.Find(profile.Id);
+            RunningProfile existingProfile = _ctx.RunningProfiles.Find(userId);
             if (existingProfile == null)
             {
                 throw new ArgumentException("No running profile found with the given profile Id");
             }
 
+            double anaerobicScore = _scoreCalculator.CalculateInitialAnaerobicScore(fiveKTime);
+            double aerobicScore = _scoreCalculator.CalculateInitialAerobicScore(weeklyMileage, fiveKTime);
+
             // Update the profile properties
-            existingProfile.DateOfBirth = profile.DateOfBirth;
-            existingProfile.Gender = profile.Gender;
-            existingProfile.WeeklyMileage = profile.WeeklyMileage;
-            existingProfile.FiveKTime = profile.FiveKTime;
-            existingProfile.AnaerobicScore = profile.AnaerobicScore;
-            existingProfile.AerobicScore = profile.AerobicScore;
+            existingProfile.DateOfBirth = dateOfBirth;
+            existingProfile.Gender = gender;
+            existingProfile.WeeklyMileage = weeklyMileage;
+            existingProfile.FiveKTime = fiveKTime;
+            existingProfile.AnaerobicScore = anaerobicScore;
+            existingProfile.AerobicScore = aerobicScore;
 
             _ctx.SaveChanges();
 

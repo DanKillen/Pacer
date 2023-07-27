@@ -44,37 +44,37 @@ namespace Pacer.Web.Controllers
 
         // HTTP POST - Login action
         [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Login([Bind("Email,Password")] LoginViewModel m)
-{
-    var user = _svc.Authenticate(m.Email, m.Password);
-    // check if login was unsuccessful and add validation errors
-    if (user == null)
-    {
-        ModelState.AddModelError("Email", "Invalid Login Credentials");
-        ModelState.AddModelError("Password", "Invalid Login Credentials");
-        return View(m);
-    }
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login([Bind("Email,Password")] LoginViewModel m)
+        {
+            var user = _svc.Authenticate(m.Email, m.Password);
+            // check if login was unsuccessful and add validation errors
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "Invalid Login Credentials");
+                ModelState.AddModelError("Password", "Invalid Login Credentials");
+                return View(m);
+            }
 
-    // Sign user in using cookie authentication
-    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, BuildClaimsPrincipal(user));
+            // Sign user in using cookie authentication
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, BuildClaimsPrincipal(user));
 
-    Alert("Successfully Logged in", AlertType.info);
+            Alert("Successfully Logged in", AlertType.info);
 
-    return Redirect("/");
-}
+            return Redirect("/");
+        }
 
-private ClaimsPrincipal BuildClaimsPrincipal(User user)
-{
-    var claims = new List<Claim>
+        private ClaimsPrincipal BuildClaimsPrincipal(User user)
+        {
+            var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         // Add any other claims you need
     };
 
-    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-    return new ClaimsPrincipal(identity);
-}
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            return new ClaimsPrincipal(identity);
+        }
 
 
         // HTTP GET - Display Register page

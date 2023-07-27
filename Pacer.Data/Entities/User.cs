@@ -14,5 +14,7 @@ namespace Pacer.Data.Entities
         // User role within application
         public Role Role { get; set; }
 
+        public RunningProfile RunningProfile { get; set; }
+
     }
 }

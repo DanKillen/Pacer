@@ -33,6 +33,5 @@ if (document.querySelector('#index-page')) {
   window.addEventListener('wheel', handleWheel, { passive: false });
 }
 
-// Calendar JavaScript
 
 

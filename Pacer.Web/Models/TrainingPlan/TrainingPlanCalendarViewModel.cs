@@ -10,6 +10,8 @@ public class TrainingPlanCalendarViewModel
     public int Month  { get; set; }
     public int Year { get; set; }
     public List<WorkoutCalendarViewModel> Workouts { get; set; }
+
+    public MileageGraphViewModel MileageGraph { get; set; }
 }
 
 public class WorkoutCalendarViewModel
@@ -18,11 +20,11 @@ public class WorkoutCalendarViewModel
     public WorkoutType Type { get; set; }
     public DateTime Date { get; set; }
     
-    public string TargetPace { get; set; }
-
     public string DateString => Date.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
     public string FormattedDate => Date.ToString("yyyy-MM-dd");
+    
+    public string TargetPace { get; set; }
 
     public double TargetDistance { get; set; }
     public int TargetPaceMinMinutes { get; set; }
@@ -32,4 +34,5 @@ public class WorkoutCalendarViewModel
     public string WorkoutDescription { get; set; }
     public double ActualDistance { get; set; }
     public TimeSpan ActualTime { get; set; }
+    public string ActualPace { get; set; }
 }

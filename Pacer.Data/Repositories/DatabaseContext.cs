@@ -56,8 +56,10 @@ namespace Pacer.Data.Repositories
             modelBuilder.Entity<User>()
                 .Property(u => u.Id)
                 .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new User
-
-
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.RunningProfile)  // User has one RunningProfile
+                .WithOne(rp => rp.User)  // RunningProfile has one User
+                .HasForeignKey<RunningProfile>(rp => rp.UserId);  // ForeignKey in RunningProfile entity is UserId
         }
 
 

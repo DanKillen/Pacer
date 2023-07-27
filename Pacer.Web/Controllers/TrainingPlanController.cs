@@ -189,6 +189,7 @@ namespace Pacer.Web.Controllers
         public IActionResult Calendar()
         {
             var viewModel = GetTrainingPlanCalendarViewModel();
+
             if (viewModel == null)
             {
                 // Handle error. This might redirect to an error page, for example.
@@ -219,7 +220,7 @@ namespace Pacer.Web.Controllers
                 RaceDate = trainingPlan.RaceDate,
                 TargetRace = trainingPlan.TargetRace,
                 TargetPace = trainingPlan.TargetPace,
-                
+
 
                 Workouts = trainingPlan.Workouts.Select(w => new WorkoutCalendarViewModel
                 {
@@ -233,7 +234,9 @@ namespace Pacer.Web.Controllers
                     TargetPaceMaxSeconds = w.TargetPaceMaxSeconds,
                     WorkoutDescription = w.WorkoutDescription,
                     ActualDistance = w.ActualDistance,
-                    ActualTime = w.ActualTime
+                    ActualTime = w.ActualTime,
+                    ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null
+
                 }).ToList()
             };
         }
@@ -257,6 +260,7 @@ namespace Pacer.Web.Controllers
                 _trainingPlanService.SaveWorkoutActuals(WorkoutId, userId, ActualDistance, actualTime);
 
                 // Redirecting to the Calendar action in the TrainingPlan controller
+                Alert("Workout added successfully. Great job!", AlertType.success);
                 return RedirectToAction("Calendar", "TrainingPlan");
             }
             catch (Exception ex)
@@ -265,5 +269,22 @@ namespace Pacer.Web.Controllers
             }
         }
 
+        [HttpPost("ClearWorkoutActuals")]
+        public IActionResult ClearWorkoutActuals(int WorkoutId)
+        {
+            try
+            {
+                var userId = GetUserId();
+                _trainingPlanService.ClearWorkoutActuals(WorkoutId, userId);
+
+                // Redirecting to the Calendar action in the TrainingPlan controller
+                Alert("Workout deleted successfully.", AlertType.info);
+                return RedirectToAction("Calendar", "TrainingPlan");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving actuals: " + ex.Message });
+            }
+        }
     }
 }

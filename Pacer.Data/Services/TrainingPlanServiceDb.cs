@@ -126,6 +126,21 @@ namespace Pacer.Data.Services
                 Console.WriteLine(e);
             }
         }
+    
+
+        public void ClearWorkoutActuals(int workoutId, int userId)
+        {
+            try{
+            var trainingPlan = GetPlanByUserId(userId);
+            var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
+            workout.ActualDistance = 0;
+            workout.ActualTime = new TimeSpan(0,0,0);
+            ctx.SaveChanges();
+            }
+            catch(Exception e){
+                Console.WriteLine(e);
+            }
+        }
     }
 
 }

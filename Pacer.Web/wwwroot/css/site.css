@@ -11,15 +11,26 @@ html {
 }
 
 body {
+  background-color: #333030; /* Dark Grey */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  color: #f7f7f7; /* Light Grey */
+}
+
+.table,
+.card {
+  background-color: #323232; /* Dark Grey */
+  color: #f7f7f7; /* Light Grey */
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin: 20px 0;
+  padding: 20px;
 }
 
 main {
   flex-grow: 1;
 }
-
 
 nav.navbar {
   z-index: 100;
@@ -50,7 +61,7 @@ nav.navbar {
 }
 
 #scroll-indicator p {
-  color: #000;
+  color: #fd7101;
   font-size: 16px;
   margin-bottom: 10px;
 }
@@ -96,7 +107,7 @@ nav.navbar {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, #eee, #ccc);
+  background: linear-gradient(45deg, #fd7101, #fd7090);
   transform: rotate(45deg);
   transition: all 0.3s ease-in-out;
   z-index: -1;
@@ -144,6 +155,58 @@ nav.navbar {
   opacity: 0 !important;
 }
 
+/* Training View  */
+
+.completed-workout {
+  background-color: #323232; /* Dark Grey */
+  color: #f7f7f7; /* Light Grey */
+  border: 2px solid #32CD32 !important;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#training-plan .list-group-item {
+  background-color: #323232; /* Dark Grey */
+  color: #f7f7f7; /* Light Grey */
+  border: none;
+  border-radius: 5px;
+  margin: 10px 0;
+  padding: 15px;
+}
+
+#training-plan h4 {
+  color: #f7f7f7; /* Light Grey */
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+#training-plan h5 {
+  color: #f7f7f7; /* Light Grey */
+  font-size: 1.5em;
+  margin-bottom: 5px;
+}
+
+#training-plan p {
+  color: #f7f7f7; /* Light Grey */
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+#training-plan button {
+  background-color: #009688; /* Dark Teal */
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
 /* Calendar CSS */
 /* Default Theme */
 /* General style */
@@ -161,11 +224,11 @@ nav.navbar {
 
 /* Blue default */
 .jsCalendar table {
-  background-color: #FFFFFF;
+  background-color: #3b3b3b;
   border-collapse: collapse;
   border-radius: 4px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
-  color: #000000;
+  color: #ffffff;
   font-family: Tahoma, Geneva, sans-serif;
   margin: 5px;
 }
@@ -240,6 +303,8 @@ nav.navbar {
 .jsCalendar thead .jsCalendar-week-days th,
 .jsCalendar tbody td {
   border-radius: 18px;
+  border: 2px solid transparent; /* Set default border for all cells */
+  box-sizing: border-box;
   cursor: default;
   display: inline-block;
   font-size: 12px;
@@ -253,10 +318,11 @@ nav.navbar {
 }
 
 .jsCalendar tbody td:hover {
-  background-color: #E6E6E6;
+  border: rgb(202, 11, 11) solid 2px !important;
 }
 
 .jsCalendar tbody td.jsCalendar-selected {
+  border: rgb(202, 11, 11) solid 2px;
   background-color: #be0303;
   border: 2px solid #000000;
   height: 32px;
@@ -264,10 +330,15 @@ nav.navbar {
   width: 32px;
 }
 
+.jsCalendar tbody td.selected-date {
+  border: rgb(202, 11, 11) solid 2px !important;
+}
+
 .jsCalendar tbody td.jsCalendar-current {
   font-weight: 200;
   border-radius: 18px;
-  border: rgb(202, 11, 11) solid 2px;
+
+  border: rgb(11, 202, 11) solid 2px;
 }
 
 .jsCalendar tbody td.jsCalendar-previous,
@@ -598,41 +669,43 @@ nav.navbar {
 .key-item {
   padding: 10px;
   color: #000;
-  /*Change the text color if required */
   border-radius: 5px;
   margin-right: 10px;
 }
 
-/* Add custom styles for the different run cells */
 .jsCalendar-RecoveryRun {
-  background-color: #52C9FF;
-
+  background-color: #1d8cf8; /* Darker Light Blue */
 }
 
 .jsCalendar-EasyRun {
-  background-color: #dfff52;
+  background-color: #acdc2b; /* Darker Yellow-Green */
 }
 
 .jsCalendar-LongRun {
-  background-color: #7852ff;
+  background-color: #5c39f8; /* Darker Dark Blue */
 }
 
 .jsCalendar-MarathonPace {
-  background-color: #ffa652;
+  background-color: #f67b14; /* Darker Orange */
 }
 
 .jsCalendar-IntervalTraining {
-  background-color: #52ff5b;
+  background-color: #01c038; /* Darker Bright Green */
 }
 
 .jsCalendar-TempoRun {
-  background-color: #e44a23;
+  background-color: #b83215; /* Darker Red */
+}
+
+.jsCalendar-VO2Max {
+  background-color: #f542ab; /* Darker Pink */
 }
 
 .jsCalendar-RaceDay {
-  background-image: url('/images/race-day-gold-star.jpg');
+  background-image: url('/images/race-day-gold-star.png');
   background-size: cover;
   background-repeat: no-repeat;
+  color: black;
 }
 
 /* Totally removes days of previous and next months*/

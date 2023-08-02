@@ -106,41 +106,76 @@ namespace Pacer.Data.Services
         }
 
         // Delete a training plan
-        public void DeletePlan(TrainingPlan plan)
+        public bool DeletePlan(TrainingPlan plan)
         {
             ctx.TrainingPlans.Remove(plan);
             ctx.SaveChanges();
+            return true;
         }
 
-        public void SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime)
+        public bool SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime)
         {
-            try{
-            var trainingPlan = GetPlanByUserId(userId);
-            var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
-            workout.ActualDistance = actualDistance;
-            workout.ActualTime = actualTime;
-            Console.WriteLine("Workout Actuals Saved:   " + workoutId + " " + actualDistance + " " + actualTime);
-            ctx.SaveChanges();
+            try
+            {
+                var trainingPlan = GetPlanByUserId(userId);
+                var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
+                if (workout != null)
+                {
+                    workout.ActualDistance = actualDistance;
+                    workout.ActualTime = actualTime;
+                    Console.WriteLine("Workout Actuals Saved: " + workoutId + " " + actualDistance + " " + workout.ActualTime);
+                    ctx.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Workout not found.");
+                    return false;
+                }
             }
-            catch(Exception e){
+            catch (Exception e)
+            {
                 Console.WriteLine(e);
+                return false;
             }
         }
-    
 
-        public void ClearWorkoutActuals(int workoutId, int userId)
+
+
+        public bool ClearWorkoutActuals(int workoutId, int userId)
         {
-            try{
-            var trainingPlan = GetPlanByUserId(userId);
-            var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
-            workout.ActualDistance = 0;
-            workout.ActualTime = new TimeSpan(0,0,0);
-            ctx.SaveChanges();
+            try
+            {
+                var trainingPlan = GetPlanByUserId(userId);
+
+                if (trainingPlan == null)
+                {
+                    Console.WriteLine($"No training plan found for user {userId}");
+                    return false;
+                }
+
+                var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
+
+                if (workout == null)
+                {
+                    Console.WriteLine($"No workout found with id {workoutId}");
+                    return false;
+                }
+
+                workout.ActualDistance = 0;
+                workout.ActualTime = new TimeSpan(0, 0, 0);
+
+                ctx.SaveChanges();
+
+                return true;
             }
-            catch(Exception e){
+            catch (Exception e)
+            {
                 Console.WriteLine(e);
+                return false;
             }
         }
+
     }
 
 }

@@ -14,8 +14,10 @@ namespace Pacer.Data.Strategies
             X,  // Rest
             I,  // Interval Training
             T, // Tempo Run
+            V, // VO2 Max
             L,   // Long Run
             M  // Race Pace
+
         }
 
         protected readonly RunningProfile RunningProfile;
@@ -38,6 +40,7 @@ namespace Pacer.Data.Strategies
             Paces.Add(WorkoutType.RecoveryRun, new TimeSpanRange(CalculatePace(1.3), CalculatePace(1.5)));
             Paces.Add(WorkoutType.EasyRun, new TimeSpanRange(CalculatePace(1.15), CalculatePace(1.25)));
             Paces.Add(WorkoutType.LongRun, new TimeSpanRange(CalculatePace(1.1), CalculatePace(1.2)));
+            Paces.Add(WorkoutType.VO2MaxRun, new TimeSpanRange(CalculatePace(0.8), CalculatePace(0.9)));
             Paces.Add(WorkoutType.IntervalTraining, new TimeSpanRange(CalculatePace(5.0 / 6.0), CalculatePace(14.0 / 15.0)));
             Paces.Add(WorkoutType.TempoRun, new TimeSpanRange(CalculatePace(0.91), CalculatePace(0.94)));
             Paces.Add(WorkoutType.MarathonPace, new TimeSpanRange(CalculatePace(0.99), CalculatePace(1)));
@@ -127,7 +130,6 @@ namespace Pacer.Data.Strategies
             return true;
         }
 
-
         protected WorkoutType GetWorkoutTypeFromRunType(RunType runType)
         {
             switch (runType)
@@ -138,6 +140,7 @@ namespace Pacer.Data.Strategies
                 case RunType.T: return WorkoutType.TempoRun;
                 case RunType.L: return WorkoutType.LongRun;
                 case RunType.M: return WorkoutType.MarathonPace;
+                case RunType.V: return WorkoutType.VO2MaxRun;
                 default: throw new ArgumentException($"Invalid RunType: {runType}");
             }
         }

@@ -19,6 +19,8 @@ namespace Pacer.Data.Entities
         IntervalTraining,
         [Display(Name = "Tempo Run")]
         TempoRun,
+        [Display(Name = "VO2 Max Run")]
+        VO2MaxRun,
     }
 
     public class TimeSpanRange

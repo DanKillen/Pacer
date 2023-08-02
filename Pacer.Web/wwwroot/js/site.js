@@ -33,5 +33,48 @@ if (document.querySelector('#index-page')) {
   window.addEventListener('wheel', handleWheel, { passive: false });
 }
 
+// 5k time slider 
+
+$(function() {
+  $("#slider-range").slider({
+      min: 750, // 12 minutes and 30 seconds in seconds
+      max: 2400, // 40 minutes in seconds
+      value: 1800,
+      slide: function(event, ui) {
+          updateMinutesAndSeconds(ui.value);
+      }
+  });
+
+  function updateMinutesAndSeconds(totalSeconds) {
+      var minutes = Math.floor(totalSeconds / 60);
+      var seconds = totalSeconds - (minutes * 60);
+
+      $("#FiveKTimeMinutes").val(minutes);
+      $("#FiveKTimeSeconds").val(seconds);
+      
+      if (totalSeconds === 2400) {
+        $("#moreText").show();
+    } else {
+        $("#moreText").hide();
+    }
+  }
+
+  function updateSlider() {
+      var minutes = Number($("#FiveKTimeMinutes").val());
+      var seconds = Number($("#FiveKTimeSeconds").val());
+
+      var totalSeconds = minutes * 60 + seconds;
+
+      if (totalSeconds >= 750 && totalSeconds <= 2400) {
+          $("#slider-range").slider("value", totalSeconds);
+      }
+  }
+
+  $("#FiveKTimeMinutes").change(updateSlider);
+  $("#FiveKTimeSeconds").change(updateSlider);
+
+  // Initialize
+  updateMinutesAndSeconds($("#slider-range").slider("value"));
+});
 
 

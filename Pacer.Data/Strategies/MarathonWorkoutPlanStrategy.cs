@@ -9,7 +9,7 @@ namespace Pacer.Data.Strategies
 
         private readonly string[] weekPlans = {
             // base phase
-            "X,X,E6,R3,E5,X,R5",
+            "V5,X,E6,R3,E5,X,R5",
             "L8,X,E8,E9,X,E5,R4",
             "L12,X,R5,X,E9,X,R5",
             // build phase

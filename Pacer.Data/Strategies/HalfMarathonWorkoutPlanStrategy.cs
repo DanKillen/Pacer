@@ -9,25 +9,22 @@ namespace Pacer.Data.Strategies
     {
 
         private readonly string[] weekPlans = {
-            // base phase
-            "X,E8,R3,E5,X,R5,L8",
-            "X,LT8,X,E9,X,R4,L12",
-            "X,E8,X,E10,X,R5,M13\"Run the first 8 miles at a comfortable pace and then the last 5 at Marathon pace\"",
-            // build phase
-            "X,LT10\"Run the first 5 miles at a comfortable pace and then the last 5 at Lactate Threshold pace\",R4,E6,X,E7,L18",
-            "X,E8,LT8\"Run the first 3 miles at a comfortable pace and then the last 5 at Lactate Threshold pace\",L12,X,E8,L14",
-            "X,E6,L12,I5\"Take 60 second walking breaks in between each mile\",X,R5,L20",
-            "X,R7,LT10\"Run the first 3 miles at a comfortable pace and then the last 7 at Lactate Threshold pace\",X,E8,R5,M18\"Run the first 8 miles at a comfortable pace and then the last 10 at Marathon pace\"",
-            // peak phase
-            "X,E8,I8\"Take 60 second walking breaks in between each mile\",X,L13,R5,L16",
-            "X,E8,L11,X,R4,LT6,L17",
-            "X,R7,I7\"Take 60 second walking breaks in between each mile\",X,L11,R4,L20",
-            // taper phase
-            "X,E8,R6,X,R4,I5\"Take 60 second walking breaks in between each mile\",L16",
-            "X,E7,LT5,X,R5,X,L12",
-            "X,R6,M7\"Run the first 5 miles at a comfortable pace and then the last 2 at Marathon pace\",X,R5,R4,X",
+            // Preparatory Phase
+            "X,E3,R2,X,E3,R2,L4",
+            "X,E4,R2,X,E4,R2,L5",
+            "X,E5,T4\"Run the first 2 miles at a comfortable pace and then the last 2 at $pace\",X,E5,R3,L6",
+            // Build Phase
+            "X,E6,R3,X,E6,T5\"Run the first 2 miles at a comfortable pace and then the last 3 at $pace\",L7",
+            "X,E7,R3,X,E7,T5\"Run the first 2 miles at a comfortable pace and then the last 3 at $pace\",L8",
+            "X,E7,R4,X,E7,T6\"Run the first 2 miles at a comfortable pace and then the last 4 at $pace\",L9",
+            // Peak Phase
+            "X,E8,R4,X,E8,T6\"Run the first 2 miles at a comfortable pace and then the last 4 at $pace\",L10",
+            "X,E9,R4,X,E9,T7\"Run the first 2 miles at a comfortable pace and then the last 5 at $pace\",L11",
+            // Taper Phase
+            "X,E6,R3,X,E5,R2,L8",
+            "X,E5,R2,X,E4,R2,X",
         };
-        
+
         public HalfMarathonWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime)
             : base(runningProfile, raceDate, targetTime, RaceType.HalfMarathon)
         {

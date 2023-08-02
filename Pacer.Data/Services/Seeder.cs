@@ -19,7 +19,7 @@ namespace Pacer.Data.Services
 
             runningProfileService.CreateProfile(1, new DateTime(1999, 3, 3), "Male", 5, new TimeSpan(0, 20, 0));
 
-            trainingPlanService.CreatePlan(1, RaceType.Marathon, new DateTime(2023, 10, 08), new TimeSpan(3, 0, 0));
+            trainingPlanService.CreatePlan(1, RaceType.Marathon, new DateTime(2023, 10, 08), new TimeSpan(3, 30, 0));
 
  
         }

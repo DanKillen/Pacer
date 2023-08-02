@@ -19,9 +19,9 @@ namespace Pacer.Data.Services
         TrainingPlan UpdatePlan(TrainingPlan plan);
 
         // Delete a training plan
-        void DeletePlan(TrainingPlan plan);
-        void SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime);
+        bool DeletePlan(TrainingPlan plan);
+        bool SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime);
 
-        void ClearWorkoutActuals(int workoutId, int userId);
+        bool ClearWorkoutActuals(int workoutId, int userId);
     }
 }

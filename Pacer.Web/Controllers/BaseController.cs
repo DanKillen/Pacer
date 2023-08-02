@@ -11,6 +11,11 @@ namespace Pacer.Web.Controllers
     // Controller inheriting from BaseController
     public class BaseController : Controller
     {
+        protected readonly ILogger _logger;
+        protected BaseController(ILogger<BaseController> logger)
+        {
+            _logger = logger;
+        }
         // set alert message
         public void Alert(string message, AlertType type = AlertType.info)
         {
@@ -19,5 +24,5 @@ namespace Pacer.Web.Controllers
         }
 
     }
- 
+
 }

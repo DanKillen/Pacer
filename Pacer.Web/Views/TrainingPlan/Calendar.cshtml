@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12 text-center">
-            <h2>@Model.PlanName Training Plan</h2>
+            <h2>@Model.TargetTime @Model.TargetRace.GetDisplayName() Training Plan</h2>
         </div>
         <div class="col-md-12">
             <div class="key">
@@ -18,16 +18,29 @@
                     Easy Run
                 </div>
                 <div class="key-item jsCalendar-LongRun">
-                    Long Run
+                    @if (Model.TargetRace == RaceType.FiveK)
+                    {
+                        <text>General Aerobic</text>
+                    }
+                    else
+                    {
+                        <text>Long Run</text>
+                    }
                 </div>
-                <div class="key-item jsCalendar-MarathonPace">
-                    Race Pace
-                </div>
+                @if (Model.TargetRace == RaceType.Marathon)
+                {
+                    <div class="key-item jsCalendar-MarathonPace">
+                        Race Pace
+                    </div>
+                }
                 <div class="key-item jsCalendar-IntervalTraining">
                     Interval Training
                 </div>
                 <div class="key-item jsCalendar-TempoRun">
                     Tempo Run
+                </div>
+                <div class="key-item jsCalendar-VO2Max">
+                    VO2 Max
                 </div>
             </div>
         </div>
@@ -50,6 +63,7 @@
                         <form id="clear-form" method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
                             onsubmit="return confirmClear();">
                             <input type="hidden" id="clearWorkoutId" name="WorkoutId" value="@Model.Id">
+                            <input type="hidden" name="returnUrl" value="Calendar" />
                             <button type="submit">Clear</button>
                         </form>
 
@@ -57,12 +71,12 @@
                     <form id="entry-form" method="post" style="display: none;"
                         action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")">
                         <input type="hidden" id="workoutId" name="WorkoutId" value="@Model.Id">
+                        <input type="hidden" name="returnUrl" value="Calendar" />
                         <div>
                             <label for="actualDistance">Actual Distance Ran (in miles):</label>
                         </div>
                         <div>
-                            <input type="number" id="actualDistance" name="ActualDistance" step="1" min="0" max="50"
-                                required>
+                            <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" required>
                         </div>
                         <div>
                             <label for="actualTime">Actual Duration:</label>
@@ -80,7 +94,7 @@
                                 <div>
                                     <label for="actualSeconds">Seconds:</label>
                                     <input type="number" id="actualSeconds" name="ActualSeconds" min="0" max="59"
-                                        required value="0">
+                                   ((double)     required value="0">
                                 </div>
                             </div>
                         </div>
@@ -91,6 +105,8 @@
         </div>
     </div>
 </div> <!-- end container -->
+
+<partial name="_MileageGraph" model="@ViewBag.WeekDistances" />
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -106,6 +122,7 @@
         3: 'Race Pace',
         4: 'Interval Training',
         5: 'Tempo Run',
+        6: 'VO2 Max'
     };
 
     function confirmClear() {
@@ -164,6 +181,9 @@
                     case 5:
                         element.classList.add('jsCalendar-TempoRun');
                         break;
+                    case 6:
+                        element.classList.add('jsCalendar-VO2Max');
+                        break;
                     default:
                         break;
                 }
@@ -172,7 +192,16 @@
 
         calendar.refresh(new Date(startYear, startMonth - 1));
 
+        var selectedCell = null;
+
         calendar.onDateClick(function (event, date) {
+            if (selectedCell) {
+                selectedCell.classList.remove('selected-date');  // Remove the class from the previously selected cell
+            }
+
+            selectedCell = event.target;  // Update the selected cell
+            selectedCell.classList.add('selected-date');  // Add the class to the newly selected cell
+
             var localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
             var dateString = localDate.toISOString().slice(0, 10);
 
@@ -198,7 +227,7 @@
 
             if (dateString === raceDate) {
                 $('#workout-date').text("Race Day!");
-                $('#workout-type').text("@Model.PlanName");
+                $('#workout-type').text("@Model.TargetTime @Model.TargetRace.ToString()");
                 $('#workout-description').text("Today is the day! Good luck!\nRun the @Model.TargetRace.ToString() at @Model.TargetPace");
                 $('#entry-form').hide();
                 return;
@@ -274,3 +303,5 @@
         console.log(error);
     });
 </script>
+
+

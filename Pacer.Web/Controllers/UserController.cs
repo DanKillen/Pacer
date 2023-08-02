@@ -21,7 +21,7 @@ namespace Pacer.Web.Controllers
         private readonly IMailService _mailer;
         private readonly IUserService _svc;
 
-        public UserController(IUserService svc, IConfiguration config, IMailService mailer)
+        public UserController(IUserService svc, IConfiguration config, IMailService mailer, ILogger<UserController> logger) : base(logger)
         {
             _config = config;
             _mailer = mailer;

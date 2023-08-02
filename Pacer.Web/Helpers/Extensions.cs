@@ -77,9 +77,25 @@ public static class Extensions
         return 0;
     }
 
-
-
 }
+
+public static class EnumExtensions
+    {
+        public static string GetDisplayName(this Enum enumValue)
+    {
+        Type enumType = enumValue.GetType();
+        string name = Enum.GetName(enumType, enumValue);
+        if (name == null)
+            return null;
+
+        MemberInfo member = enumType.GetMember(name).FirstOrDefault();
+        if (member == null)
+            return null;
+
+        DisplayAttribute displayAttribute = member.GetCustomAttribute<DisplayAttribute>();
+        return displayAttribute?.Name ?? name;
+    }
+    }
 
 public static class DateTimeExtensions
 {

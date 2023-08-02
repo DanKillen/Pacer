@@ -6,9 +6,13 @@ namespace Pacer.Data.Entities
 
     public enum RaceType
     {
+        [Display(Name = "5K")]
         FiveK,
+        [Display(Name = "10K")]
         TenK,
+        [Display(Name = "Half Marathon")]
         HalfMarathon,
+        [Display(Name = "Marathon")]
         Marathon
     }
 

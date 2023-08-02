@@ -1,0 +1,86 @@
+@model List<Pacer.Web.Models.TrainingPlan.WeekDistance>
+
+<div class="container">
+    <canvas id="weekDistancesChart" height="100" width="300"></canvas>
+    <h2>Week Distances</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Week Number</th>
+                <th>Target Distance</th>
+                <th>Actual Distance Ran</th>
+                <th>% Complete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var week in Model)
+            {
+                <tr>
+                    <td>@week.Week</td>
+                    <td>@week.TargetDistance miles</td>
+                    <td>@week.ActualDistance miles</td>
+                    <td>@week.PercentageComplete.ToString("0.")%</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('weekDistancesChart').getContext('2d');
+
+    var weekNumbers = @Html.Raw(ViewBag.WeekNumbers);
+    var targetDistances = @Html.Raw(ViewBag.TargetDistances);
+    var actualDistances = @Html.Raw(ViewBag.ActualDistances);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: weekNumbers,
+            datasets: [{
+                label: 'Target Mileage ',
+                data: targetDistances,
+                borderColor: 'rgba(0, 123, 255, 1)',
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                fill: false,
+            }, {
+                label: 'Actual Mileage Ran',
+                data: actualDistances,
+                borderColor: 'rgba(255, 0, 0, 1)',
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Weekly Distances'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                x: {
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Week'
+                    }
+                },
+                y: {
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Distance (miles)'
+                    }
+                }
+            }
+        }
+    });
+</script>

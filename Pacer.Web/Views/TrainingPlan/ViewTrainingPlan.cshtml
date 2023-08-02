@@ -1,11 +1,13 @@
 @model TrainingPlanViewModel
 
-<div class="card shadow p-4 mt-5 mx-auto w-75">
+<div id="training-plan" class="card shadow p-4 mt-5 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
         <!-- your SVG logo goes here -->
     </div>
 
-    <h3 class="my-3 mx-auto">@Model.PlanName Training Plan</h3>
+    <h3 class="my-3 mx-auto">@Model.TargetTime @Model.TargetRace  Training Plan</h3>
+    <hr style="border-top: 5px solid #ccc;">
+
 
     @for (int i = 0; i < Model.Weeks.Count; i++)
     {
@@ -15,14 +17,103 @@
         <ul class="list-group mb-3">
             @foreach (var workout in week.Workouts)
             {
-                <li class="list-group-item">
-                    <h5>@workout.Date.ToString("D")</h5>
-                    <h6 class="text-muted">@workout.Type</h6>
-                    <p>@workout.WorkoutDescription</p>
-                    <p>Target Distance: @workout.TargetDistance</p>
-                    <p>Target Pace: @workout.TargetPaceMinMinutes:@workout.TargetPaceMinSeconds - @workout.TargetPaceMaxMinutes:@workout.TargetPaceMaxSeconds</p>
+                <li class="list-group-item @(workout.ActualDistance > 0 ? "completed-workout" : "")">
+                    <div class="row">
+                        <h5>@workout.Date.ToString("D")</h5>
+                        <hr style="border-top: 1px solid #ccc;">
+                        <div class="col-md-6">
+                            <h4 class="text-bold">@workout.Type.GetDisplayName()</h4>
+                            <p>Target Distance: @workout.TargetDistance miles</p>
+                            <p>Target Pace: @workout.TargetPaceMinMinutes:@workout.TargetPaceMinSeconds.ToString("00") -
+                                @workout.TargetPaceMaxMinutes:@workout.TargetPaceMaxSeconds.ToString("00") per mile</p>
+                        </div>
+
+                        @if (workout.ActualDistance > 0)
+                        {
+                            <div class="col-md-4">
+                                <div id="previous-results-@workout.Id">
+                                    <h4>Workout Complete</h4>
+                                    <p id="prev-distance-@workout.Id">Distance Ran: @workout.ActualDistance miles</p>
+                                    <p id="prev-time-@workout.Id">Duration: @workout.ActualTime</p>
+                                    <p id="prev-pace-@workout.Id">Pace: @workout.ActualPace min/mile</p>
+                                    <form method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
+                                        onsubmit="return confirmClear();">
+                                        <input type="hidden" name="WorkoutId" value="@workout.Id" />
+                                        <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                                        <button type="submit">Clear</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <img src="/images/GreenTick.png" width="100%" alt="Green Tick" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-6" style="padding-top: 20px;">
+                                <form id="entry-form-@workout.Id" method="post"
+                                    action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")">
+                                    <input type="hidden" name="WorkoutId" value="@workout.Id" />
+                                    <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                                    <div>
+                                        <label for="actualDistance-@workout.Id">Actual Distance Ran (in miles):</label>
+                                        <input type="number" id="actualDistance-@workout.Id" name="ActualDistance"
+                                            value=@workout.TargetDistance min="0" max="50" required>
+                                    </div>
+                                    <div>
+                                        <label for="actualTime-@workout.Id">Actual Duration:</label>
+                                        <div style="display: flex; justify-content: space-between; max-width: 200px;">
+                                            <div>
+                                                <label for="actualHours-@workout.Id">Hours:</label>
+                                                <input type="number" id="actualHours-@workout.Id" name="ActualHours" min="0"
+                                                    max="10" required value="0">
+                                            </div>
+                                            <div>
+                                                <label for="actualMinutes-@workout.Id">Minutes:</label>
+                                                <input type="number" id="actualMinutes-@workout.Id" name="ActualMinutes" min="0"
+                                                    max="59" required value="0">
+                                            </div>
+                                            <div>
+                                                <label for="actualSeconds-@workout.Id">Seconds:</label>
+                                                <input type="number" id="actualSeconds-@workout.Id" name="ActualSeconds" min="0"
+                                                    max="59" required value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit">Save</button>
+                                </form>
+                            </div>
+                        }
+                    </div>
                 </li>
             }
         </ul>
     }
+    <!-- Race Day Card -->
+    <div id="race-day-card" class="card shadow p-4 mt-5 mx-auto w-75">
+        <div class="position-absolute top-0 start-50 translate-middle p-2">
+            <img src="/images/race-day-gold-star.png" alt="Star" height="50" z-index: 100; />
+        </div>
+
+        <h3 class="my-3 mx-auto">Race Day!</h3>
+
+        <div class="list-group-item text-center">
+            <div class="row justify-content-center">
+                <div class>
+                    <h3>@Model.TargetTime @Model.TargetRace</h3>
+                    <p>Today is the day! Good luck!</p>
+                    <p>Run the @Model.TargetRace at
+                        @Model.TargetPace.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+<script>
+    function confirmClear() {
+        return confirm('Are you sure you want to clear this run?');
+    }
+</script>

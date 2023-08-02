@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Pacer.Data.Services;
 using Pacer.Data.Entities;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace Pacer.Web.Controllers
 {
@@ -13,7 +14,8 @@ namespace Pacer.Web.Controllers
         private readonly IRunningProfileService _runningProfileService;
         private readonly IUserService _userService;
 
-        public ProfileController(IRunningProfileService runningProfileService, IUserService userService)
+
+        public ProfileController(IRunningProfileService runningProfileService, IUserService userService, ILogger<ProfileController> logger) : base(logger)
         {
             _userService = userService;
             _runningProfileService = runningProfileService;
@@ -104,29 +106,32 @@ namespace Pacer.Web.Controllers
                 WeeklyMileage = profile.WeeklyMileage,
                 FiveKTimeMinutes = profile.FiveKTime.Minutes,
                 FiveKTimeSeconds = profile.FiveKTime.Seconds,
-                // Add the rest of your properties here...
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult EditProfile(RunningProfileViewModel model)
+        public IActionResult EditProfile(int UserId, DateTime dateOfBirth, string gender, int weeklyMileage, int fiveKTimeMinutes, int fiveKTimeSeconds)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var formUserId = UserId;
+            _logger.LogInformation("formUserId: " + formUserId);
+            _logger.LogInformation("userId: " + userId);
 
-            if (userId != model.UserId)
+            if (userId != formUserId)
             {
-                return Unauthorized();
+                Alert("Error updating profile", AlertType.danger);
+                return View();
             }
 
-            var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
-            var updatedProfile = _runningProfileService.UpdateProfile(model.UserId, model.DateOfBirth, model.Gender, model.WeeklyMileage, model.FiveKTime);
+            var fiveKTime = TimeSpan.FromMinutes(fiveKTimeMinutes) + TimeSpan.FromSeconds(fiveKTimeSeconds);
+            var updatedProfile = _runningProfileService.UpdateProfile(userId, dateOfBirth, gender, weeklyMileage, fiveKTime);
 
             if (updatedProfile == null)
             {
                 Alert("Error updating profile", AlertType.danger);
-                return View(model);
+                return View();
             }
             else
             {
@@ -136,6 +141,6 @@ namespace Pacer.Web.Controllers
         }
 
 
-        
+
     }
 }

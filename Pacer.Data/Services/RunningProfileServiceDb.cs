@@ -63,7 +63,9 @@ namespace Pacer.Data.Services
         public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // Check if the profile exists in the context
-            RunningProfile existingProfile = _ctx.RunningProfiles.Find(userId);
+            RunningProfile existingProfile = _ctx.RunningProfiles.FirstOrDefault(rp => rp.UserId == userId);
+
+
             if (existingProfile == null)
             {
                 throw new ArgumentException("No running profile found with the given profile Id");

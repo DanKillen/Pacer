@@ -1,0 +1,10 @@
+@model EditTargetTimeViewModel
+
+<form method="post">
+    <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
+
+    <label for="targetTime">Target Time:</label>
+    <input type="time" id="targetTime" name="TargetTime" value="@Model.TargetTime.ToString(@"hh\:mm\:ss")" required />
+
+    <button type="submit">Save</button>
+</form>

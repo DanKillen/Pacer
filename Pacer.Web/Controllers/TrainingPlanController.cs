@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacer.Data.Entities;
 using Pacer.Data.Services;
+using Pacer.Web.Models.TrainingPlan;
 using System;
+using System.Globalization;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -13,7 +16,7 @@ namespace Pacer.Web.Controllers
         private readonly ITrainingPlanService _trainingPlanService;
         private readonly IRunningProfileService _runningProfileService;
 
-        public TrainingPlanController(ITrainingPlanService trainingPlanService, IRunningProfileService runningProfileService)
+        public TrainingPlanController(ITrainingPlanService trainingPlanService, IRunningProfileService runningProfileService, ILogger<UserController> logger) : base(logger)
         {
             _trainingPlanService = trainingPlanService;
             _runningProfileService = runningProfileService;
@@ -37,7 +40,7 @@ namespace Pacer.Web.Controllers
 
             if (trainingPlan != null)
             {
-                return RedirectToAction("ViewTrainingPlan", new { id = trainingPlan.Id });
+                return RedirectToAction("ViewTrainingPlan");
             }
 
             return RedirectToAction("CreateTrainingPlan");
@@ -51,7 +54,8 @@ namespace Pacer.Web.Controllers
 
             var model = new TrainingPlanCreateModel
             {
-                RunningProfileId = runningProfile.Id
+                RunningProfileId = runningProfile.Id,
+                RaceDate = DateTime.Now.Date + TimeSpan.FromDays(30),
             };
 
             return View(model);
@@ -82,9 +86,10 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewTrainingPlan(int id)
+        public IActionResult ViewTrainingPlan()
         {
-            var trainingPlan = _trainingPlanService.GetPlanById(id);
+            var userId = GetUserId();
+            var trainingPlan = _trainingPlanService.GetPlanByUserId(userId);
 
             if (trainingPlan == null)
             {
@@ -106,20 +111,35 @@ namespace Pacer.Web.Controllers
                 TempData["Alert.Type"] = "danger";
                 return RedirectToAction("Error", "Home");
             }
-
+            int i = 1;
+            string FormattedTargetTime;
+            if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"mm\:ss");
+            }
+            else
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
+            }
             var viewModel = new TrainingPlanViewModel
             {
                 Id = trainingPlan.Id,
-                PlanName = trainingPlan.TargetRace.ToString() + " " + trainingPlan.TargetTime.ToString(@"h\:mm\:ss"),
+                TargetRace = trainingPlan.TargetRace,
+                TargetTime = FormattedTargetTime,
+                TargetPace = trainingPlan.TargetPace,
                 Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetIso8601WeekOfYear())
                              .Select(g => new WeekViewModel
                              {
-                                 WeekNumber = g.Key,
+                                 WeekNumber = i++,
                                  Workouts = g.Select(w => new WorkoutViewModel
                                  {
+                                     Id = w.Id,
                                      Type = w.Type,
                                      Date = w.Date,
                                      TargetDistance = w.TargetDistance,
+                                     ActualDistance = w.ActualDistance,
+                                     ActualTime = w.ActualTime,
+                                     ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null,
                                      TargetPaceMinMinutes = w.TargetPaceMinMinutes,
                                      TargetPaceMinSeconds = w.TargetPaceMinSeconds,
                                      TargetPaceMaxMinutes = w.TargetPaceMaxMinutes,
@@ -155,17 +175,25 @@ namespace Pacer.Web.Controllers
 
             var firstWorkoutDate = trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
 
-
+            string FormattedTargetTime;
+            if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"mm\:ss");
+            }
+            else
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
+            }
             var viewModel = new TrainingPlanCalendarViewModel
             {
                 Id = trainingPlan.Id,
-                PlanName = trainingPlan.TargetTime.ToString(@"h\:mm\:ss") + " " + trainingPlan.TargetRace.ToString(),
+                TargetTime = FormattedTargetTime,
                 Month = firstWorkoutDate.Month,
                 Year = firstWorkoutDate.Year,
                 TargetPace = trainingPlan.TargetPace,
                 RaceDate = trainingPlan.RaceDate,
 
-                Workouts = trainingPlan.Workouts.Select(w => new WorkoutCalendarViewModel
+                Workouts = trainingPlan.Workouts.Select(w => new WorkoutViewModel
                 {
                     Type = w.Type,
                     Date = w.Date,
@@ -177,11 +205,6 @@ namespace Pacer.Web.Controllers
                     WorkoutDescription = w.WorkoutDescription
                 }).ToList()
             };
-            //remove after testing
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(viewModel));
-
-
-
             return Json(viewModel);
         }
 
@@ -195,6 +218,28 @@ namespace Pacer.Web.Controllers
                 // Handle error. This might redirect to an error page, for example.
                 return RedirectToAction("Error", "Home");
             }
+
+            var grouped = viewModel.Workouts
+                .GroupBy(x => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.Date, CalendarWeekRule.FirstDay, DayOfWeek.Sunday))
+                .Select(g => new WeekDistance
+                {
+                    Week = 0, // placeholder value
+                    TargetDistance = g.Sum(x => x.TargetDistance),
+                    ActualDistance = g.Sum(x => x.ActualDistance)
+                })
+                .OrderBy(x => x.Week)
+                .ToList();
+
+            for (int i = 0; i < grouped.Count; i++)
+            {
+                grouped[i].Week = i + 1; // assign week numbers starting from 1
+            }
+
+            ViewBag.WeekDistances = grouped;
+            ViewBag.WeekNumbers = JsonSerializer.Serialize(grouped.Select(x => x.Week).ToList());
+            ViewBag.TargetDistances = JsonSerializer.Serialize(grouped.Select(x => x.TargetDistance).ToList());
+            ViewBag.ActualDistances = JsonSerializer.Serialize(grouped.Select(x => x.ActualDistance).ToList());
+
 
             return View("Calendar", viewModel);
         }
@@ -210,11 +255,20 @@ namespace Pacer.Web.Controllers
             }
 
             var firstWorkoutDate = trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
+            string FormattedTargetTime;
+            if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"mm\:ss");
+            }
+            else
+            {
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
+            }
 
             return new TrainingPlanCalendarViewModel
             {
                 Id = trainingPlan.Id,
-                PlanName = trainingPlan.TargetTime.ToString(@"h\:mm\:ss") + " " + trainingPlan.TargetRace.ToString(),
+                TargetTime = FormattedTargetTime,
                 Month = firstWorkoutDate.Month,
                 Year = firstWorkoutDate.Year,
                 RaceDate = trainingPlan.RaceDate,
@@ -222,7 +276,7 @@ namespace Pacer.Web.Controllers
                 TargetPace = trainingPlan.TargetPace,
 
 
-                Workouts = trainingPlan.Workouts.Select(w => new WorkoutCalendarViewModel
+                Workouts = trainingPlan.Workouts.Select(w => new WorkoutViewModel
                 {
                     Id = w.Id,
                     Type = w.Type,
@@ -242,7 +296,7 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpPost("SaveWorkoutActuals")]
-        public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds)
+        public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
         {
             var actualTime = new TimeSpan();
             try
@@ -261,30 +315,68 @@ namespace Pacer.Web.Controllers
 
                 // Redirecting to the Calendar action in the TrainingPlan controller
                 Alert("Workout added successfully. Great job!", AlertType.success);
-                return RedirectToAction("Calendar", "TrainingPlan");
+                return RedirectToAction(returnUrl);
+
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving actuals: " + ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving data: " + ex.Message });
             }
         }
 
         [HttpPost("ClearWorkoutActuals")]
-        public IActionResult ClearWorkoutActuals(int WorkoutId)
+        public IActionResult ClearWorkoutActuals(int WorkoutId, string returnUrl)
         {
-            try
-            {
-                var userId = GetUserId();
-                _trainingPlanService.ClearWorkoutActuals(WorkoutId, userId);
 
-                // Redirecting to the Calendar action in the TrainingPlan controller
-                Alert("Workout deleted successfully.", AlertType.info);
-                return RedirectToAction("Calendar", "TrainingPlan");
-            }
-            catch (Exception ex)
+            var userId = GetUserId();
+            var result = _trainingPlanService.ClearWorkoutActuals(WorkoutId, userId);
+            if (result)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving actuals: " + ex.Message });
+                Alert("Workout cleared successfully.", AlertType.info);
+                return RedirectToAction(returnUrl);
             }
+            else
+            {
+                Alert("Workout not cleared. Please try again", AlertType.danger);
+                return RedirectToAction(returnUrl);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditTargetTime(int id)
+        {
+            var trainingPlan = _trainingPlanService.GetPlanById(id);
+            if (trainingPlan == null) return NotFound();
+
+            var model = new EditTargetTimeViewModel
+            {
+                TrainingPlanId = trainingPlan.Id,
+                TargetTime = trainingPlan.TargetTime,
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditTargetTime(EditTargetTimeViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var trainingPlan = _trainingPlanService.GetPlanById(model.TrainingPlanId); // Retrieve from DB, replace with your actual code
+            if (trainingPlan == null) return NotFound();
+
+            trainingPlan.TargetTime = model.TargetTime;
+            trainingPlan.TargetPace = CalculateTargetPace(model.TargetTime); // Implement this function based on your requirements
+            _db.SaveChanges(); // Save changes to DB, replace with your actual code
+
+            // Recalculate target paces for workouts
+            foreach (var workout in trainingPlan.Workouts)
+            {
+                workout.TargetPace = CalculateTargetPaceForWorkout(workout, trainingPlan.TargetPace); // Implement this function based on your requirements
+                                                                                                      // Save changes to each workout
+                _db.SaveChanges(); // Save changes to DB, replace with your actual code
+            }
+
+            return RedirectToAction("ViewTrainingPlan", new { id = trainingPlan.Id }); // Redirect to the training plan
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Pacer.Data.Entities
         [Display(Name = "Tempo Run")]
         TempoRun,
         [Display(Name = "VO2 Max Run")]
-        VO2MaxRun,
+        VO2Max,
     }
 
     public class TimeSpanRange

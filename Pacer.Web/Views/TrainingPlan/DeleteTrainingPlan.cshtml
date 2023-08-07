@@ -1,0 +1,43 @@
+@model TrainingPlanDeleteModel
+
+<div class="card shadow p-4 mt-5 mx-auto w-75">
+    <h3 class="text-center my-3">Delete Training Plan</h3>
+    <form asp-action="DeleteTrainingPlan" asp-controller="TrainingPlan" method="post">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group mt-3">
+            <label class="form-label">Target Race</label>
+            <div class="border border-secondary p-2 rounded">@Model.TargetRace.GetDisplayName()</div>
+        </div>
+
+        <div class="form-group mt-3">
+            <label class="form-label">Date of Race</label>
+            <div class="border border-secondary p-2 rounded">@Model.RaceDate.ToShortDateString()</div>
+        </div>
+
+        <div class="form-group mt-3">
+            <label class="form-label">Target Time</label>
+            <div class="border border-secondary p-2 rounded">@Model.TargetTime.ToString()</div>
+        </div>
+
+        <div class="alert alert-danger mt-4" role="alert">
+            <h4 class="alert-heading">Warning!</h4>
+            <p>Are you sure you would like to delete this training plan?</p> 
+            <hr>
+            <p class="mb-0">All completed workouts and targets will be deleted also.</p>
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+            <input type="submit" value="Delete Plan" class="btn btn-danger btn-block" />
+            <a class="btn btn-link btn-block ms-3" asp-controller="Home" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

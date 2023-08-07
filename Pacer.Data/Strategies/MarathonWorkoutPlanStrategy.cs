@@ -9,28 +9,28 @@ namespace Pacer.Data.Strategies
 
         private readonly string[] weekPlans = {
             // base phase
-            "V5,X,E6,R3,E5,X,R5",
-            "L8,X,E8,E9,X,E5,R4",
-            "L12,X,R5,X,E9,X,R5",
+            "L7;X;E6;R3;E5;X;R5",
+            "L8;X;E8;E9;X;E5;R4",
+            "L12;X;R5;X;E9;X;R5",
             // build phase
-            "M13\"Run the first 8 miles at a comfortable pace and then the last 5 miles at $pace\",X,T10\"Run the first 5 miles at a comfortable pace and then the last 5 miles at $pace\",X,E6,X,R4",
-            "L18,X,E6,T8\"Run the first 3 miles at a comfortable pace and then the last 5 miles at $pace\",X,E8",
-            "L14,X,I5\"Take 60 second walking breaks in between each mile\",R5,X,E5,R4",
-            "L20,X,R7,T10\"Run the first 3 miles at a comfortable pace and then the last 7 miles at $pace\",X,E8,R5",
+            "M13\"Run the first 8 miles at a comfortable pace and then the last 5 miles at $pace\";X;T10\"Run the first 5 miles at a comfortable pace and then the last 5 miles at $pace\";X;E6;X;R4",
+            "L18;X;E6;T8\"Run the first 3 miles at a comfortable pace and then the last 5 miles at $pace\";X;E8",
+            "L14;X;I5\"5 miles at $pace but take 60 second walking breaks in between each mile\";R5;X;E5;R4",
+            "L20;X;R7;T10\"Run the first 3 miles at a comfortable pace and then the last 7 miles at $pace\";X;E8;R5",
             // peak phase
-            "M18\"Run the first 8 miles at a comfortable pace and then the last 10 at Marathon pace\",X,E8,I8\"Take 60 second walking breaks in between each mile\",X,L13,R5",
-            "L16,X,E8,L11,X,R4,T6",
-            "L17,X,R7,I7\"Take 60 second walking breaks in between each mile\",X,L11,R4",
+            "M18\"Run the first 8 miles at a comfortable pace and then the last 10 at $pace\";X;E8;I8\"8 miles at $pace but take 60 second walking breaks in between each mile\";X;L13;R5",
+            "L16;X;E8;L11;X;R4;T6",
+            "L17;X;R7;I7\"7 miles at $pace but take 60 second walking breaks in between each mile\";X;L11;R4",
             // taper phase
-            "L20,X,E8,R6,X,R4,I5\"Take 60 second walking breaks in between each mile\"",
-            "L20,X,E7,T5,X,R5,X",
-            "L12,X,R6,M7\"Run the first 5 miles at a comfortable pace and then the last 2 miles at $pace\",X,R5,R4,X",
+            "L20;X;E8;R6;X;R4;I5\"8 miles at $pace but take 60 second walking breaks in between each mile\"",
+            "L20;X;E7;T5;X;R5;X",
+            "L12;X;R6;M7\"Run the first 5 miles at a comfortable pace and then the last 2 miles at $pace\";X;R5;R4;X",
         };
 
-        public MarathonWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime)
-            : base(runningProfile, raceDate, targetTime, RaceType.Marathon)
+        public MarathonWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime, IWorkoutPaceCalculator workoutPaceCalculator)
+            : base(runningProfile, raceDate, targetTime, workoutPaceCalculator)
         {
-            
+            InitializePaces(RaceType.Marathon);
         }
         public override Workout[] GenerateWorkouts()
         {

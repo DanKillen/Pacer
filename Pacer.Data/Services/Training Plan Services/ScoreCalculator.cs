@@ -57,7 +57,7 @@ public class ScoreCalculator : IScoreCalculator
     
     public double CalculateAerobicScoreFromWeeklyMileage(int weeklyMileage)
     {
-        double score = 0;
+        double score;
         double maxWeeklyMileage = 120;
 
         // Scores for 20 miles and below

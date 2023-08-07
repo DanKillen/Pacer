@@ -4,46 +4,43 @@
     var viewModelJson = System.Text.Json.JsonSerializer.Serialize(Model);
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h2>@Model.TargetTime @Model.TargetRace.GetDisplayName() Training Plan</h2>
-        </div>
-        <div class="col-md-12">
-            <div class="key">
-                <div class="key-item jsCalendar-RecoveryRun">
-                    Recovery Run
-                </div>
-                <div class="key-item jsCalendar-EasyRun">
-                    Easy Run
-                </div>
+<div id="calendar-plan" class="card shadow p-4 mt-5 mx-auto w-75">
+    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
+    </div>
+    <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
+        <i class="bi bi-list"></i> Week List View</a>
+    <partial name="_TrainingPlanHeader" model="Model" />
+    <div class="col-md-12">
+        <div class="key">
+            <div class="key-item jsCalendar-RecoveryRun">
+                Recovery Run @await Component.InvokeAsync("Tooltip", new { key = "RecoveryRun" })
+            </div>
+            <div class="key-item jsCalendar-EasyRun">
+                Easy Run @await Component.InvokeAsync("Tooltip", new { key = "EasyRun" })
+            </div>
+            @if (Model.TargetRace != RaceType.FiveK)
+            {
                 <div class="key-item jsCalendar-LongRun">
-                    @if (Model.TargetRace == RaceType.FiveK)
-                    {
-                        <text>General Aerobic</text>
-                    }
-                    else
-                    {
-                        <text>Long Run</text>
-                    }
+                    Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
                 </div>
-                @if (Model.TargetRace == RaceType.Marathon)
-                {
-                    <div class="key-item jsCalendar-MarathonPace">
-                        Race Pace
-                    </div>
-                }
-                <div class="key-item jsCalendar-IntervalTraining">
-                    Interval Training
+            }
+            @if (Model.TargetRace == RaceType.Marathon)
+            {
+                <div class="key-item jsCalendar-MarathonPace">
+                    Race Pace @await Component.InvokeAsync("Tooltip", new { key = "MarathonPace" })
                 </div>
-                <div class="key-item jsCalendar-TempoRun">
-                    Tempo Run
-                </div>
-                <div class="key-item jsCalendar-VO2Max">
-                    VO2 Max
-                </div>
+            }
+            <div class="key-item jsCalendar-IntervalTraining">
+                Interval Training @await Component.InvokeAsync("Tooltip", new { key = "IntervalTraining" })
+            </div>
+            <div class="key-item jsCalendar-TempoRun">
+                Tempo Run @await Component.InvokeAsync("Tooltip", new { key = "TempoRun" })
+            </div>
+            <div class="key-item jsCalendar-VO2Max">
+                VO2 Max @await Component.InvokeAsync("Tooltip", new { key = "VO2Max" })
             </div>
         </div>
+
     </div>
     <div class="container">
         <div class="row">
@@ -94,7 +91,7 @@
                                 <div>
                                     <label for="actualSeconds">Seconds:</label>
                                     <input type="number" id="actualSeconds" name="ActualSeconds" min="0" max="59"
-                                   ((double)     required value="0">
+                                        ((double) required value="0">
                                 </div>
                             </div>
                         </div>
@@ -104,7 +101,7 @@
             </div>
         </div>
     </div>
-</div> <!-- end container -->
+</div>
 
 <partial name="_MileageGraph" model="@ViewBag.WeekDistances" />
 
@@ -230,6 +227,7 @@
                 $('#workout-type').text("@Model.TargetTime @Model.TargetRace.ToString()");
                 $('#workout-description').text("Today is the day! Good luck!\nRun the @Model.TargetRace.ToString() at @Model.TargetPace");
                 $('#entry-form').hide();
+                $('#previous-results').hide();
                 return;
             }
 

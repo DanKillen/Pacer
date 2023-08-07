@@ -10,23 +10,24 @@ namespace Pacer.Data.Strategies
 
         private readonly string[] weekPlans = {
             // base phase
-            "X,E2,R1,X,E2,R1,L1",
-            "X,E3,R1,X,E3,R1,L2",
-            "X,E3,V1\"Aim for a fast, nearly all-out pace\",X,E3,R2,L2",
-            "X,E4,R1,X,E4,V1\"Aim for a fast, nearly all-out pace\",L3",
+            "X;E2;R1;X;E2;R1;L1",
+            "X;E3;R1;X;E3;R1;L2",
+            "X;E3;V1\"Aim for a fast, nearly all-out pace. $pace or faster\";X;E3;R2;E2",
+            "X;E4;R1;X;E4;V1\"Aim for a fast, nearly all-out pace. $pace or faster\";E3",
             // Build Phase
-            "X,E4,R1,X,E4,V2\"Aim for a fast, nearly all-out pace\",L3",
-            "X,E4,R1,X,E4,V2\"Aim for a fast, nearly all-out pace\",L4",
-            "X,E5,R2,X,E4,V2\"Aim for a fast, nearly all-out pace\",L4",
+            "X;E4;R1;X;E4;V2\"Aim for a fast, nearly all-out pace. $pace or faster\";E3",
+            "X;E4;R1;X;E4;V2\"Aim for a fast, nearly all-out pace. $pace or faster\";E4",
+            "X;E5;R2;X;E4;V2\"Aim for a fast, nearly all-out pace. $pace or faster\";E4",
             // Peak Phase
-            "X,E5,R2,X,E4,V2\"Aim for a fast, nearly all-out pace\",L4",
+            "X;E5;R2;X;E4;V2\"Aim for a fast, nearly all-out pace. $pace or faster\";E4",
             // Taper Phase
-            "X,E3,R1,X,E2,R1,L3",
-            "X,E3,R1,X,E2,R1,X"
+            "X;E3;R1;X;E2;R1;E3",
+            "X;E3;R1;X;E2;R1;X"
         };
-        public FiveKWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime)
-            : base(runningProfile, raceDate, targetTime, RaceType.FiveK)
+        public FiveKWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime, IWorkoutPaceCalculator workoutPaceCalculator)
+            : base(runningProfile, raceDate, targetTime, workoutPaceCalculator)
         {
+            InitializePaces(RaceType.FiveK);
         }
 
         public override Workout[] GenerateWorkouts()
@@ -43,10 +44,7 @@ namespace Pacer.Data.Strategies
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred during the parsing of week {week + 1}: {ex.Message}");
-                    // If you wish to stop the execution when an error occurs, uncomment the line below
-                    // throw;
                 }
-
                 currentWeekStart = currentWeekStart.AddDays(7);
             }
 

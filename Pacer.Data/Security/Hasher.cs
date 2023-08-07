@@ -57,5 +57,9 @@ namespace Pacer.Data.Security
             } catch { return false; }            
         }
 
+        internal static bool ValidateHash(object password1, string password2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

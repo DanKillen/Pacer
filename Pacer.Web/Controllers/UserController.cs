@@ -47,7 +47,7 @@ namespace Pacer.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Bind("Email,Password")] LoginViewModel m)
         {
-            var user = _svc.Authenticate(m.Email, m.Password);
+            var user = await _svc.Authenticate(m.Email, m.Password);
             // check if login was unsuccessful and add validation errors
             if (user == null)
             {
@@ -58,6 +58,7 @@ namespace Pacer.Web.Controllers
 
             // Sign user in using cookie authentication
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, BuildClaimsPrincipal(user));
+            
 
             Alert("Successfully Logged in", AlertType.info);
 
@@ -67,10 +68,10 @@ namespace Pacer.Web.Controllers
         private ClaimsPrincipal BuildClaimsPrincipal(User user)
         {
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        // Add any other claims you need
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+            };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             return new ClaimsPrincipal(identity);
@@ -86,14 +87,14 @@ namespace Pacer.Web.Controllers
         // HTTP POST - Register action
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register([Bind("Name,Email,Password,PasswordConfirm,Role")] RegisterViewModel m)
+        public async Task<IActionResult> Register([Bind("Name,Email,Password,PasswordConfirm,Role")] RegisterViewModel m)
         {
             if (!ModelState.IsValid)
             {
                 return View(m);
             }
             // add user via service
-            var user = _svc.AddUser(m.Name, m.Email, m.Password, m.Role);
+            var user = await _svc.AddUserAsync(m.Name, m.Email, m.Password, m.Role);
 
             // check if error adding user and display warning
             if (user == null)
@@ -151,7 +152,7 @@ namespace Pacer.Web.Controllers
             Alert("Successfully Updated Account Details", AlertType.info);
 
             // sign the user in with updated details)
-            await SignInCookie(user);
+            await SignInCookieAsync(user);
 
             return RedirectToAction("Index", "Home");
         }
@@ -241,7 +242,7 @@ namespace Pacer.Web.Controllers
 
             Alert("Successfully Updated Password", AlertType.info);
             // sign the user in with updated details
-            await SignInCookie(user);
+            await SignInCookieAsync(user);
 
             return RedirectToAction("Index", "Home");
         }
@@ -352,7 +353,7 @@ namespace Pacer.Web.Controllers
         }
 
         // Sign user in using Cookie authentication scheme
-        private async Task SignInCookie(User user)
+        private async Task SignInCookieAsync(User user)
         {
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,

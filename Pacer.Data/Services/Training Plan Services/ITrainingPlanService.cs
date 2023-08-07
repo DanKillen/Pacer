@@ -6,7 +6,7 @@ namespace Pacer.Data.Services
     // This interface describes the operations that a RunningProfileService class implementation should provide
     public interface ITrainingPlanService
     {
-           // ---------------- Training Plan Management --------------
+        // ---------------- Training Plan Management --------------
 
         // Create a new training plan
         TrainingPlan CreatePlan(int RunningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
@@ -23,5 +23,8 @@ namespace Pacer.Data.Services
         bool SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime);
 
         bool ClearWorkoutActuals(int workoutId, int userId);
+
+        public bool UpdatePlanAndWorkouts(int trainingPlanId, TimeSpan targetTime);
     }
+
 }

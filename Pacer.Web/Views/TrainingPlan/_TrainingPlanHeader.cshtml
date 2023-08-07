@@ -1,0 +1,7 @@
+<hr style="border-top: 5px solid #ccc;">
+<h1 class="my-3 mx-auto">@Model.TargetTime @Model.TargetRace Training Plan </h3>
+    <h2 class= "mx-auto"><a href="@Url.Action("EditTargetTime", new { id = Model.Id })" class="btn btn-warning">
+        <i class="bi bi-clock-fill"></i> Edit Target Time</a>
+    <a href="@Url.Action("DeleteTrainingPlan", new { id = Model.Id })" class="btn btn-danger">
+        <i class="bi bi-trash-fill"></i> Delete Training Plan</a></h3>
+<hr style="border-top: 5px solid #ccc;">

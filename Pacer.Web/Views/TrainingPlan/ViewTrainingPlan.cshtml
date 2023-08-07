@@ -2,18 +2,17 @@
 
 <div id="training-plan" class="card shadow p-4 mt-5 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
-        <!-- your SVG logo goes here -->
     </div>
-
-    <h3 class="my-3 mx-auto">@Model.TargetTime @Model.TargetRace  Training Plan</h3>
-    <hr style="border-top: 5px solid #ccc;">
+    <a href="@Url.Action("Calendar")" class="btn btn-info">
+        <i class="bi bi-calendar"></i> Calendar View</a>
+    <partial name="_TrainingPlanHeader" model="Model" />
 
 
     @for (int i = 0; i < Model.Weeks.Count; i++)
     {
         var week = Model.Weeks[i];
 
-        <h4>Week @week.WeekNumber</h4>
+        <h3>Week @week.WeekNumber</h3>
         <ul class="list-group mb-3">
             @foreach (var workout in week.Workouts)
             {
@@ -22,10 +21,15 @@
                         <h5>@workout.Date.ToString("D")</h5>
                         <hr style="border-top: 1px solid #ccc;">
                         <div class="col-md-6">
-                            <h4 class="text-bold">@workout.Type.GetDisplayName()</h4>
+                            <div class="d-flex align-items-center">
+                                <h4 class="text-bold" style="margin-right: 10px;">@workout.Type.GetDisplayName() </h4>
+                                @await Component.InvokeAsync("Tooltip", new { key = workout.Type.ToString() })
+                            </div>
+
                             <p>Target Distance: @workout.TargetDistance miles</p>
                             <p>Target Pace: @workout.TargetPaceMinMinutes:@workout.TargetPaceMinSeconds.ToString("00") -
                                 @workout.TargetPaceMaxMinutes:@workout.TargetPaceMaxSeconds.ToString("00") per mile</p>
+                            <p>Description: @workout.WorkoutDescription</p>
                         </div>
 
                         @if (workout.ActualDistance > 0)
@@ -52,7 +56,8 @@
                         {
                             <div class="col-md-6" style="padding-top: 20px;">
                                 <form id="entry-form-@workout.Id" method="post"
-                                    action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")">
+                                    action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")"
+                                    onsubmit="return validateDistance(@workout.Id)">
                                     <input type="hidden" name="WorkoutId" value="@workout.Id" />
                                     <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
                                     <div>
@@ -115,5 +120,16 @@
 <script>
     function confirmClear() {
         return confirm('Are you sure you want to clear this run?');
+    }
+</script>
+<script>
+    function validateDistance(workoutId) {
+        var distanceField = document.getElementById("actualDistance-" + workoutId);
+        if (distanceField.value == 0) {
+            alert('Actual distance ran must be greater than zero.');
+            distanceField.focus();
+            return false;
+        }
+        return true;
     }
 </script>

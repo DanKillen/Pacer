@@ -23,27 +23,22 @@ namespace Pacer.Data.Strategies
         protected readonly RunningProfile RunningProfile;
         protected readonly DateTime RaceDate;
         protected readonly TimeSpan TargetTime;
-        protected readonly Dictionary<WorkoutType, TimeSpanRange> Paces = new Dictionary<WorkoutType, TimeSpanRange>();
 
-        protected TimeSpan EquivalentMarathonPace { get; }
+        protected TimeSpan EquivalentMarathonPace { get; private set; }
+        protected IWorkoutPaceCalculator WorkoutPaceCalculator { get; }
+        protected IDictionary<WorkoutType, TimeSpanRange> Paces { get; private set; }
 
-        protected BaseWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime, RaceType raceType)
+        protected BaseWorkoutPlanStrategy(RunningProfile runningProfile, DateTime raceDate, TimeSpan targetTime, IWorkoutPaceCalculator workoutPaceCalculator)
         {
 
             RunningProfile = runningProfile;
             RaceDate = raceDate;
             TargetTime = targetTime;
-
-            TimeSpan equivalentMarathonTime = new EquivalentMarathonPaceCalculator().CalculateEquivalentMarathonTime(targetTime, raceType);
-            EquivalentMarathonPace = TimeSpan.FromMinutes(equivalentMarathonTime.TotalMinutes / 26.2188);
-
-            Paces.Add(WorkoutType.RecoveryRun, new TimeSpanRange(CalculatePace(1.3), CalculatePace(1.5)));
-            Paces.Add(WorkoutType.EasyRun, new TimeSpanRange(CalculatePace(1.15), CalculatePace(1.25)));
-            Paces.Add(WorkoutType.LongRun, new TimeSpanRange(CalculatePace(1.1), CalculatePace(1.2)));
-            Paces.Add(WorkoutType.VO2MaxRun, new TimeSpanRange(CalculatePace(0.8), CalculatePace(0.9)));
-            Paces.Add(WorkoutType.IntervalTraining, new TimeSpanRange(CalculatePace(5.0 / 6.0), CalculatePace(14.0 / 15.0)));
-            Paces.Add(WorkoutType.TempoRun, new TimeSpanRange(CalculatePace(0.91), CalculatePace(0.94)));
-            Paces.Add(WorkoutType.MarathonPace, new TimeSpanRange(CalculatePace(0.99), CalculatePace(1)));
+            WorkoutPaceCalculator = workoutPaceCalculator;
+        }
+        protected void InitializePaces(RaceType raceType)
+        {
+            Paces = WorkoutPaceCalculator.CalculatePaces(TargetTime, raceType);
         }
         public abstract Workout[] GenerateWorkouts();
 
@@ -77,7 +72,7 @@ namespace Pacer.Data.Strategies
         protected IEnumerable<Workout> CreateWorkoutsForWeek(string weekPlan, DateTime weekStart)
         {
             var workouts = new List<Workout>();
-            string[] dailyPlans = weekPlan.Split(',');
+            string[] dailyPlans = weekPlan.Split(';');
 
             for (int i = 0; i < dailyPlans.Length; i++)
             {
@@ -112,19 +107,19 @@ namespace Pacer.Data.Strategies
             if (string.IsNullOrEmpty(dailyPlan) || dailyPlan.Length < 2)
                 return false;
 
-            if (!Enum.TryParse(dailyPlan.Substring(0, 1), out runType))
+            if (!Enum.TryParse(dailyPlan[..1], out runType))
                 return false;
 
             int distanceEndIndex = dailyPlan.IndexOf("\"") > 0 ? dailyPlan.IndexOf("\"") : dailyPlan.Length;
 
-            if (!double.TryParse(dailyPlan.Substring(1, distanceEndIndex - 1), out distance))
+            if (!double.TryParse(dailyPlan[1..distanceEndIndex], out distance))
                 return false;
 
             if (dailyPlan.Contains("\""))
             {
                 int start = dailyPlan.IndexOf("\"") + 1;
                 int end = dailyPlan.LastIndexOf("\"");
-                description = dailyPlan.Substring(start, end - start);
+                description = dailyPlan[start..end];
             }
 
             return true;
@@ -132,22 +127,18 @@ namespace Pacer.Data.Strategies
 
         protected WorkoutType GetWorkoutTypeFromRunType(RunType runType)
         {
-            switch (runType)
+            return runType switch
             {
-                case RunType.E: return WorkoutType.EasyRun;
-                case RunType.R: return WorkoutType.RecoveryRun;
-                case RunType.I: return WorkoutType.IntervalTraining;
-                case RunType.T: return WorkoutType.TempoRun;
-                case RunType.L: return WorkoutType.LongRun;
-                case RunType.M: return WorkoutType.MarathonPace;
-                case RunType.V: return WorkoutType.VO2MaxRun;
-                default: throw new ArgumentException($"Invalid RunType: {runType}");
-            }
+                RunType.E => WorkoutType.EasyRun,
+                RunType.R => WorkoutType.RecoveryRun,
+                RunType.I => WorkoutType.IntervalTraining,
+                RunType.T => WorkoutType.TempoRun,
+                RunType.L => WorkoutType.LongRun,
+                RunType.M => WorkoutType.MarathonPace,
+                RunType.V => WorkoutType.VO2Max,
+                _ => throw new ArgumentException($"Invalid RunType: {runType}"),
+            };
         }
 
-        private PaceTime CalculatePace(double factor)
-        {
-            return new PaceTime(TimeSpan.FromMinutes(EquivalentMarathonPace.TotalMinutes * factor));
-        }
     }
 }

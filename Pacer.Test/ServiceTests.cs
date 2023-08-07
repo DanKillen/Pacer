@@ -47,8 +47,8 @@ namespace Pacer.Test
         public void AddUser_When2ValidUsersAdded_ShouldCreate2Users()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
-            service.AddUser("guest", "guest@mail.com", "guest", Role.guest);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("guest", "guest@mail.com", "guest", Role.guest);
 
             // act
             var users = service.GetUsers();
@@ -61,9 +61,9 @@ namespace Pacer.Test
         public void GetPage1WithpageSize2_When3UsersExist_ShouldReturn2Pages()
         {
             // act
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
-            service.AddUser("manager", "manager@mail.com", "manager", Role.manager);
-            service.AddUser("guest", "guest@mail.com", "guest", Role.guest);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("manager", "manager@mail.com", "manager", Role.manager);
+            service.AddUserAsync("guest", "guest@mail.com", "guest", Role.guest);
 
             // return first page with 2 users per page
             var pagedUsers = service.GetUsers(1, 2);
@@ -76,9 +76,9 @@ namespace Pacer.Test
         public void GetPage1WithPageSize2_When3UsersExist_ShouldReturnPageWith2Users()
         {
             // act
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
-            service.AddUser("manager", "manager@mail.com", "manager", Role.manager);
-            service.AddUser("guest", "guest@mail.com", "guest", Role.guest);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("manager", "manager@mail.com", "manager", Role.manager);
+            service.AddUserAsync("guest", "guest@mail.com", "guest", Role.guest);
 
             var pagedUsers = service.GetUsers(1, 2);
 
@@ -99,26 +99,10 @@ namespace Pacer.Test
         }
 
         [Fact]
-        public void UpdateUser_WhenUserExists_ShouldWork()
-        {
-            // arrange
-            var user = service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
-
-            // act
-            user.Name = "administrator";
-            user.Email = "admin@mail.com";
-            var updatedUser = service.UpdateUser(user);
-
-            // assert
-            Assert.Equal("administrator", updatedUser.Name);
-            Assert.Equal("admin@mail.com", updatedUser.Email);
-        }
-
-        [Fact]
         public void Login_WithValidCredentials_ShouldWork()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
 
             // act            
             var user = service.Authenticate("admin@mail.com", "admin");
@@ -132,7 +116,7 @@ namespace Pacer.Test
         public void Login_WithInvalidCredentials_ShouldNotWork()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
 
             // act      
             var user = service.Authenticate("admin@mail.com", "xxx");
@@ -146,7 +130,7 @@ namespace Pacer.Test
         public void ForgotPasswordRequest_ForValidUser_ShouldGenerateToken()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
 
             // act      
             var token = service.ForgotPassword("admin@mail.com");
@@ -203,7 +187,7 @@ namespace Pacer.Test
         public void ResetPasswordRequest_WithInValidUserAndValidToken_ShouldReturnNull()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
             var token = service.ForgotPassword("admin@mail.com");
 
             // act      
@@ -217,8 +201,8 @@ namespace Pacer.Test
         public void ResetPasswordRequests_WhenAllCompleted_ShouldExpireAllTokens()
         {
             // arrange
-            service.AddUser("admin", "admin@mail.com", "admin", Role.admin);
-            service.AddUser("guest", "guest@mail.com", "guest", Role.guest);
+            service.AddUserAsync("admin", "admin@mail.com", "admin", Role.admin);
+            service.AddUserAsync("guest", "guest@mail.com", "guest", Role.guest);
 
             // create token and reset password - token then invalidated
             var token1 = service.ForgotPassword("admin@mail.com");

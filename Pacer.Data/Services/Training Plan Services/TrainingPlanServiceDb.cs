@@ -9,17 +9,21 @@ namespace Pacer.Data.Services
     public class TrainingPlanServiceDb : ITrainingPlanService
     {
         private readonly DatabaseContext ctx;
+        private readonly WorkoutFactory _workoutFactory;
+        private readonly IWorkoutPaceCalculator _workoutPaceCalculator;
         private readonly ILogger<TrainingPlanServiceDb> _logger;
         private readonly IRunningProfileService _runningProfileService;
 
-        public TrainingPlanServiceDb(DatabaseContext ctx, ILogger<TrainingPlanServiceDb> logger, IRunningProfileService runningProfileService)
+        public TrainingPlanServiceDb(DatabaseContext ctx, WorkoutFactory workoutFactory, ILogger<TrainingPlanServiceDb> logger, IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator)
         {
             this.ctx = ctx;
+            _workoutFactory = workoutFactory;
             _logger = logger;
             _runningProfileService = runningProfileService;
+            _workoutPaceCalculator = workoutPaceCalculator;
         }
 
-        private static readonly Dictionary<RaceType, double> RaceDistancesInMiles = new Dictionary<RaceType, double>
+        private static readonly Dictionary<RaceType, double> RaceDistancesInMiles = new()
         {
         { RaceType.FiveK, 3.1 },
         { RaceType.TenK, 6.2 },
@@ -33,19 +37,14 @@ namespace Pacer.Data.Services
 
         public TrainingPlan CreatePlan(int runningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime)
         {
-            RunningProfile runningProfile = ctx.RunningProfiles.Find(runningProfileId);
-            if (runningProfile == null)
-            {
-                throw new ArgumentException("No running profile found for the given id");
-            }
+            RunningProfile runningProfile = ctx.RunningProfiles.Find(runningProfileId) ?? throw new ArgumentException("No running profile found for the given id");
             // Use WorkoutFactory to create workouts
-            WorkoutFactory workoutFactory = new WorkoutFactory();
-            Workout[] workouts = workoutFactory.AssignWorkouts(runningProfile, targetRace, raceDate, targetTime);
+            Workout[] workouts = _workoutFactory.AssignWorkouts(runningProfile, targetRace, raceDate, targetTime);
 
             string targetPace = CalculateTargetPace(targetRace, targetTime);
 
 
-            TrainingPlan newTrainingPlan = new TrainingPlan
+            TrainingPlan newTrainingPlan = new()
             {
                 RunningProfile = runningProfile,
                 TargetRace = targetRace,
@@ -140,8 +139,6 @@ namespace Pacer.Data.Services
             }
         }
 
-
-
         public bool ClearWorkoutActuals(int workoutId, int userId)
         {
             try
@@ -176,6 +173,39 @@ namespace Pacer.Data.Services
             }
         }
 
+        public bool UpdatePlanAndWorkouts(int trainingPlanId, TimeSpan targetTime)
+        {
+            using var transaction = ctx.Database.BeginTransaction();
+            try
+            {
+                var existingPlan = ctx.TrainingPlans.Include(tp => tp.Workouts).FirstOrDefault(tp => tp.Id == trainingPlanId);
+                if (existingPlan == null) return false;
+
+                existingPlan.TargetTime = targetTime;
+                existingPlan.TargetPace = CalculateTargetPace(existingPlan.TargetRace, targetTime);
+
+                // Recalculate target paces for workouts
+                var newPaces = _workoutPaceCalculator.CalculatePaces(targetTime, existingPlan.TargetRace);
+
+                foreach (var workout in existingPlan.Workouts)
+                {
+                    var newPace = newPaces[workout.Type];
+                    workout.TargetPaceMinMinutes = newPace.Min.Minutes;
+                    workout.TargetPaceMinSeconds = newPace.Min.Seconds;
+                    workout.TargetPaceMaxMinutes = newPace.Max.Minutes;
+                    workout.TargetPaceMaxSeconds = newPace.Max.Seconds;
+                }
+
+                ctx.SaveChanges();
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                return false;
+            }
+        }
     }
 
 }

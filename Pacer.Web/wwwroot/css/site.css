@@ -716,3 +716,9 @@ nav.navbar {
   color: transparent !important;
   text-indent: -9999px;
 }
+
+.weather-icon {
+  width: 50px;
+  height: auto;
+  vertical-align: middle;
+}

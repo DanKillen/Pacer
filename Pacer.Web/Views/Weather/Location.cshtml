@@ -1,0 +1,28 @@
+<h2>Location Permission</h2>
+
+<p>We would like to use your location to determine your local weather. Do you agree?</p>
+
+<form asp-controller="Weather" asp-action="Weather" method="post" id="location-form">
+    <input type="hidden" name="latitude" id="latitude" value="">
+    <input type="hidden" name="longitude" id="longitude" value="">
+    <input type="submit" value="Yes, I agree" id="submit-button" disabled />
+</form>
+
+@section Scripts {
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    document.getElementById('submit-button').disabled = false;
+                }, 
+                error => {
+                    console.error(`Error occurred: ${error.message}`);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    </script>
+}

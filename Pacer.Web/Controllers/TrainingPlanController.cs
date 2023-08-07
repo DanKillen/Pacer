@@ -298,7 +298,7 @@ namespace Pacer.Web.Controllers
         [HttpPost("SaveWorkoutActuals")]
         public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
         {
-            var actualTime = new TimeSpan();
+            TimeSpan actualTime;
             try
             {
                 actualTime = new TimeSpan(ActualHours, ActualMinutes, ActualSeconds);
@@ -307,7 +307,7 @@ namespace Pacer.Web.Controllers
             {
                 return BadRequest(new { message = "Error: Invalid time format" });
             }
-
+            
             try
             {
                 var userId = GetUserId();
@@ -342,41 +342,79 @@ namespace Pacer.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult EditTargetTime(int id)
+        [HttpGet("EditTargetTime/{id}")]
+        public ActionResult EditTargetTime(int id)
         {
+            // Fetch the existing training plan from your data store. 
             var trainingPlan = _trainingPlanService.GetPlanById(id);
-            if (trainingPlan == null) return NotFound();
+            if (trainingPlan == null)
+            {
+                // No training plan with the provided ID exists.
+                return NotFound();
+            }
 
-            var model = new EditTargetTimeViewModel
+            // Create a new view model with the current values of the training plan.
+            var viewModel = new EditTargetTimeViewModel
             {
                 TrainingPlanId = trainingPlan.Id,
+                TargetRace = trainingPlan.TargetRace,
                 TargetTime = trainingPlan.TargetTime,
             };
-            return View(model);
+
+            // Pass the view model to the view.
+            return View(viewModel);
         }
 
-        [HttpPost]
+        [HttpPost("EditTargetTime")]
         public IActionResult EditTargetTime(EditTargetTimeViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            var trainingPlan = _trainingPlanService.GetPlanById(model.TrainingPlanId); // Retrieve from DB, replace with your actual code
-            if (trainingPlan == null) return NotFound();
+            var result = _trainingPlanService.UpdatePlanAndWorkouts(model.TrainingPlanId, model.TargetTime);
 
-            trainingPlan.TargetTime = model.TargetTime;
-            trainingPlan.TargetPace = CalculateTargetPace(model.TargetTime); // Implement this function based on your requirements
-            _db.SaveChanges(); // Save changes to DB, replace with your actual code
-
-            // Recalculate target paces for workouts
-            foreach (var workout in trainingPlan.Workouts)
+            if (!result)
             {
-                workout.TargetPace = CalculateTargetPaceForWorkout(workout, trainingPlan.TargetPace); // Implement this function based on your requirements
-                                                                                                      // Save changes to each workout
-                _db.SaveChanges(); // Save changes to DB, replace with your actual code
+                Alert("New Target Time did not save", AlertType.danger);
+                return Index();
+            }
+            Alert("New Target Time saved successfully!", AlertType.success);
+            return RedirectToAction("ViewTrainingPlan", new { id = model.TrainingPlanId });
+        }
+        [HttpGet("DeleteTrainingPlan")]
+        public IActionResult DeleteTrainingPlan()
+        {
+            var userId = GetUserId();
+            var trainingPlan = _trainingPlanService.GetPlanByUserId(userId);
+            var model = new TrainingPlanDeleteModel
+            {
+                Id = trainingPlan.Id,
+                TargetRace = trainingPlan.TargetRace,
+                RaceDate = trainingPlan.RaceDate,
+                TargetTime = trainingPlan.TargetTime
+            };
+            return View(model);
+        }
+        [HttpPost("DeleteTrainingPlan")]
+        public IActionResult DeleteTrainingPlan(TrainingPlanDeleteModel model)
+        {
+            var trainingPlan = _trainingPlanService.GetPlanById(model.Id);
+
+            if (trainingPlan == null)
+            {
+                TempData["Alert.Message"] = "Error: Training plan not found";
+                TempData["Alert.Type"] = "danger";
+                return RedirectToAction("Error", "Home");
             }
 
-            return RedirectToAction("ViewTrainingPlan", new { id = trainingPlan.Id }); // Redirect to the training plan
+            var result = _trainingPlanService.DeletePlan(trainingPlan);
+
+            if (!result)
+            {
+                Alert("Training Plan not deleted. Please try again", AlertType.danger);
+                return RedirectToAction("ViewTrainingPlan");
+            }
+            Alert("Training Plan deleted successfully.", AlertType.info);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

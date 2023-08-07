@@ -4,6 +4,7 @@ using Pacer.Data.Services;
 using Pacer.Data.Security;
 using Pacer.Data.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Pacer.Data.Services
 {
@@ -53,9 +54,9 @@ namespace Pacer.Data.Services
         }
 
         // Add a new User checking a User with same email does not exist
-        public User AddUser(string name, string email, string password, Role role)
+        public async Task<User> AddUserAsync(string name, string email, string password, Role role)
         {     
-            var existing = GetUserByEmail(email);
+            var existing = await GetUserByEmail(email);
             if (existing != null)
             {
                 return null;
@@ -111,9 +112,11 @@ namespace Pacer.Data.Services
         }
 
         // Find a user with specified email address
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
-            return ctx.Users.FirstOrDefault(u => u.Email == email);
+            return await ctx.Users
+                            .Include(u => u.RunningProfile)
+                            .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         // Verify if email is available or registered to specified user
@@ -127,13 +130,14 @@ namespace Pacer.Data.Services
             return ctx.Users.Where(q).ToList();
         }
 
-        public User Authenticate(string email, string password)
+        public async Task<User> Authenticate(string email, string password)
         {
             // retrieve the user based on the EmailAddress (assumes EmailAddress is unique)
-            var user = GetUserByEmail(email);
+            var user = await GetUserByEmail(email);
 
             // Verify the user exists and Hashed User password matches the password provided
             return (user != null && Hasher.ValidateHash(user.Password, password)) ? user : null;
+
             //return (user != null && user.Password == password ) ? user: null;
         }
 

@@ -29,16 +29,12 @@ namespace Pacer.Data.Services
         public RunningProfile CreateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // First, confirm that a User with the given userId exists
-            User user = _ctx.Users.Find(userId);
-            if (user == null)
-            {
-                throw new ArgumentException("No user found with the given userId");
-            }
+            User user = _ctx.Users.Find(userId) ?? throw new ArgumentException("No user found with the given userId");
 
             double anaerobicScore = _scoreCalculator.CalculateInitialAnaerobicScore(fiveKTime);
             double aerobicScore = _scoreCalculator.CalculateInitialAerobicScore(weeklyMileage, fiveKTime);
 
-            RunningProfile newProfile = new RunningProfile
+            RunningProfile newProfile = new()
             {
                 UserId = userId,
                 DateOfBirth = dateOfBirth,
@@ -50,6 +46,7 @@ namespace Pacer.Data.Services
             };
 
             _ctx.RunningProfiles.Add(newProfile);
+            user.RunningProfile = newProfile;
             _ctx.SaveChanges();
             return newProfile;
         }
@@ -63,14 +60,7 @@ namespace Pacer.Data.Services
         public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // Check if the profile exists in the context
-            RunningProfile existingProfile = _ctx.RunningProfiles.FirstOrDefault(rp => rp.UserId == userId);
-
-
-            if (existingProfile == null)
-            {
-                throw new ArgumentException("No running profile found with the given profile Id");
-            }
-
+            RunningProfile existingProfile = _ctx.RunningProfiles.FirstOrDefault(rp => rp.UserId == userId) ?? throw new ArgumentException("No running profile found with the given profile Id");
             double anaerobicScore = _scoreCalculator.CalculateInitialAnaerobicScore(fiveKTime);
             double aerobicScore = _scoreCalculator.CalculateInitialAerobicScore(weeklyMileage, fiveKTime);
 
@@ -90,12 +80,7 @@ namespace Pacer.Data.Services
         public void DeleteProfile(RunningProfile profile)
         {
             // Check if the profile exists in the context
-            RunningProfile existingProfile = _ctx.RunningProfiles.Find(profile.Id);
-            if (existingProfile == null)
-            {
-                throw new ArgumentException("No running profile found with the given profile Id");
-            }
-
+            RunningProfile existingProfile = _ctx.RunningProfiles.Find(profile.Id) ?? throw new ArgumentException("No running profile found with the given profile Id");
             _ctx.RunningProfiles.Remove(existingProfile);
             _ctx.SaveChanges();
         }

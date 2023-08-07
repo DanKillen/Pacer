@@ -1,0 +1,32 @@
+@model WeatherViewModel
+
+<div class="container mt-5">
+
+    <h1 class="mb-4">Weather Information</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h3>@Model.Name</h3>
+            <hr style="border-top: 5px solid #ccc;">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Weather Condition:</strong>
+                        <img src=@($"https://openweathermap.org/img/wn/{Model.Icon}@2x.png") alt="@Model.Weather Icon"
+                            class="weather-icon" />
+                        @Model.Weather
+                    </p>
+                    <p><strong>Weather Description:</strong> @Model.Description</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Temperature:</strong> @Model.Temperature °C</p>
+                    <p><strong>Humidity:</strong> @Model.Humidity %</p>
+                    <p><strong>Wind Speed:</strong> @Model.WindSpeed m/s</p>
+                    <p><strong>Sunset:</strong> @Model.Sunset</p>
+                 </div>
+            </div>
+                <hr style="border-top: 5px solid #ccc;"> 
+                <h2>@Model.Advice</h2>
+        </div>
+    </div>
+</div>

@@ -35,39 +35,45 @@ if (document.querySelector('#index-page')) {
 
 // 5k time slider 
 
-$(function() {
+var sliderValue = 1800; // Default value if no savedFiveKTimeMinutes
+if (typeof savedFiveKTimeMinutes !== 'undefined' && savedFiveKTimeMinutes > 0) {
+  sliderValue = (savedFiveKTimeMinutes * 60) + savedFiveKTimeSeconds;
+}
+console.log(sliderValue);
+$(function () {
   $("#slider-range").slider({
-      min: 750, // 12 minutes and 30 seconds in seconds
-      max: 2400, // 40 minutes in seconds
-      value: 1800,
-      slide: function(event, ui) {
-          updateMinutesAndSeconds(ui.value);
-      }
+    
+    min: 750, // 12 minutes and 30 seconds in seconds
+    max: 2400, // 40 minutes in seconds
+    value: sliderValue, // Use the previously saved  time or the default value
+    slide: function (event, ui) {
+      updateMinutesAndSeconds(ui.value);
+    }
   });
 
   function updateMinutesAndSeconds(totalSeconds) {
-      var minutes = Math.floor(totalSeconds / 60);
-      var seconds = totalSeconds - (minutes * 60);
+    var minutes = Math.floor(totalSeconds / 60);
+    var seconds = totalSeconds - (minutes * 60);
 
-      $("#FiveKTimeMinutes").val(minutes);
-      $("#FiveKTimeSeconds").val(seconds);
-      
-      if (totalSeconds === 2400) {
-        $("#moreText").show();
+    $("#FiveKTimeMinutes").val(minutes);
+    $("#FiveKTimeSeconds").val(seconds);
+
+    if (totalSeconds === 2400) {
+      $("#moreText").show();
     } else {
-        $("#moreText").hide();
+      $("#moreText").hide();
     }
   }
 
   function updateSlider() {
-      var minutes = Number($("#FiveKTimeMinutes").val());
-      var seconds = Number($("#FiveKTimeSeconds").val());
+    var minutes = Number($("#FiveKTimeMinutes").val());
+    var seconds = Number($("#FiveKTimeSeconds").val());
 
-      var totalSeconds = minutes * 60 + seconds;
+    var totalSeconds = minutes * 60 + seconds;
 
-      if (totalSeconds >= 750 && totalSeconds <= 2400) {
-          $("#slider-range").slider("value", totalSeconds);
-      }
+    if (totalSeconds >= 750 && totalSeconds <= 2400) {
+      $("#slider-range").slider("value", totalSeconds);
+    }
   }
 
   $("#FiveKTimeMinutes").change(updateSlider);
@@ -75,6 +81,10 @@ $(function() {
 
   // Initialize
   updateMinutesAndSeconds($("#slider-range").slider("value"));
+});
+ // Tool Tips
+$(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip();
 });
 
 

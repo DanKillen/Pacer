@@ -1,10 +1,25 @@
 @model EditTargetTimeViewModel
 
-<form method="post">
-    <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
+<div class="card shadow p-4 mt-5 mx-auto w-75">
+    <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"hh\:mm\:ss") @Model.TargetRace.GetDisplayName()</h3>
+    <form method="post" action="/EditTargetTime">
 
-    <label for="targetTime">Target Time:</label>
-    <input type="time" id="targetTime" name="TargetTime" value="@Model.TargetTime.ToString(@"hh\:mm\:ss")" required />
+        <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
 
-    <button type="submit">Save</button>
-</form>
+        <div class="form-group mt-3 p-3">
+            <label for="targetTime">New Target Time:</label>
+            <input class="form-control" type="time" id="targetTime" name="TargetTime"
+                value="@Model.TargetTime.ToString(@"hh\:mm\:ss")" step="1" required />
+        </div>
+
+        <div class="alert alert-warning mt-4" role="alert">
+            <p>Are you sure you would like to edit your target time?</p>
+            <hr>
+            <p class="mb-0">Your target paces will be updated, and all previously saved workouts will remain.</p>
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+            <button type="submit" class="btn btn-primary btn-block">Save</button>
+        </div>
+    </form>
+</div>

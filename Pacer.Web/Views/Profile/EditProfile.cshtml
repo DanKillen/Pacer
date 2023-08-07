@@ -1,5 +1,10 @@
 @model RunningProfileViewModel
 
+<script>
+    var savedFiveKTimeMinutes = @Model.FiveKTimeMinutes;
+    var savedFiveKTimeSeconds = @Model.FiveKTimeSeconds;
+</script>
+
 <div class="card shadow p-4 mt-5 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
         <!-- your SVG logo goes here -->
@@ -28,7 +33,6 @@
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <!-- Add more options if you have more genders -->
             </select>
             <span asp-validation-for="Gender" class="text-danger"></span>
         </div>

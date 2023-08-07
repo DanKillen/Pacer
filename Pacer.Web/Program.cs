@@ -16,14 +16,28 @@ builder.Services.AddDbContext<DatabaseContext>( options => {
     //options.UseMySql(builder.Configuration.GetConnectionString("MySql"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySql")));
     //options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
     //options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+    //builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 });  
-
+builder.Services.Configure<IpStackSettings>(builder.Configuration.GetSection("IpStack"));
 // Add Services to DI   
 builder.Services.AddTransient<IUserService,UserServiceDb>();
 builder.Services.AddTransient<IMailService,SmtpMailService>();
 builder.Services.AddTransient<ITrainingPlanService, TrainingPlanServiceDb>();
 builder.Services.AddTransient<IRunningProfileService, RunningProfileServiceDb>();
+builder.Services.AddTransient<WorkoutFactory>();
 builder.Services.AddScoped<IScoreCalculator, ScoreCalculator>();
+builder.Services.AddTransient<EquivalentMarathonPaceCalculator>();
+builder.Services.AddTransient<IWorkoutPaceCalculator, WorkoutPaceCalculator>();
+builder.Services.Configure<WeatherApiSettings>(builder.Configuration.GetSection("WeatherApi"));
+
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<ILocationService, GeoLocationService>();
+builder.Services.AddSingleton<IWeatherService, WeatherService>();
+
+
+
 
 // ** Required to enable asp-authorize Taghelper **            
 builder.Services.AddHttpContextAccessor(); 

@@ -13,15 +13,15 @@ namespace Pacer.Data.Services
             svc.Initialise();
 
             // add users
-            svc.AddUser("Administrator", "admin@mail.com", "admin", Role.admin);
-            svc.AddUser("Manager", "manager@mail.com", "manager", Role.manager);
-            svc.AddUser("Guest", "guest@mail.com", "guest", Role.guest);
+            svc.AddUserAsync("Administrator", "admin@mail.com", "admin", Role.admin);
+            svc.AddUserAsync("Manager", "manager@mail.com", "manager", Role.manager);
+            svc.AddUserAsync("Guest", "guest@mail.com", "guest", Role.guest);
 
             runningProfileService.CreateProfile(1, new DateTime(1999, 3, 3), "Male", 5, new TimeSpan(0, 20, 0));
 
             trainingPlanService.CreatePlan(1, RaceType.Marathon, new DateTime(2023, 10, 08), new TimeSpan(3, 30, 0));
 
- 
+
         }
     }
 

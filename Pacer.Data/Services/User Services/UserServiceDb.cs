@@ -17,10 +17,10 @@ namespace Pacer.Data.Services
             this.ctx = ctx; 
         }
 
-        public void Initialise()
-        {
-           ctx.Initialise(); 
-        }
+        // public void Initialise()
+        // {
+        //    ctx.Initialise(); 
+        // }
 
         // ------------------ User Related Operations ------------------------
 

@@ -64,7 +64,7 @@ public async Task<WeatherResponse> GetWeatherByLocation(string location)
     }
     else
     {
-        throw new Exception($"Failed to get weather: {response.StatusCode}");
+        return null;
     }
 }
 

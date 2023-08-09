@@ -15,7 +15,7 @@ public class RaceTimePredictor : IRaceTimePredictor
     private double CalculateEstimatedTime(double knownTime, double knownDistance, double targetDistance)
     {
         // Using the Riegel formula
-        return knownTime * Math.Pow((targetDistance / knownDistance), RiegelCoefficient);
+        return knownTime * Math.Pow(targetDistance / knownDistance, RiegelCoefficient);
     }
 
     public TimeSpan CalculateEstimatedMarathonTime(TimeSpan fiveKTime)

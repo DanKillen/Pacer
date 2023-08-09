@@ -8,7 +8,7 @@ namespace Pacer.Data.Services
     public interface IUserService
     {
         // Initialise the repository - only to be used during development 
-        void Initialise();
+        //void Initialise();
 
         // ---------------- User Management --------------
         IList<User> GetUsers();

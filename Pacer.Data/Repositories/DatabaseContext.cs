@@ -74,22 +74,23 @@ namespace Pacer.Data.Repositories
 
 
         // Configure the context with logging - remove in production
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Filename=data.db");
-            // remove in production 
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
-        }
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // {
+            // optionsBuilder.UseSqlite("Filename=data.db");
+            // // remove in production 
+            // optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+        // }
 
         public static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder => new();
 
         // Convenience method to recreate the database thus ensuring the new database takes 
         // account of any changes to Models or DatabaseContext. ONLY to be used in development
-        public void Initialise()
-        {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
-        }
+        
+        // public void Initialise()
+        // {
+        //     Database.EnsureDeleted();
+        //     Database.EnsureCreated();
+        // }
 
     }
 }

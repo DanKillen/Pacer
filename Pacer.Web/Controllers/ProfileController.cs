@@ -48,6 +48,20 @@ namespace Pacer.Web.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
 
+            if (!ModelState.IsValid)
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    if (ModelState[key].Errors.Any())
+                    {
+                        var errorMessages = ModelState[key].Errors.Select(error => error.ErrorMessage);
+                        Console.WriteLine($"Key: {key}, Errors: {string.Join(",", errorMessages)}");
+                    }
+                }
+                Alert("Error creating profile", AlertType.danger);
+                return View(model);
+            }
+
             var profile = _runningProfileService.CreateProfile(userId, model.DateOfBirth, model.Gender, model.WeeklyMileage, fiveKTime);
 
             if (profile == null)
@@ -68,7 +82,8 @@ namespace Pacer.Web.Controllers
             var profile = _runningProfileService.GetProfileByUserId(userId);
             if (profile == null)
             {
-                return NotFound();
+                Alert("Please create a running profile.", AlertType.info);
+                return RedirectToAction("CreateProfile", "Profile");
             }
 
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -131,6 +146,10 @@ namespace Pacer.Web.Controllers
         [HttpPost]
         public IActionResult EditProfile(int userId, RunningProfileViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (currentUserId != userId.ToString())

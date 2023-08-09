@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Pacer.Data.Extensions;
+using Pacer.Data.Utilities;
 
 namespace Pacer.Data.Entities
 {
@@ -61,11 +61,6 @@ namespace Pacer.Data.Entities
             }
         }
         public string PaceString { get; set; }
-        public PaceTime GetPaceTime()
-        {
-            var parts = PaceString.Split(':');
-            return new PaceTime(new TimeSpan(0, int.Parse(parts[0]), int.Parse(parts[1])));
-        }
         public TrainingPlan TrainingPlan { get; set; }
     }
     public enum PaceType

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Pacer.Data.Entities;
-using Pacer.Data.Extensions;
+using Pacer.Data.Utilities;
 using Pacer.Data.Services;
 
 
@@ -25,16 +25,11 @@ namespace Pacer.Data.Strategies
         protected readonly DateTime RaceDate;
         protected readonly TimeSpan TargetTime;
 
-        private IWorkoutPaceCalculator _workoutPaceCalculator { get; }
-        private IRunningProfileService _runningProfileService { get; }
 
-        protected BaseWorkoutPlanStrategy(IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator, DateTime raceDate, TimeSpan targetTime)
+        protected BaseWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
         {
-            _runningProfileService = runningProfileService;
-            _workoutPaceCalculator = workoutPaceCalculator;
             RaceDate = raceDate;
             TargetTime = targetTime;
-            
         }
 
         public abstract Workout[] GenerateWorkouts();
@@ -58,17 +53,17 @@ namespace Pacer.Data.Strategies
             for (int i = 0; i < dailyPlans.Length; i++)
             {
                 string dailyPlan = dailyPlans[i].Trim();
-
+                
+                if (dailyPlan == "X")
+                {
+                    continue;
+                }
                 if (!TryParseDailyPlan(dailyPlan, out RunType runType, out double distance, out string description))
                 {
                     Console.WriteLine($"Invalid daily plan: {dailyPlan}");
                     continue;
                 }
 
-                if (runType == RunType.X)
-                {
-                    continue;
-                }
 
                 workouts.Add(CreateWorkout(
                     GetWorkoutTypeFromRunType(runType),

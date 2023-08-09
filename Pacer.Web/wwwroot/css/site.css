@@ -225,6 +225,39 @@ nav.navbar {
 /* End of Index/About Page CSS */
 /* Training View  */
 
+#detailsButton {
+  font-size: 1em;        /* Font size of text */
+  color: #009688;        /* Dark Teal */
+  cursor: pointer;         /* Change cursor to hand pointer on hover */
+  transition: all 0.3s;   /* Smooth transition for hover effects */
+  display: inline-block;  /* To apply padding correctly */
+  padding: 10px 10px;      /* Some padding to make it look more button-like */
+  border-radius: 5px;     /* Rounded corners */
+  border: 2px solid #009688; /* Dark Teal */
+}
+
+#detailsButton:hover {
+  background-color: #f7f7f713; /* Light background on hover */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+#detailsButton i {
+  margin-right: 5px; /* Spacing between icon and text */
+}
+
+#detailsBox {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+#detailsBox div {
+  margin-bottom: 15px;
+}
+
+
 .completed-workout {
   background-color: #323232; /* Dark Grey */
   color: #f7f7f7; /* Light Grey */

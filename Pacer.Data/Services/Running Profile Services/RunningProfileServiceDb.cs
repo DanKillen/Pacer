@@ -19,10 +19,10 @@ namespace Pacer.Data.Services
             _raceTimePredictor = raceTimePredictor;
         }
 
-        public void Initialise()
-        {
-            _ctx.Initialise();
-        }
+        // public void Initialise()
+        // {
+        //     _ctx.Initialise();
+        // }
 
         // ---------------- Running Profile Management --------------
 
@@ -56,6 +56,11 @@ namespace Pacer.Data.Services
         public RunningProfile GetProfileByUserId(int userId)
         {
             return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.User.Id == userId);
+        }
+        
+        public RunningProfile GetProfileByProfileId(int profileId)
+        {
+            return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.Id == profileId);
         }
         // Update a running profile
         public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)

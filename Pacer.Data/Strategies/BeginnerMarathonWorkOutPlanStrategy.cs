@@ -1,7 +1,7 @@
 
 using Pacer.Data.Entities;
 using Pacer.Data.Services;
-using Pacer.Data.Extensions;
+using Pacer.Data.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace Pacer.Data.Strategies
@@ -10,28 +10,35 @@ namespace Pacer.Data.Strategies
     {
         private readonly string[] WeekPlans = {
             // base phase
-            "L7;X;E6;R3;E5;X;R5",
-            "L8;X;E8;E9;X;E5;R4",
-            "L12;X;R5;X;E9;X;R5",
+            "E4;R2;X;E4;X;L5;X",
+            "E5;R3;X;E4;X;L5;X",
+            "E4;R3;X;E5;X;L7;X",
+            "E4;X;E4;R2;E5;X;R4",
+            "E5;X;E4;R2;E5;X;R5",
+            "L7;X;E4;R3;E5;X;R5",
+
             // build phase
-            "M13\"Run the first 8 miles at a comfortable pace and then the last 5 miles at target pace\";X;T10\"Run the first 5 miles at a comfortable pace and then the last 5 miles at target pace\";X;E6;X;R4",
-            "L18;X;E6;T8\"Run the first 3 miles at a comfortable pace and then the last 5 miles at target pace\";X;E8",
-            "L14;X;I5\"5 miles at target pace but take 60 second walking breaks in between each mile\";R5;X;E5;R4",
-            "L20;X;R7;T10\"Run the first 3 miles at a comfortable pace and then the last 7 miles at target pace\";X;E8;R5",
+            "L8;X;E5;R3;E6;X;R5",
+            "L9;X;E5;T6\"Maintain a consistent pace\";X;E6;X;R5",
+            "L10;X;I4\"Run fast for 1 minute, then walk or jog for 2 minutes. Repeat.\";R4;E5;X;R5",
+            "L12;X;E6;R4;T7\"Maintain a consistent, slightly challenging pace\";X;E6;R5",
+
             // peak phase
-            "M18\"Run the first 8 miles at a comfortable pace and then the last 10 at target pace\";X;E8;I8\"8 miles at target pace but take 60 second walking breaks in between each mile\";X;L13;R5",
-            "L16;X;E8;L11;X;R4;T6",
-            "L17;X;R7;I7\"7 miles at target pace but take 60 second walking breaks in between each mile\";X;L11;R4",
+            "L14;X;E6;I5\"Run fast for 1 minute, then walk or jog for 2 minutes. Repeat.\";R4;E7;X;R5",
+            "L15;X;E6;R5;T8\"Maintain a consistent, slightly challenging pace\";X;E7;X",
+            "L16;X;E6;I5\"Run fast for 1 minute, then walk or jog for 2 minutes. Repeat.\";R5;E7;X;R5",
+
             // taper phase
-            "L20;X;E8;R6;X;R4;I5\"8 miles at target pace but take 60 second walking breaks in between each mile\"",
-            "L20;X;E7;T5;X;R5;X",
-            "L12;X;R6;M7\"Run the first 5 miles at a comfortable pace and then the last 2 miles at target pace\";X;R5;R4;X",
+            "L14;X;E6;R4;T6\"Maintain a consistent, slightly challenging pace\";X;E5;X",
+            "L12;X;E5;R4;T5\"Maintain a consistent, slightly challenging pace\";X;E4;X",
+            "L8;X;E4;M4\"Run at a comfortable pace to shake out the legs\";X;R3;R3;X",
+
         };
-        
-        public BeginnerMarathonWorkoutPlanStrategy(IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator, DateTime raceDate, TimeSpan targetTime)
-        : base(runningProfileService, workoutPaceCalculator, raceDate, targetTime) // Pass the dependencies to the base class constructor
-    {
-    }
+
+        public BeginnerMarathonWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
+        : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
+        {
+        }
 
         public override Workout[] GenerateWorkouts()
         {

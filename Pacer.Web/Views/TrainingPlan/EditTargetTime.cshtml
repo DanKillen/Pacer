@@ -1,16 +1,20 @@
 @model EditTargetTimeViewModel
 
 <div class="card shadow p-4 mt-4 mx-auto w-75">
-    <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"h\:mm") @Model.TargetRace.GetDisplayName()</h3>
+    <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"h\:mm")
+        @Model.TargetRace.GetDisplayName()</h3>
     <form method="post" action="/EditTargetTime">
 
         <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
 
         <div class="form-group mt-3 p-3">
             <label for="targetTime">New Target Time:</label>
-            <input class="form-control" type="time" id="targetTime" name="TargetTime"
-                value="@Model.TargetTime.ToString(@"hh\:mm\:ss")" step="1" required />
+            <input class="form-control" type="range" id="targetTime" min="60" max="360"
+                value="@((int)Model.TargetTime.TotalMinutes)" oninput="displayTime(this.value)" />
+            <span id="targetTimeDisplay">@Model.TargetTime.ToString("h\\:mm")</span>
         </div>
+
+        <input type="hidden" asp-for="TargetTime" id="hiddenTargetTime" />
 
         <div class="alert alert-warning mt-4" role="alert">
             <p>Are you sure you would like to edit your target time?</p>
@@ -23,3 +27,37 @@
         </div>
     </form>
 </div>
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+<script>
+        function displayTime(minutes) {
+            // Convert the minutes into a TimeSpan or similar format
+            var hours = Math.floor(minutes / 60);
+            minutes %= 60;
+            var timeString = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+
+            // Display the time in your span
+            document.getElementById('targetTimeDisplay').textContent = timeString;
+
+            // Set the value of the hidden input
+            document.getElementById('hiddenTargetTime').value = timeString;
+        }
+    function updateTargetTime() {
+        var targetTimeSlider = document.getElementById('targetTime');
+        var raceType = '@Model.TargetRace.ToString()';
+
+        if (raceType === 'Marathon' || raceType === 'BMarathon') {
+            targetTimeSlider.min = 125;
+            targetTimeSlider.max = 300;
+        } else if (raceType === 'HalfMarathon' || raceType === 'BHalfMarathon') {
+            targetTimeSlider.min = 60;
+            targetTimeSlider.max = 150;
+        }
+        displayTime(targetTimeSlider.value);
+    }
+    updateTargetTime();
+
+</script>

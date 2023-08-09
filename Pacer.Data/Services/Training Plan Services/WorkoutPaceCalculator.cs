@@ -1,12 +1,11 @@
 using Pacer.Data.Entities;
-using Pacer.Data.Extensions;
+using Pacer.Data.Utilities;
 using System.Collections.Generic;
 
 public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 {
     private readonly IRaceTimePredictor _raceTimePredictor;
 
-    // Constructor injection
     public WorkoutPaceCalculator(IRaceTimePredictor raceTimePredictor)
     {
         _raceTimePredictor = raceTimePredictor ?? throw new ArgumentNullException(nameof(raceTimePredictor));

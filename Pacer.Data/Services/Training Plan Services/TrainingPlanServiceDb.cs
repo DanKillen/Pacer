@@ -37,8 +37,9 @@ namespace Pacer.Data.Services
 
         public TrainingPlan CreatePlan(int runningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime)
         {
-            var runningProfile = _runningProfileService.GetProfileByUserId(runningProfileId);
-            var workouts = _workoutFactory.AssignWorkouts(_runningProfileService, targetRace, raceDate, targetTime);
+
+            var runningProfile = _runningProfileService.GetProfileByProfileId(runningProfileId);
+            var workouts = _workoutFactory.AssignWorkouts(targetRace, raceDate, targetTime);
             var targetPace = CalculateTargetPace(targetRace, targetTime);
 
             TrainingPlan newTrainingPlan = new()
@@ -78,7 +79,7 @@ namespace Pacer.Data.Services
             TimeSpan paceTimeSpan = TimeSpan.FromMinutes(pace);
 
             // Format the pace in mm:ss per mile
-            return string.Format("{0:D2}:{1:D2} /mi", paceTimeSpan.Minutes, paceTimeSpan.Seconds);
+            return string.Format("{0}:{1:D2}", paceTimeSpan.Minutes, paceTimeSpan.Seconds);
         }
 
         public bool EditTargetTime(int trainingPlanId, RaceType targetRace, TimeSpan targetTime)
@@ -130,10 +131,14 @@ namespace Pacer.Data.Services
             string marathonRecommendation;
 
             // Marathon Recommendations
-            if (estimatedMarathonTime.TotalHours < 3.5)
+            if (age > 70)
+            {
+                marathonRecommendation = "Given your age, we would recommend our Beginner Training Plans and would discourage you from a whole Marathon.";
+            }
+            else if (estimatedMarathonTime.TotalHours < 3.5)
             {
                 marathonRecommendation = weeklyMileage > 20 ?
-                    "Given your training and estimated pace, we recommend the Standard Training Plans for you." :
+                    "Given your weekly mileage and estimated pace, we recommend the Standard Training Plans for you." :
                     "While you have promising estimated times, we would be concerned about the lack of weekly mileage. At this stage we would recommend our Beginner Training Plans.";
             }
             else if (estimatedMarathonTime.TotalHours < 4)
@@ -160,7 +165,8 @@ namespace Pacer.Data.Services
 
         public TrainingPlan GetPlanById(int id)
         {
-            return ctx.TrainingPlans.Include(plan => plan.Workouts)
+            return ctx.TrainingPlans.AsSplitQuery()
+                                    .Include(plan => plan.Workouts)
                                     .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                     .FirstOrDefault(plan => plan.Id == id);
         }
@@ -171,12 +177,12 @@ namespace Pacer.Data.Services
             RunningProfile profile = _runningProfileService.GetProfileByUserId(userId);
             if (profile == null)
             {
-                // Log the issue, the logger should be injected through the constructor
                 _logger.LogWarning($"No running profile found for user id: {userId}");
 
                 return null;
             }
-            return ctx.TrainingPlans.Include(plan => plan.Workouts)
+            return ctx.TrainingPlans.AsSplitQuery()
+                                    .Include(plan => plan.Workouts)
                                     .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                     .FirstOrDefault(plan => plan.RunningProfileId == profile.Id);
         }

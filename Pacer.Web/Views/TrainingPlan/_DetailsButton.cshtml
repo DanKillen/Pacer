@@ -1,0 +1,38 @@
+@using Pacer.Web;
+
+<h2 class="mx-auto" class="btn btn-info" type="button" id="detailsButton" class="btn btn-danger">
+    <i class="bi bi-clipboard-fill"></i> Details
+</h2>
+<div class="collapse mx-auto center" id="detailsBox">
+    <div class="card card-body mx-auto">
+        <div>
+            <ul>
+                @Html.Raw(TrainingPlanDetails.GetTrainingDetails(Model.TargetRace.ToString()))
+                <li>The taper phase is crucial to allow the body to recover before the race.
+                <li>As always, listen to your body. If something doesn't feel right, consider adjusting the plan or
+                    consulting a coach.
+                <li>Incorporate strength training and flexibility exercises like yoga or pilates on rest days or
+                    post-run for better results and injury prevention.
+                <li>Nutrition and hydration play a significant role in training. Ensure a balanced diet and stay
+                    hydrated.
+                <li>Remember, consistency is the key. Stick to the plan, and you'll see progress.
+            </ul>
+        </div>
+    </div>
+</div>
+<hr style="border-top: 5px solid #ccc;">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var detailsButton = document.getElementById('detailsButton');
+        var detailsBox = document.getElementById('detailsBox');
+
+        detailsButton.addEventListener('click', function () {
+            if (detailsBox.style.display === 'none' || detailsBox.style.display === '') {
+                detailsBox.style.display = 'block';
+            } else {
+                detailsBox.style.display = 'none';
+            }
+        });
+    });
+</script>

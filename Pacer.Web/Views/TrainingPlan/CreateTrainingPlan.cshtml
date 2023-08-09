@@ -4,7 +4,7 @@
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
         <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
-    <h1 class="my-3 mx-auto">Create Training Plan</h1>
+    <h1 class="mx-auto">Create Training Plan</h1>
 
     <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post">
 
@@ -20,20 +20,20 @@
         </div>
         <hr>
         <div class="mt-3">
-            <label asp-for="TargetRace" class="form-label">Target Race</label>
+            <label asp-for="TargetRace" class="form-label">Training Plan @await Component.InvokeAsync("Tooltip", new { key = "CreateTrainingPlan" })</label>
             <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
                 class="form-control" onchange="updateTargetTime();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="RaceDate" class="form-label">Date of Race</label>
+            <label asp-for="RaceDate" class="form-label">Date of Race @await Component.InvokeAsync("Tooltip", new { key = "CreateDateofRace" })</label>
             <input type="date" asp-for="RaceDate" class="form-control" />
             <span asp-validation-for="RaceDate" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label id="targetTimeLabel" class="form-label">Target Time</label>
+            <label id="targetTimeLabel" class="form-label"></label>@await Component.InvokeAsync("Tooltip", new { key = "CreateTargetTime" })
             <input id="targetTimeInput" type="range" class="form-control" min="60" max="240"
                 step="1" oninput="displayTime(this.value)" />
             <span id="targetTimeDisplay">@Model.EstimatedHalfMarathonTime.ToString("h\\:mm")</span>
@@ -85,14 +85,14 @@
 
             if (selectedRaceType === '@marathonValue' || selectedRaceType === '@bMarathonValue') {
                 targetTimeSlider.min = 125; // 2 hours 5 minutes in minutes
-                targetTimeSlider.max = 360; // 6 hours in minutes
+                targetTimeSlider.max = 300; // 5 hours in minutes
                 targetTimeSlider.value = '@(Model.EstimatedMarathonTime.TotalMinutes)';
-                targetTimeLabel.textContent = 'Marathon Target Time (hh:mm)';
+                targetTimeLabel.textContent = 'Marathon Target Time';
             } else if (selectedRaceType === '@halfMarathonValue' || selectedRaceType === '@bHalfMarathonValue') {
                 targetTimeSlider.min = 60; // 1 hour in minutes
-                targetTimeSlider.max = 240; // 4 hours in minutes
+                targetTimeSlider.max = 150; // 2.5 hours in minutes
                 targetTimeSlider.value = '@(Model.EstimatedHalfMarathonTime.TotalMinutes)';
-                targetTimeLabel.textContent = 'Half Marathon Target Time (hh:mm)';
+                targetTimeLabel.textContent = 'Half Marathon Target Time';
             }
             displayTime(targetTimeSlider.value);
         }

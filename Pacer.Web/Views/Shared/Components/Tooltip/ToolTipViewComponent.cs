@@ -7,6 +7,17 @@ public class TooltipViewComponent : ViewComponent
     {
         var tooltips = new Dictionary<string, string>
         {
+            
+            
+            // Running Profile Tooltips
+            {"WeeklyMileage", "Please enter how many miles you have ran each week, on average, for the past 4 weeks."},
+            {"5KTime","Please input a recent 5k time. If you don't have one then please time yourself running 5 kilometres, or enter the maximum value."},
+            // Training Plan Tooltips
+            {"TrainingPlan", "All paces are given in minutes and seconds per mile. Add workout data to get feedback."},
+            {"CreateTrainingPlan","Beginner Training Plans are designed to carefully build up your mileage. The Standard Half Marathon plan will begin at 10 miles a week and the Standard Marathon Plan will begin at 25 miles a week."},
+            {"CreateDateofRace","This will update to the length of the training plan. Your race should be on this date or later."},
+            {"CreateTargetTime","Times are given in hours and minutes. You may edit your target time if you like."},
+
             // Workout Type Tooltips
             { "RecoveryRun", "Very easy runs designed to allow your muscles to recover while still getting in some mileage." },
             { "EasyRun", "These are typically longer runs done at a relaxed pace." },
@@ -20,12 +31,11 @@ public class TooltipViewComponent : ViewComponent
             {"Timezone", "All times are in your local timezone."},
             {"Weather", "Weather data is provided by OpenWeatherMap."},
 
-            // Training Plan Tooltips
-            {"TrainingPlan", "All paces are given in minutes and seconds per mile. Add workout data to get feedback."}    
-    
         };
+        tooltips.TryGetValue(key, out var tooltipText);
 
-        var tooltipText = tooltips[key];
+        // If the key doesn't exist, set a default tooltip text
+        tooltipText ??= "Information not available.";
         return Task.FromResult((IViewComponentResult)View("Default", tooltipText));
 
     }

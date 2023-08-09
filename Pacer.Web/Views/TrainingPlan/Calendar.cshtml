@@ -11,6 +11,7 @@
     <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
         <i class="bi bi-list"></i> Week List View</a>
     <partial name="_TrainingPlanHeader" model="Model" />
+    <partial name="_DetailsButton" model="Model" />
     <div class="col-md-12">
         <div class="key">
             <div class="key-item jsCalendar-RecoveryRun">
@@ -228,10 +229,13 @@
             $('#workout-date').text(formattedDate);
 
             if (dateString === raceDate) {
+                let raceDisplayName = "@Model.TargetRaceDisplayName";
+                let raceParts = raceDisplayName.split(' ');
+                let raceName = raceParts.length > 1 ? raceParts.slice(-2).join(' ') : raceParts.pop();
                 $('#workout-date').text("Race Day!");
-                $('#workout-type').text("@Model.TargetTime @Model.TargetRace.ToString()");
-                $('#workout-pace').text("@Model.TargetPace min/mile");
-                $('#workout-description').text("Today is the day! Good luck!\nRun the @Model.TargetRace.ToString() at @Model.TargetPace");
+                $('#workout-type').text("@Model.TargetTime "+ raceName);
+                $('#workout-pace').text("@Model.TargetPace");
+                $('#workout-description').text("Today is the day! Good luck!\nRun the " + raceName + " at @Model.TargetPace per mile");
                 $('#entry-form').hide();
                 $('#previous-results').hide();
                 return;

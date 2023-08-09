@@ -14,6 +14,8 @@ namespace Pacer.Data.Services
 
         // Get a running profile by user
         RunningProfile GetProfileByUserId(int userId);
+        // Get a running profile by profile id
+        RunningProfile GetProfileByProfileId(int profileId);
 
         // Update a running profile
         RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime);

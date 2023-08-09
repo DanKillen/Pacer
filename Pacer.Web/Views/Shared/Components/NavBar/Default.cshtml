@@ -9,8 +9,8 @@
     <div class="navbar-nav">
         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
         <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
-        <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        <a class="nav-link" asp-controller="Home" asp-action="Secure">Secure</a>
+        @* <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <a class="nav-link" asp-controller="Home" asp-action="Secure">Secure</a> *@
         <a class="nav-link" asp-controller="User" asp-action="Index" asp-roles="admin">Users</a>
         @if (User.Identity.IsAuthenticated)
         {

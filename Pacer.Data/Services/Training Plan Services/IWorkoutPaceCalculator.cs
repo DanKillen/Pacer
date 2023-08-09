@@ -1,5 +1,5 @@
 using Pacer.Data.Entities;
-using Pacer.Data.Extensions;
+using Pacer.Data.Utilities;
 
 public interface IWorkoutPaceCalculator
 {

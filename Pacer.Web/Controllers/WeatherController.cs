@@ -53,16 +53,9 @@ public class WeatherController : BaseController
 
         if (!ModelState.IsValid)
         {
-            // Log or print the errors
-            foreach (var modelState in ModelState.Values)
-            {
-                foreach (var error in modelState.Errors)
-                {
-                    Console.WriteLine(error.ErrorMessage);
-                }
-            }
+            Alert("Error Receiving Response", AlertType.warning);
+            return RedirectToAction(nameof(Location));
         }
-        Console.WriteLine(weatherViewModel);
         return View(weatherViewModel);
     }
 
@@ -71,9 +64,14 @@ public class WeatherController : BaseController
     {
 
         var weatherResponse = await _weatherService.GetWeatherByLocation(location.Replace(" ", ""));
+        if (weatherResponse == null)
+        {
+            Alert("Location not found", AlertType.warning);
+            return RedirectToAction(nameof(Location));
+        }
         Console.WriteLine(JsonSerializer.Serialize(weatherResponse));
 
-        if (weatherResponse.Name == "Londonderry County Borough")
+        if (weatherResponse.Name == "Londonderry County Borough" || weatherResponse.Name == "Londonderry")
         {
             weatherResponse.Name = "Derry City";
         }

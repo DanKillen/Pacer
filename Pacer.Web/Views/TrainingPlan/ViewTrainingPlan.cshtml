@@ -7,6 +7,7 @@
     <a href="@Url.Action("Calendar")" class="btn btn-info">
         <i class="bi bi-calendar"></i> Calendar View</a>
     <partial name="_TrainingPlanHeader" model="Model" />
+    <partial name="_DetailsButton" model="Model" />
 
 
     @for (int i = 0; i < Model.Weeks.Count; i++)
@@ -105,9 +106,9 @@
         <div class="list-group-item text-center">
             <div class="row justify-content-center">
                 <div class>
-                    <h3>@Model.TargetTime @Model.TargetRace</h3>
+                    <h3>@Model.TargetTime @GetRaceName(Model.TargetRace.GetDisplayName())</h3>
                     <p>Today is the day! Good luck!</p>
-                    <p>Run the @Model.TargetRace at
+                    <p>Run the @GetRaceName(Model.TargetRace.GetDisplayName()) at
                         @Model.TargetPace.</p>
                 </div>
             </div>
@@ -121,6 +122,13 @@
     function confirmClear() {
         return confirm('Are you sure you want to clear this run?');
     }
+
+    @functions {
+    string GetRaceName(string displayName) {
+        return displayName.Replace("Beginner ", "");
+    }
+}
+
 </script>
 <script>
     function validateDistance(workoutId) {

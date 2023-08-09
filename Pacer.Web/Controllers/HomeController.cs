@@ -29,6 +29,19 @@ namespace Pacer.Web.Controllers
             return View();
         }
 
+        public IActionResult GetStarted()
+        {
+            // Check if the user is authenticated
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "TrainingPlan");
+            }
+            else
+            {
+                return RedirectToAction("Login", "User");
+            }
+        }
+
         [Authorize]
         public IActionResult Secure()
         {

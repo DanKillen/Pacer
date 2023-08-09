@@ -36,20 +36,16 @@ if (document.querySelector('#index-page')) {
 if (document.querySelector('#about-page')) {
   window.addEventListener('wheel', handleWheel, { passive: false });
 }
-
-
 // 5k time slider 
-
 var sliderValue = 1800; // Default value if no savedFiveKTimeMinutes
 if (typeof savedFiveKTimeMinutes !== 'undefined' && savedFiveKTimeMinutes > 0) {
   sliderValue = (savedFiveKTimeMinutes * 60) + savedFiveKTimeSeconds;
 }
-console.log(sliderValue);
 $(function () {
   $("#slider-range").slider({
     
     min: 750, // 12 minutes and 30 seconds in seconds
-    max: 2400, // 40 minutes in seconds
+    max: 1800, // 30 minutes in seconds
     value: sliderValue, // Use the previously saved  time or the default value
     slide: function (event, ui) {
       updateMinutesAndSeconds(ui.value);
@@ -63,7 +59,7 @@ $(function () {
     $("#FiveKTimeMinutes").val(minutes);
     $("#FiveKTimeSeconds").val(seconds);
 
-    if (totalSeconds === 2400) {
+    if (totalSeconds === 1800) {
       $("#moreText").show();
     } else {
       $("#moreText").hide();
@@ -76,7 +72,7 @@ $(function () {
 
     var totalSeconds = minutes * 60 + seconds;
 
-    if (totalSeconds >= 750 && totalSeconds <= 2400) {
+    if (totalSeconds >= 750 && totalSeconds <= 1800) {
       $("#slider-range").slider("value", totalSeconds);
     }
   }
@@ -87,6 +83,7 @@ $(function () {
   // Initialize
   updateMinutesAndSeconds($("#slider-range").slider("value"));
 });
+
  // Tool Tips
 $(function () {
   $('[data-bs-toggle="tooltip"]').tooltip();

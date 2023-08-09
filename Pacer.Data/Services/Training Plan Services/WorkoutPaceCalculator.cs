@@ -1,35 +1,90 @@
 using Pacer.Data.Entities;
 using Pacer.Data.Extensions;
+using System.Collections.Generic;
 
 public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 {
-    private readonly EquivalentMarathonPaceCalculator _equivalentMarathonPaceCalculator;
+    private readonly IRaceTimePredictor _raceTimePredictor;
 
-    public WorkoutPaceCalculator(EquivalentMarathonPaceCalculator equivalentMarathonPaceCalculator)
+    // Constructor injection
+    public WorkoutPaceCalculator(IRaceTimePredictor raceTimePredictor)
     {
-        _equivalentMarathonPaceCalculator = equivalentMarathonPaceCalculator;
-    } 
+        _raceTimePredictor = raceTimePredictor ?? throw new ArgumentNullException(nameof(raceTimePredictor));
+    }
 
-    public Dictionary<WorkoutType, TimeSpanRange> CalculatePaces(TimeSpan targetTime, RaceType raceType)
+    public ICollection<TrainingPlanPace> CalculatePaces(TimeSpan targetTime, RaceType raceType)
     {
-        TimeSpan equivalentMarathonPace = _equivalentMarathonPaceCalculator.CalculateEquivalentMarathonPace(targetTime, raceType);
+        TimeSpan equivalentMarathonPace = _raceTimePredictor.CalculateEquivalentMarathonPace(targetTime, raceType);
 
-        var paces = new Dictionary<WorkoutType, TimeSpanRange>
+        var paces = new List<TrainingPlanPace>();
+
+        foreach (WorkoutType type in Enum.GetValues(typeof(WorkoutType)))
         {
-            { WorkoutType.RecoveryRun, new TimeSpanRange(CalculatePace(1.3, equivalentMarathonPace), CalculatePace(1.5, equivalentMarathonPace)) },
-            { WorkoutType.EasyRun, new TimeSpanRange(CalculatePace(1.15, equivalentMarathonPace), CalculatePace(1.25, equivalentMarathonPace)) },
-            { WorkoutType.LongRun, new TimeSpanRange(CalculatePace(1.1, equivalentMarathonPace), CalculatePace(1.2, equivalentMarathonPace)) },
-            { WorkoutType.VO2Max, new TimeSpanRange(CalculatePace(0.85, equivalentMarathonPace), CalculatePace(0.9, equivalentMarathonPace)) },
-            { WorkoutType.IntervalTraining, new TimeSpanRange(CalculatePace(5.0 / 6.0, equivalentMarathonPace), CalculatePace(14.0 / 15.0, equivalentMarathonPace)) },
-            { WorkoutType.TempoRun, new TimeSpanRange(CalculatePace(0.91, equivalentMarathonPace), CalculatePace(0.94, equivalentMarathonPace)) },
-            { WorkoutType.MarathonPace, new TimeSpanRange(CalculatePace(0.99, equivalentMarathonPace), CalculatePace(1, equivalentMarathonPace)) }
-        };
+            var paceValues = CalculatePace(type, equivalentMarathonPace);
+
+            paces.Add(new TrainingPlanPace
+            {
+                WorkoutType = type,
+                PaceType = PaceType.Min,
+                Pace = paceValues.Item1
+            });
+
+            paces.Add(new TrainingPlanPace
+            {
+                WorkoutType = type,
+                PaceType = PaceType.Max,
+                Pace = paceValues.Item2
+            });
+        }
 
         return paces;
     }
-
-    private PaceTime CalculatePace(double factor, TimeSpan equivalentMarathonPace)
+    private Tuple<PaceTime, PaceTime> CalculatePace(WorkoutType type, TimeSpan equivalentMarathonPace)
     {
-        return new PaceTime(TimeSpan.FromMinutes(equivalentMarathonPace.TotalMinutes * factor));
+        double minMultiplier, maxMultiplier;
+
+        switch (type)
+        {
+            case WorkoutType.RecoveryRun:
+                minMultiplier = 1.3;
+                maxMultiplier = 1.5;
+                break;
+            case WorkoutType.EasyRun:
+                minMultiplier = 1.15;
+                maxMultiplier = 1.25;
+                break;
+            case WorkoutType.LongRun:
+                minMultiplier = 1.1;
+                maxMultiplier = 1.2;
+                break;
+            case WorkoutType.VO2Max:
+                minMultiplier = 0.85;
+                maxMultiplier = 0.9;
+                break;
+            case WorkoutType.IntervalTraining:
+                minMultiplier = 5.0 / 6.0;
+                maxMultiplier = 14.0 / 15.0;
+                break;
+            case WorkoutType.TempoRun:
+                minMultiplier = 0.91;
+                maxMultiplier = 0.94;
+                break;
+            case WorkoutType.MarathonPace:
+                minMultiplier = 0.99;
+                maxMultiplier = 1;
+                break;
+            default:
+                throw new ArgumentException("Unsupported workout type", nameof(type));
+        }
+
+        var minPace = TimeSpan.FromTicks((long)(equivalentMarathonPace.Ticks * minMultiplier));
+        var maxPace = TimeSpan.FromTicks((long)(equivalentMarathonPace.Ticks * maxMultiplier));
+
+        return Tuple.Create(ConvertToPaceTime(minPace), ConvertToPaceTime(maxPace));
+    }
+
+    private PaceTime ConvertToPaceTime(TimeSpan timeSpan)
+    {
+        return new PaceTime(timeSpan);
     }
 }

@@ -25,10 +25,8 @@ namespace Pacer.Data.Entities
 
     public class TimeSpanRange
     {
-
         public int MinMinutes { get; set; }
         public int MinSeconds { get; set; }
-
         public int MaxMinutes { get; set; }
         public int MaxSeconds { get; set; }
         [NotMapped]
@@ -53,8 +51,6 @@ namespace Pacer.Data.Entities
             }
         }
 
-
-
         public TimeSpanRange() { }
 
         public TimeSpanRange(PaceTime min, PaceTime max)
@@ -68,7 +64,6 @@ namespace Pacer.Data.Entities
             return $"{Min} - {Max}";
         }
     }
-
     public class Workout
     {
         public int Id { get; set; }
@@ -76,20 +71,13 @@ namespace Pacer.Data.Entities
         // TrainingPlan entity reference - to link a workout to a training plan
         public TrainingPlan TrainingPlan { get; set; }
         public int TrainingPlanId { get; set; }
-
         // Workout specific properties
         public WorkoutType Type { get; set; }
         public DateTime Date { get; set; }
         [NotMapped]
         public string FormattedDate => Date.ToString("yyyy-MM-dd");
         public double TargetDistance { get; set; }
-        public int TargetPaceMinMinutes { get; set; }
-        public int TargetPaceMinSeconds { get; set; }
-        public int TargetPaceMaxMinutes { get; set; }
-        public int TargetPaceMaxSeconds { get; set; }
-
         public string WorkoutDescription { get; set; }
-
         public double ActualDistance { get; set; }
         public TimeSpan ActualTime { get; set; }
     }

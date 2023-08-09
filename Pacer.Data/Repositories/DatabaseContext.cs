@@ -17,6 +17,7 @@ namespace Pacer.Data.Repositories
         public DbSet<RunningProfile> RunningProfiles { get; set; }
         public DbSet<TrainingPlan> TrainingPlans { get; set; }
         public DbSet<Workout> Workouts { get; set; }
+        public DbSet<TrainingPlanPace> Paces { get; set; }
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
@@ -29,6 +30,15 @@ namespace Pacer.Data.Repositories
             modelBuilder.Entity<TrainingPlan>()
                 .Property(e => e.Id)
                 .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new TrainingPlan
+
+            // TrainingPlan to TrainingPlanPace relationship
+            modelBuilder.Entity<TrainingPlanPace>()
+                        .HasOne(tp => tp.TrainingPlan)
+                        .WithMany(p => p.Paces)
+                        .HasForeignKey(tp => tp.TrainingPlanId);
+            modelBuilder.Entity<TrainingPlanPace>()
+                        .HasIndex(tp => new { tp.TrainingPlanId, tp.WorkoutType, tp.PaceType })
+                        .IsUnique();
 
             // Workout entity configuration
             modelBuilder.Entity<Workout>()

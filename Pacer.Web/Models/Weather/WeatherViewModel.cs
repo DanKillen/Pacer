@@ -17,7 +17,7 @@ public class WeatherViewModel
     [JsonPropertyName("speed")]
     public decimal WindSpeed { get; set; } = 50.0M;
     [JsonPropertyName("sunset")]
-    public DateTime Sunset { get; set; } = DateTime.Now;
+    public string Sunset { get; set; }
 
     [JsonPropertyName("country")]
     public string Country { get; set; }

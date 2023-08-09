@@ -4,18 +4,19 @@ using Pacer.Data.Services;
 using Pacer.Data.Security;
 using Pacer.Data.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Pacer.Data.Services
 {
     public class RunningProfileServiceDb : IRunningProfileService
     {
         private readonly DatabaseContext _ctx;
-        private readonly IScoreCalculator _scoreCalculator;
+        private readonly IRaceTimePredictor _raceTimePredictor;
 
-        public RunningProfileServiceDb(DatabaseContext ctx, IScoreCalculator scoreCalculator)
+        public RunningProfileServiceDb(DatabaseContext ctx, IRaceTimePredictor raceTimePredictor)
         {
             _ctx = ctx;
-            _scoreCalculator = scoreCalculator;
+            _raceTimePredictor = raceTimePredictor;
         }
 
         public void Initialise()
@@ -31,8 +32,8 @@ namespace Pacer.Data.Services
             // First, confirm that a User with the given userId exists
             User user = _ctx.Users.Find(userId) ?? throw new ArgumentException("No user found with the given userId");
 
-            double anaerobicScore = _scoreCalculator.CalculateInitialAnaerobicScore(fiveKTime);
-            double aerobicScore = _scoreCalculator.CalculateInitialAerobicScore(weeklyMileage, fiveKTime);
+            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(fiveKTime);
+            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(fiveKTime);
 
             RunningProfile newProfile = new()
             {
@@ -41,8 +42,8 @@ namespace Pacer.Data.Services
                 Gender = gender,
                 WeeklyMileage = weeklyMileage,
                 FiveKTime = fiveKTime,
-                AnaerobicScore = anaerobicScore,
-                AerobicScore = aerobicScore
+                EstimatedMarathonTime = estimatedMarathonTime,
+                EstimatedHalfMarathonTime = estimatedHalfMarathonTime
             };
 
             _ctx.RunningProfiles.Add(newProfile);
@@ -54,23 +55,23 @@ namespace Pacer.Data.Services
         // Get a running profile by id
         public RunningProfile GetProfileByUserId(int userId)
         {
-            return _ctx.RunningProfiles.FirstOrDefault(rp => rp.User.Id == userId);
+            return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.User.Id == userId);
         }
         // Update a running profile
         public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // Check if the profile exists in the context
             RunningProfile existingProfile = _ctx.RunningProfiles.FirstOrDefault(rp => rp.UserId == userId) ?? throw new ArgumentException("No running profile found with the given profile Id");
-            double anaerobicScore = _scoreCalculator.CalculateInitialAnaerobicScore(fiveKTime);
-            double aerobicScore = _scoreCalculator.CalculateInitialAerobicScore(weeklyMileage, fiveKTime);
+            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(fiveKTime);
+            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(fiveKTime);
 
             // Update the profile properties
             existingProfile.DateOfBirth = dateOfBirth;
             existingProfile.Gender = gender;
             existingProfile.WeeklyMileage = weeklyMileage;
             existingProfile.FiveKTime = fiveKTime;
-            existingProfile.AnaerobicScore = anaerobicScore;
-            existingProfile.AerobicScore = aerobicScore;
+            existingProfile.EstimatedMarathonTime = estimatedMarathonTime;
+            existingProfile.EstimatedHalfMarathonTime = estimatedHalfMarathonTime;
 
             _ctx.SaveChanges();
 
@@ -84,7 +85,7 @@ namespace Pacer.Data.Services
             _ctx.RunningProfiles.Remove(existingProfile);
             _ctx.SaveChanges();
         }
-        
+
     }
 
 }

@@ -33,6 +33,11 @@ if (document.querySelector('#index-page')) {
   window.addEventListener('wheel', handleWheel, { passive: false });
 }
 
+if (document.querySelector('#about-page')) {
+  window.addEventListener('wheel', handleWheel, { passive: false });
+}
+
+
 // 5k time slider 
 
 var sliderValue = 1800; // Default value if no savedFiveKTimeMinutes

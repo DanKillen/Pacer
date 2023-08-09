@@ -1,7 +1,8 @@
 @model TrainingPlanViewModel
 
-<div id="training-plan" class="card shadow p-4 mt-5 mx-auto w-75">
-    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
+<div id="training-plan" class="card shadow p-5 mt-4 mx-auto w-75">
+    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
+        <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
     <a href="@Url.Action("Calendar")" class="btn btn-info">
         <i class="bi bi-calendar"></i> Calendar View</a>
@@ -26,10 +27,9 @@
                                 @await Component.InvokeAsync("Tooltip", new { key = workout.Type.ToString() })
                             </div>
 
-                            <p>Target Distance: @workout.TargetDistance miles</p>
-                            <p>Target Pace: @workout.TargetPaceMinMinutes:@workout.TargetPaceMinSeconds.ToString("00") -
-                                @workout.TargetPaceMaxMinutes:@workout.TargetPaceMaxSeconds.ToString("00") per mile</p>
-                            <p>Description: @workout.WorkoutDescription</p>
+                            <h6><p>Distance: @workout.TargetDistance miles</p>
+                            <p>Target Pace: @workout.TargetPace per mile</p>
+                            <p>@workout.WorkoutDescription</p></h6>
                         </div>
 
                         @if (workout.ActualDistance > 0)
@@ -60,13 +60,13 @@
                                     onsubmit="return validateDistance(@workout.Id)">
                                     <input type="hidden" name="WorkoutId" value="@workout.Id" />
                                     <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
-                                    <div>
-                                        <label for="actualDistance-@workout.Id">Actual Distance Ran (in miles):</label>
+                                    <div class="mb-1">
+                                        <label for="actualDistance-@workout.Id"><b>Actual Distance Ran:</b></label>
                                         <input type="number" id="actualDistance-@workout.Id" name="ActualDistance"
-                                            value=@workout.TargetDistance min="0" max="50" required>
+                                            value=@workout.TargetDistance min="0" max="50" required> miles
                                     </div>
                                     <div>
-                                        <label for="actualTime-@workout.Id">Actual Duration:</label>
+                                        <label for="actualTime-@workout.Id"><b>Actual Duration:</b></label>
                                         <div style="display: flex; justify-content: space-between; max-width: 200px;">
                                             <div>
                                                 <label for="actualHours-@workout.Id">Hours:</label>

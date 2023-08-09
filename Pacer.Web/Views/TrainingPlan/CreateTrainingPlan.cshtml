@@ -1,33 +1,47 @@
 @model TrainingPlanCreateModel
 
-<div class="card shadow p-4 mt-5 mx-auto w-75">
-    <h3 class="my-3 mx-auto">Create Training Plan</h3>
+<div class="card shadow p-4 mt-4 mx-auto w-75">
+    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
+        <img src="\images\LogoTrimWIP.png" height="50px">
+    </div>
+    <h1 class="my-3 mx-auto">Create Training Plan</h1>
 
     <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post">
 
         <input type="hidden" asp-for="RunningProfileId" />
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+        <hr>
+        <div class="mt-3 text-center">
+            @foreach (var recommendationPart in Model.Recommendation)
+            {
+                <p><b>@recommendationPart</b></p>
+            }
+        </div>
+        <hr>
         <div class="mt-3">
             <label asp-for="TargetRace" class="form-label">Target Race</label>
-            <select asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()" class="form-control">
-                <option>Select Target Race</option>
-            </select>
+            <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
+                class="form-control" onchange="updateTargetTime();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
             <label asp-for="RaceDate" class="form-label">Date of Race</label>
-            <input type="date" asp-for="RaceDate" class="form-control"/>
+            <input type="date" asp-for="RaceDate" class="form-control" />
             <span asp-validation-for="RaceDate" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="TargetTime" class="form-label">Target Time</label>
-            <input type="time" step="1" asp-for="TargetTime" class="form-control" />
+            <label id="targetTimeLabel" class="form-label">Target Time</label>
+            <input id="targetTimeInput" type="range" class="form-control" min="60" max="240"
+                step="1" oninput="displayTime(this.value)" />
+            <span id="targetTimeDisplay">@Model.EstimatedHalfMarathonTime.ToString("h\\:mm")</span>
             <span asp-validation-for="TargetTime" class="text-danger"></span>
         </div>
+
+        <input type="hidden" asp-for="TargetTime" id="hiddenTargetTime" />
+
 
         <div class="mt-3">
             <input type="submit" value="Create Plan" class="btn btn-primary" />
@@ -37,8 +51,52 @@
     </form>
 </div>
 
+@{
+    var marathonValue = ((int)RaceType.Marathon).ToString();
+    var bMarathonValue = ((int)RaceType.BMarathon).ToString();
+    var halfMarathonValue = ((int)RaceType.HalfMarathon).ToString();
+    var bHalfMarathonValue = ((int)RaceType.BHalfMarathon).ToString();
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        function displayTime(minutes) {
+            // Convert the minutes into a TimeSpan or similar format
+            var hours = Math.floor(minutes / 60);
+            minutes %= 60;
+            var timeString = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+
+            // Display the time in your span
+            document.getElementById('targetTimeDisplay').textContent = timeString;
+
+            // Set the value of the hidden input
+            document.getElementById('hiddenTargetTime').value = timeString;
+        }
+
+        function updateTargetTime() {
+            var raceTypeDropdown = document.getElementById('raceTypeDropdown');
+            var targetTimeSlider = document.getElementById('targetTimeInput');
+            var targetTimeLabel = document.getElementById('targetTimeLabel');
+            var selectedRaceType = raceTypeDropdown.options[raceTypeDropdown.selectedIndex].value;
+
+            if (selectedRaceType === '@marathonValue' || selectedRaceType === '@bMarathonValue') {
+                targetTimeSlider.min = 125; // 2 hours 5 minutes in minutes
+                targetTimeSlider.max = 360; // 6 hours in minutes
+                targetTimeSlider.value = '@(Model.EstimatedMarathonTime.TotalMinutes)';
+                targetTimeLabel.textContent = 'Marathon Target Time (hh:mm)';
+            } else if (selectedRaceType === '@halfMarathonValue' || selectedRaceType === '@bHalfMarathonValue') {
+                targetTimeSlider.min = 60; // 1 hour in minutes
+                targetTimeSlider.max = 240; // 4 hours in minutes
+                targetTimeSlider.value = '@(Model.EstimatedHalfMarathonTime.TotalMinutes)';
+                targetTimeLabel.textContent = 'Half Marathon Target Time (hh:mm)';
+            }
+            displayTime(targetTimeSlider.value);
+        }
+        updateTargetTime();
+
+    </script>
 }

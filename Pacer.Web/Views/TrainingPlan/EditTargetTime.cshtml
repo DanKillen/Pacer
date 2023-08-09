@@ -1,7 +1,7 @@
 @model EditTargetTimeViewModel
 
-<div class="card shadow p-4 mt-5 mx-auto w-75">
-    <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"hh\:mm\:ss") @Model.TargetRace.GetDisplayName()</h3>
+<div class="card shadow p-4 mt-4 mx-auto w-75">
+    <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"h\:mm") @Model.TargetRace.GetDisplayName()</h3>
     <form method="post" action="/EditTargetTime">
 
         <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />

@@ -51,11 +51,22 @@ namespace Pacer.Web.Controllers
         {
             var userId = GetUserId();
             var runningProfile = _runningProfileService.GetProfileByUserId(userId);
+            if (runningProfile == null)
+            {
+                TempData["Alert.Message"] = "Error: Running Profile not found";
+                TempData["Alert.Type"] = "danger";
+                return RedirectToAction("Error", "Home");
+            }
+            int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)DateTime.Now.DayOfWeek + 7) % 7;
+            DateTime suggestedDate = DateTime.Now.Date.AddDays(daysUntilSunday).AddDays(12 * 7); // 12 weeks later
 
             var model = new TrainingPlanCreateModel
             {
                 RunningProfileId = runningProfile.Id,
-                RaceDate = DateTime.Now.Date + TimeSpan.FromDays(30),
+                Recommendation = _trainingPlanService.GetRecommendation(runningProfile.EstimatedMarathonTime, runningProfile.EstimatedHalfMarathonTime, runningProfile.WeeklyMileage, runningProfile.DateOfBirth),
+                RaceDate = suggestedDate,
+                EstimatedMarathonTime = runningProfile.EstimatedMarathonTime,
+                EstimatedHalfMarathonTime = runningProfile.EstimatedHalfMarathonTime
             };
 
             return View(model);
@@ -111,7 +122,6 @@ namespace Pacer.Web.Controllers
                 TempData["Alert.Type"] = "danger";
                 return RedirectToAction("Error", "Home");
             }
-            int i = 1;
             string FormattedTargetTime;
             if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
             {
@@ -119,8 +129,9 @@ namespace Pacer.Web.Controllers
             }
             else
             {
-                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
             }
+            int currentWeek = 1;
             var viewModel = new TrainingPlanViewModel
             {
                 Id = trainingPlan.Id,
@@ -130,27 +141,38 @@ namespace Pacer.Web.Controllers
                 Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetIso8601WeekOfYear())
                              .Select(g => new WeekViewModel
                              {
-                                 WeekNumber = i++,
+                                 WeekNumber = currentWeek++,
                                  Workouts = g.Select(w => new WorkoutViewModel
                                  {
                                      Id = w.Id,
                                      Type = w.Type,
                                      Date = w.Date,
                                      TargetDistance = w.TargetDistance,
+                                     TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
                                      ActualDistance = w.ActualDistance,
                                      ActualTime = w.ActualTime,
                                      ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null,
-                                     TargetPaceMinMinutes = w.TargetPaceMinMinutes,
-                                     TargetPaceMinSeconds = w.TargetPaceMinSeconds,
-                                     TargetPaceMaxMinutes = w.TargetPaceMaxMinutes,
-                                     TargetPaceMaxSeconds = w.TargetPaceMaxSeconds,
                                      WorkoutDescription = w.WorkoutDescription
                                  }).ToList()
                              }).ToList()
             };
-
             return View(viewModel);
         }
+
+        private string LookupTargetPaceForWorkout(WorkoutType type, ICollection<TrainingPlanPace> paces)
+        {
+            var minPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Min)?.PaceString;
+            var maxPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Max)?.PaceString;
+
+            // If both paces are available, return a range.
+            if (minPace != null && maxPace != null)
+            {
+                return $"{minPace} - {maxPace}";
+            }
+            // Otherwise, return whichever is available, or null if neither are.
+            return minPace ?? maxPace;
+        }
+
 
         [HttpGet]
         public IActionResult ViewTrainingPlanCalendar()
@@ -184,6 +206,7 @@ namespace Pacer.Web.Controllers
             {
                 FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
             }
+        
             var viewModel = new TrainingPlanCalendarViewModel
             {
                 Id = trainingPlan.Id,
@@ -198,10 +221,8 @@ namespace Pacer.Web.Controllers
                     Type = w.Type,
                     Date = w.Date,
                     TargetDistance = w.TargetDistance,
-                    TargetPaceMinMinutes = w.TargetPaceMinMinutes,
-                    TargetPaceMinSeconds = w.TargetPaceMinSeconds,
-                    TargetPaceMaxMinutes = w.TargetPaceMaxMinutes,
-                    TargetPaceMaxSeconds = w.TargetPaceMaxSeconds,
+                    TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
+
                     WorkoutDescription = w.WorkoutDescription
                 }).ToList()
             };
@@ -262,7 +283,7 @@ namespace Pacer.Web.Controllers
             }
             else
             {
-                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm\:ss");
+                FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
             }
 
             return new TrainingPlanCalendarViewModel
@@ -282,12 +303,8 @@ namespace Pacer.Web.Controllers
                     Type = w.Type,
                     Date = w.Date,
                     TargetDistance = w.TargetDistance,
-                    TargetPaceMinMinutes = w.TargetPaceMinMinutes,
-                    TargetPaceMinSeconds = w.TargetPaceMinSeconds,
-                    TargetPaceMaxMinutes = w.TargetPaceMaxMinutes,
-                    TargetPaceMaxSeconds = w.TargetPaceMaxSeconds,
-                    WorkoutDescription = w.WorkoutDescription,
                     ActualDistance = w.ActualDistance,
+                    TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
                     ActualTime = w.ActualTime,
                     ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null
 
@@ -307,7 +324,7 @@ namespace Pacer.Web.Controllers
             {
                 return BadRequest(new { message = "Error: Invalid time format" });
             }
-            
+
             try
             {
                 var userId = GetUserId();
@@ -370,7 +387,7 @@ namespace Pacer.Web.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var result = _trainingPlanService.UpdatePlanAndWorkouts(model.TrainingPlanId, model.TargetTime);
+            var result = _trainingPlanService.EditTargetTime(model.TrainingPlanId, model.TargetRace, model.TargetTime);
 
             if (!result)
             {

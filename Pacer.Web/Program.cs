@@ -3,6 +3,7 @@ using Pacer.Data.Services;
 using Pacer.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure Authentication / Authorisation via extension methods 
@@ -24,10 +25,10 @@ builder.Services.AddTransient<IUserService,UserServiceDb>();
 builder.Services.AddTransient<IMailService,SmtpMailService>();
 builder.Services.AddTransient<ITrainingPlanService, TrainingPlanServiceDb>();
 builder.Services.AddTransient<IRunningProfileService, RunningProfileServiceDb>();
-builder.Services.AddTransient<WorkoutFactory>();
-builder.Services.AddScoped<IScoreCalculator, ScoreCalculator>();
-builder.Services.AddTransient<EquivalentMarathonPaceCalculator>();
+builder.Services.AddTransient<IWorkoutFactory, WorkoutFactory>();
+builder.Services.AddTransient<IRaceTimePredictor, RaceTimePredictor>();
 builder.Services.AddTransient<IWorkoutPaceCalculator, WorkoutPaceCalculator>();
+
 builder.Services.Configure<WeatherApiSettings>(builder.Configuration.GetSection("WeatherApi"));
 
 

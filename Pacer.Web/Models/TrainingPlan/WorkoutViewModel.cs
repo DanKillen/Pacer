@@ -9,10 +9,7 @@ public class WorkoutViewModel
 
     public string FormattedDate => Date.ToString("yyyy-MM-dd");
     public double TargetDistance { get; set; }
-    public int TargetPaceMinMinutes { get; set; }
-    public int TargetPaceMinSeconds { get; set; }
-    public int TargetPaceMaxMinutes { get; set; }
-    public int TargetPaceMaxSeconds { get; set; }
+    public string TargetPace { get; set; }
     public string WorkoutDescription { get; set; }
 
     public double ActualDistance { get; set; }

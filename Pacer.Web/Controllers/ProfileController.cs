@@ -12,12 +12,10 @@ namespace Pacer.Web.Controllers
     public class ProfileController : BaseController
     {
         private readonly IRunningProfileService _runningProfileService;
-        private readonly IUserService _userService;
 
 
-        public ProfileController(IRunningProfileService runningProfileService, IUserService userService, ILogger<ProfileController> logger) : base(logger)
+        public ProfileController(IRunningProfileService runningProfileService, ILogger<ProfileController> logger) : base(logger)
         {
-            _userService = userService;
             _runningProfileService = runningProfileService;
         }
 
@@ -45,12 +43,12 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProfile(DateTime dateOfBirth, string gender, int weeklyMileage, int fiveKTimeMinutes, int fiveKTimeSeconds)
+        public IActionResult CreateProfile(RunningProfileViewModel model)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var fiveKTime = TimeSpan.FromMinutes(fiveKTimeMinutes) + TimeSpan.FromSeconds(fiveKTimeSeconds);
+            var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
 
-            var profile = _runningProfileService.CreateProfile(userId, dateOfBirth, gender, weeklyMileage, fiveKTime);
+            var profile = _runningProfileService.CreateProfile(userId, model.DateOfBirth, model.Gender, model.WeeklyMileage, fiveKTime);
 
             if (profile == null)
             {
@@ -72,20 +70,33 @@ namespace Pacer.Web.Controllers
             {
                 return NotFound();
             }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (currentUserId != userId.ToString())
+            {
+                // Check if the current user is an admin
+                if (!User.IsInRole("Admin"))
+                {
+                    Alert("You do not have permission to view this profile", AlertType.danger);
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
             var model = new RunningProfileViewModel
             {
                 UserId = profile.UserId,
-                UserName = _userService.GetUser(profile.UserId).Name,
+                UserName = profile.User.Name,
                 DateOfBirth = profile.DateOfBirth,
                 Gender = profile.Gender,
                 WeeklyMileage = profile.WeeklyMileage,
                 FiveKTimeMinutes = profile.FiveKTime.Minutes,
                 FiveKTimeSeconds = profile.FiveKTime.Seconds,
-                // Add the rest of your properties here...
             };
 
             return View(model);
         }
+
 
         [HttpGet]
         public IActionResult EditProfile()
@@ -97,10 +108,16 @@ namespace Pacer.Web.Controllers
             {
                 return NotFound();
             }
+            if (userId != profile.UserId)
+            {
+                Alert("You do not have permission to edit this profile", AlertType.danger);
+                return RedirectToAction("Index", "Home");
+            }
 
             var model = new RunningProfileViewModel
             {
                 UserId = profile.UserId,
+                UserName = profile.User.Name,
                 DateOfBirth = profile.DateOfBirth,
                 Gender = profile.Gender,
                 WeeklyMileage = profile.WeeklyMileage,
@@ -112,21 +129,22 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditProfile(int UserId, DateTime dateOfBirth, string gender, int weeklyMileage, int fiveKTimeMinutes, int fiveKTimeSeconds)
+        public IActionResult EditProfile(int userId, RunningProfileViewModel model)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var formUserId = UserId;
-            _logger.LogInformation("formUserId: " + formUserId);
-            _logger.LogInformation("userId: " + userId);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userId != formUserId)
+            if (currentUserId != userId.ToString())
             {
-                Alert("Error updating profile", AlertType.danger);
-                return View();
+                // Check if the current user is an admin
+                if (!User.IsInRole("Admin"))
+                {
+                    Alert("You do not have permission to edit this profile", AlertType.danger);
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
-            var fiveKTime = TimeSpan.FromMinutes(fiveKTimeMinutes) + TimeSpan.FromSeconds(fiveKTimeSeconds);
-            var updatedProfile = _runningProfileService.UpdateProfile(userId, dateOfBirth, gender, weeklyMileage, fiveKTime);
+            var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
+            var updatedProfile = _runningProfileService.UpdateProfile(userId, model.DateOfBirth, model.Gender, model.WeeklyMileage, fiveKTime);
 
             if (updatedProfile == null)
             {

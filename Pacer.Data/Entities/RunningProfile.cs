@@ -14,16 +14,8 @@ namespace Pacer.Data.Entities
         public string Gender { get; set; }
         public int WeeklyMileage { get; set; }
         public TimeSpan FiveKTime { get; set; }
-        public double AnaerobicScore { get; set; }
-        public double AerobicScore { get; set; }
-        public double CurrentFitnessScore
-        {
-            get
-            {
-                // You might want to refine this formula according to your application's specific needs
-                return (AnaerobicScore + AerobicScore);
-            }
-        }
+        public TimeSpan EstimatedMarathonTime { get; set; }
+        public TimeSpan EstimatedHalfMarathonTime { get; set; }
     }
 }
 

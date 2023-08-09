@@ -42,6 +42,31 @@ public class WeatherService : IWeatherService
         }
     }
 
+public async Task<WeatherResponse> GetWeatherByLocation(string location)
+{
+    string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}&units=metric";
+    Console.WriteLine(openWeatherUrl);
+
+    HttpResponseMessage response = await _httpClient.GetAsync(openWeatherUrl);
+    if (response.IsSuccessStatusCode)
+    {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        string content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(content);
+        WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(content, options);
+        Console.WriteLine(weatherResponse.Main?.Temp.ToString() ?? "Main.Temp is null");
+        Console.WriteLine(weatherResponse.Wind?.Speed.ToString() ?? "Wind.Speed is null");
+
+        return weatherResponse;
+    }
+    else
+    {
+        throw new Exception($"Failed to get weather: {response.StatusCode}");
+    }
+}
 
     public string GetClothingAdvice(decimal temperature, decimal windSpeed, decimal humidity, string weather)
     {

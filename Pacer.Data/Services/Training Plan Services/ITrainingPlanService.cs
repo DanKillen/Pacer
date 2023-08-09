@@ -10,6 +10,8 @@ namespace Pacer.Data.Services
 
         // Create a new training plan
         TrainingPlan CreatePlan(int RunningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
+        bool EditTargetTime(int trainingPlanId, RaceType targetRace, TimeSpan targetTime);
+        string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth);
 
         TrainingPlan GetPlanById(int Id);
         // Get a training plan by user
@@ -23,8 +25,6 @@ namespace Pacer.Data.Services
         bool SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime);
 
         bool ClearWorkoutActuals(int workoutId, int userId);
-
-        public bool UpdatePlanAndWorkouts(int trainingPlanId, TimeSpan targetTime);
     }
 
 }

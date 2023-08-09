@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Pacer.Data.Entities
 {
     // Add User roles relevant to your application

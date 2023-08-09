@@ -3,5 +3,6 @@ using Pacer.Data.Extensions;
 
 public interface IWorkoutPaceCalculator
 {
-    Dictionary<WorkoutType, TimeSpanRange> CalculatePaces(TimeSpan targetTime, RaceType raceType);
+    public ICollection<TrainingPlanPace> CalculatePaces(TimeSpan targetTime, RaceType raceType);
+    
 }

@@ -4,8 +4,9 @@
     var viewModelJson = System.Text.Json.JsonSerializer.Serialize(Model);
 }
 
-<div id="calendar-plan" class="card shadow p-4 mt-5 mx-auto w-75">
-    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark p-2">
+<div id="calendar-plan" class="card shadow p-5 mt-4 mx-auto w-75">
+    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
+        <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
     <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
         <i class="bi bi-list"></i> Week List View</a>
@@ -18,12 +19,10 @@
             <div class="key-item jsCalendar-EasyRun">
                 Easy Run @await Component.InvokeAsync("Tooltip", new { key = "EasyRun" })
             </div>
-            @if (Model.TargetRace != RaceType.FiveK)
-            {
-                <div class="key-item jsCalendar-LongRun">
-                    Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
-                </div>
-            }
+
+            <div class="key-item jsCalendar-LongRun">
+                Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
+            </div>
             @if (Model.TargetRace == RaceType.Marathon)
             {
                 <div class="key-item jsCalendar-MarathonPace">
@@ -40,6 +39,7 @@
                 VO2 Max @await Component.InvokeAsync("Tooltip", new { key = "VO2Max" })
             </div>
         </div>
+        <hr style="border-top: 5px solid #ccc;">
 
     </div>
     <div class="container">
@@ -51,6 +51,7 @@
                 <div id="workout-details">
                     <h4 id="workout-date"></h4>
                     <h5 id="workout-type"></h5>
+                    <h6 id="workout-pace"></h6>
                     <p id="workout-description">Click on the dates in the calendar to see your workouts</p>
                     <div id="previous-results" style="display: none;">
                         <h4>Workout Complete!</h4>
@@ -70,13 +71,14 @@
                         <input type="hidden" id="workoutId" name="WorkoutId" value="@Model.Id">
                         <input type="hidden" name="returnUrl" value="Calendar" />
                         <div>
-                            <label for="actualDistance">Actual Distance Ran (in miles):</label>
+                            <label for="actualDistance"><b>Actual Distance Ran:</b></label>
                         </div>
-                        <div>
+                        <div class="mb-1">
                             <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" required>
+                            miles
                         </div>
                         <div>
-                            <label for="actualTime">Actual Duration:</label>
+                            <label for="actualTime"><b>Actual Duration:</b></label>
                             <div style="display: flex; justify-content: space-between; max-width: 200px;">
                                 <div>
                                     <label for="actualHours">Hours:</label>
@@ -186,8 +188,11 @@
                 }
             }
         });
+        var today = new Date();
+        var startDate = new Date(startYear, startMonth - 1);
+        var laterDate = new Date(Math.max(today, startDate));
 
-        calendar.refresh(new Date(startYear, startMonth - 1));
+        calendar.refresh(laterDate);
 
         var selectedCell = null;
 
@@ -225,6 +230,7 @@
             if (dateString === raceDate) {
                 $('#workout-date').text("Race Day!");
                 $('#workout-type').text("@Model.TargetTime @Model.TargetRace.ToString()");
+                $('#workout-pace').text("@Model.TargetPace min/mile");
                 $('#workout-description').text("Today is the day! Good luck!\nRun the @Model.TargetRace.ToString() at @Model.TargetPace");
                 $('#entry-form').hide();
                 $('#previous-results').hide();
@@ -255,6 +261,7 @@
                 var formattedDate = days[workoutDate.getDay()] + ' ' + day + suffix + ' ' + months[workoutDate.getMonth()] + ' ' + workoutDate.getFullYear();
                 $('#workout-date').text(formattedDate);
                 $('#workout-type').text(workout.TargetDistance + ' mile ' + workoutTypeNames[workout.Type]);
+                $('#workout-pace').text(workout.TargetPace + ' min/mile');
                 $('#workout-description').text(workout.WorkoutDescription);
                 $('#workoutId').val(workout.Id);
                 $('#clearWorkoutId').val(workout.Id);
@@ -291,6 +298,7 @@
             }
             else {
                 $('#workout-type').text("");
+                $('#workout-pace').text("");
                 $('#workout-description').text("No workout scheduled for this date.");
                 $('#entry-form').hide();
             }

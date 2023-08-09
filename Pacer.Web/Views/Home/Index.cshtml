@@ -29,33 +29,12 @@
         <div id="menu-section" class="section fade-out">
             <a class="menu-button" id="login-button" asp-controller="User" asp-action="Login">Log In</a>
             <a class="menu-button" id="register-button" asp-controller="User" asp-action="Register">Register</a>
-            <a class="menu-button" id="how-to-button">How do I use Pacer?</a>
+            <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="About">How do I use Pacer?</a>
         </div>
 </body>
 
 </div>
 
 
-@* <!-- card is only visible when authorised - note use of asp-authorize -->
-<div asp-authorize class="card">
-    <div class="card-body">
-        <h4 class="card-title">Authorized</h4>
-        <p class="card-text">This content is only visible if you are <span class="text-success">Authorized.</span></p>
-
-        <!-- p elements are only rendered when user has specified role(s) -->
-        <p asp-roles="admin">This content is only visible if you are authenticated and have the <span
-                class="text-danger">admin</span> role</p>
-        <p asp-roles="guest">This content is only visible if you are authenticated and have the <span
-                class="text-danger">guest</span> role</p>
-        <p asp-roles="manager">This content is only visible if you are authenticated and have the <span
-                class="text-danger">manager</span> role</p>
-        <p asp-roles="admin,manager">This content is visible if you have the <span class="text-danger">admin or
-                manager</span> roles</p>
-
-        <!-- uncomment AddPolicyAuthorisation() in Program.cs to access RolePolicy in example below -->
-        <!--
-            <p asp-policy="RolePolicy">This content is visible if you have the <span class="text-danger">RolePolicy</span></p>
-        -->
-    </div>
-</div> *@
+<!-- Scripts -->
 <script src="js/site.js"></script>

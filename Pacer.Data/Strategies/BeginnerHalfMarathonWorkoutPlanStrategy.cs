@@ -5,7 +5,7 @@ using Pacer.Data.Extensions;
 
 namespace Pacer.Data.Strategies
 {
-    public class AdvancedHalfMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
+    public class BeginnerHalfMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
     {
 
         private readonly string[] WeekPlans = {
@@ -24,12 +24,10 @@ namespace Pacer.Data.Strategies
             "X;E6;R3;X;E5;R2;L8",
             "X;E5;R2;X;E4;R2;X",
         };
-
-        public AdvancedHalfMarathonWorkoutPlanStrategy(IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator, DateTime raceDate, TimeSpan targetTime)
+        public BeginnerHalfMarathonWorkoutPlanStrategy(IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator, DateTime raceDate, TimeSpan targetTime)
         : base(runningProfileService, workoutPaceCalculator, raceDate, targetTime) // Pass the dependencies to the base class constructor
     {
     }
-
         public override Workout[] GenerateWorkouts()
         {
             var workouts = new List<Workout>();
@@ -44,10 +42,7 @@ namespace Pacer.Data.Strategies
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred during the parsing of week {week + 1}: {ex.Message}");
-                    // If you wish to stop the execution when an error occurs, uncomment the line below
-                    // throw;
                 }
-
                 currentWeekStart = currentWeekStart.AddDays(7);
             }
 

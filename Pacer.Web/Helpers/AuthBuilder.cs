@@ -23,7 +23,7 @@ public static class AuthBuilder
         }, CookieAuthenticationDefaults.AuthenticationScheme);
 
         // build principal using claims
-        return  new ClaimsPrincipal(claims);
+        return new ClaimsPrincipal(claims);
     }
             
 }

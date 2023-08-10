@@ -57,24 +57,12 @@ namespace Pacer.Web.Controllers
             }
 
             // Sign user in using cookie authentication
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, BuildClaimsPrincipal(user));
-            
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, AuthBuilder.BuildClaimsPrincipal(user));
+
 
             Alert("Successfully Logged in", AlertType.info);
 
             return Redirect("/");
-        }
-
-        private ClaimsPrincipal BuildClaimsPrincipal(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            return new ClaimsPrincipal(identity);
         }
 
 
@@ -94,7 +82,7 @@ namespace Pacer.Web.Controllers
                 return View(m);
             }
             // add user via service
-            var user = await _svc.AddUserAsync(m.Name, m.Email, m.Password, m.Role);
+            var user = await _svc.AddUserAsync(m.Name, m.Email, m.Password);
 
             // check if error adding user and display warning
             if (user == null)
@@ -127,7 +115,7 @@ namespace Pacer.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile([Bind("Id,Name,Email,Role")] ProfileViewModel m)
+        public async Task<IActionResult> UpdateProfile([Bind("Id,Name,Email")] ProfileViewModel m)
         {
             var user = _svc.GetUser(m.Id);
             // check if form is invalid and redisplay
@@ -139,7 +127,6 @@ namespace Pacer.Web.Controllers
             // update user details and call service
             user.Name = m.Name;
             user.Email = m.Email;
-            user.Role = m.Role;
             var updated = _svc.UpdateUser(user);
 
             // check if error updating service
@@ -289,18 +276,31 @@ namespace Pacer.Web.Controllers
             if (!_mailer.SendMail("Password Reset Request", message, m.Email))
             {
                 Alert("There was a problem sending a password reset email", AlertType.warning);
+
                 return RedirectToAction(nameof(ForgotPassword));
             }
 
             Alert("Password Reset Token sent to your registered email account", AlertType.info);
-            return RedirectToAction(nameof(ResetPassword));
+            return RedirectToAction(nameof(PasswordResetSent));
         }
 
-        // HTTP GET - Display Reset password page
-        public IActionResult ResetPassword()
+        public IActionResult PasswordResetSent()
         {
             return View();
         }
+
+
+        // HTTP GET - Display Reset password page
+        public IActionResult ResetPassword(string token = null, string email = null)
+        {
+            var model = new ResetPasswordViewModel
+            {
+                Token = token,
+                Email = email
+            };
+            return View(model);
+        }
+
 
         // HTTP POST - ResetPassword action
         [HttpPost]

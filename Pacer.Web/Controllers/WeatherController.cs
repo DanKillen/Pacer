@@ -62,6 +62,11 @@ public class WeatherController : BaseController
     [HttpGet]
     public async Task<IActionResult> WeatherByLocation(string location)
     {
+        if (string.IsNullOrWhiteSpace(location))
+        {
+            Alert("Please enter a location", AlertType.warning);
+            return RedirectToAction(nameof(Location));
+        }
 
         var weatherResponse = await _weatherService.GetWeatherByLocation(location.Replace(" ", ""));
         if (weatherResponse == null)

@@ -54,7 +54,7 @@ namespace Pacer.Data.Services
         }
 
         // Add a new User checking a User with same email does not exist
-        public async Task<User> AddUserAsync(string name, string email, string password, Role role)
+        public async Task<User> AddUserAsync(string name, string email, string password)
         {     
             var existing = await GetUserByEmail(email);
             if (existing != null)
@@ -67,7 +67,7 @@ namespace Pacer.Data.Services
                 Name = name,
                 Email = email,
                 Password = Hasher.CalculateHash(password), // can hash if required 
-                Role = role              
+                Role = Role.guest              
             };
             ctx.Users.Add(user);
             ctx.SaveChanges();

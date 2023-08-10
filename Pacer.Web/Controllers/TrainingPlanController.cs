@@ -24,7 +24,7 @@ namespace Pacer.Web.Controllers
 
         private int GetUserId()
         {
-            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
             {
                 // Log this occurrence or handle it in a way that's appropriate for your application.
                 Alert("Issue with User ID. Please log out then try again", AlertType.danger);
@@ -212,7 +212,7 @@ namespace Pacer.Web.Controllers
 
         private TrainingPlanCalendarViewModel GetTrainingPlanCalendarViewModel()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.Sid);
             var trainingPlan = _trainingPlanService.GetPlanByUserId(Int32.Parse(userId));
 
             if (trainingPlan == null || trainingPlan.Workouts == null || !trainingPlan.Workouts.Any())

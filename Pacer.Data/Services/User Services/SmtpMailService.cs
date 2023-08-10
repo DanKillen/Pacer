@@ -12,17 +12,41 @@ public class SmtpMailService : IMailService
     private readonly int _port;
     private readonly string _username;
     private readonly string _password;
-    
+
     // appsettings.json section MailSettings contains mail configuration
     public SmtpMailService(IConfiguration config)
+{
+    // First, try to get values from environment variables
+    _from = Environment.GetEnvironmentVariable("FromAddress");
+    _host = Environment.GetEnvironmentVariable("Host");
+    _port = Convert.ToInt32(Environment.GetEnvironmentVariable("Port"));
+    _username = Environment.GetEnvironmentVariable("UserName");
+    _password = Environment.GetEnvironmentVariable("Password");
+
+    // If environment variables aren't set (i.e., we're in a local environment), 
+    // fall back to using appsettings.json
+    if (string.IsNullOrEmpty(_from))
     {
-        _from = config.GetSection("MailSettings")["FromAddress"] ?? string.Empty; //.GetValue<string>("FromAddress");
-        _host = config.GetSection("MailSettings")["Host"] ?? string.Empty;
-        _port = Int32.Parse( (config.GetSection("MailSettings")["Port"] ?? "0"));
-        _username = config.GetSection("MailSettings")["UserName"] ?? string.Empty;
-        _password = config.GetSection("MailSettings")["Password"] ?? string.Empty;  
+        _from = config.GetSection("MailSettings")["FromAddress"] ?? string.Empty;
     }
-    
+    if (string.IsNullOrEmpty(_host))
+    {
+        _host = config.GetSection("MailSettings")["Host"] ?? string.Empty;
+    }
+    if (_port == 0) // assuming port can't be 0
+    {
+        _port = Int32.Parse(config.GetSection("MailSettings")["Port"] ?? "0");
+    }
+    if (string.IsNullOrEmpty(_username))
+    {
+        _username = config.GetSection("MailSettings")["UserName"] ?? string.Empty;
+    }
+    if (string.IsNullOrEmpty(_password))
+    {
+        _password = config.GetSection("MailSettings")["Password"] ?? string.Empty;
+    }
+}
+
     // send mail
     public bool SendMail(string subject, string body, string to, string from = null, bool asHtml = true)
     {
@@ -32,7 +56,8 @@ public class SmtpMailService : IMailService
             UseDefaultCredentials = false,
             Credentials = new NetworkCredential(_username, _password),
             EnableSsl = true,
-            DeliveryMethod = SmtpDeliveryMethod.Network
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            Timeout = 20000
         };
         try
         {
@@ -46,48 +71,71 @@ public class SmtpMailService : IMailService
 
             };
             mail.To.Add(to);
-            
+
             // now send the mail message
-            client.Send(mail);  
-            return true;
-        }
-        catch (Exception)
-        { 
-            // could not send email
-            return false;
-        }
-    }
-    
-    // Send Mail Asynchronously
-    public async Task<bool> SendMailAsync(string subject, string body, string to, string from = null, bool asHtml = true)
-    {
-        // now configure smtp client 
-        var client = new SmtpClient(_host, _port)
-        {
-            Credentials = new NetworkCredential(_username, _password),
-            EnableSsl = true
-        };
-        try
-        {
-            // construct the mail message
-            var mail = new MailMessage
+            try
             {
-                From = new MailAddress(from ?? _from),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = asHtml,
-            };
-   
-            mail.To.Add(to);
-            
-            // now send the mail message asynchronously
-            await client.SendMailAsync(mail);  // client.Send(from, to, subject, message);
-            return true;
+                client.Send(mail);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return false;
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine($"Error constructing email: {ex.Message}");
             return false;
         }
     }
+
+    // Send Mail Asynchronously
+    // public async Task<bool> SendMailAsync(string subject, string body, string to, string from = null, bool asHtml = true)
+    // {
+    //     // now configure smtp client 
+    //     var client = new SmtpClient(_host, _port)
+    //     {
+    //         Credentials = new NetworkCredential(_username, _password),
+    //         EnableSsl = true
+    //     };
+    //     try
+    //     {
+    //         // construct the mail message
+    //         var mail = new MailMessage
+    //         {
+    //             From = new MailAddress(from ?? _from),
+    //             Subject = subject,
+    //             Body = body,
+    //             IsBodyHtml = asHtml,
+    //         };
+
+    //         mail.To.Add(to);
+
+    //         try
+    //         {
+    //             // ... (rest of the method)
+    //             client.Send(mail);
+    //             return true;
+    //         }
+    //         catch (Exception ex) // Catch the exception
+    //         {
+    //             // Log the exception message to the console
+    //             Console.WriteLine($"Error sending email: {ex.Message}");
+    //             return false;
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine($"Error constructing email: {ex.Message}");
+    //         return false;
+    //     }
+    // }
 }
 

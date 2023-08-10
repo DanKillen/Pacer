@@ -7,21 +7,33 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pacer.Web.Models;
+using Pacer.Data.Services;
 
 namespace Pacer.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IUserService _userService;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IUserService userService, ILogger<HomeController> logger)
         {
+            _userService = userService;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                string name = User.Identity.Name;
+                return View("Index", name);
+            }
+            else
+            {
+                return View();
+            }
+
         }
 
         public IActionResult About()

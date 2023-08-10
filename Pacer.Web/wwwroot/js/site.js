@@ -42,24 +42,17 @@ if (typeof savedFiveKTimeMinutes !== 'undefined' && savedFiveKTimeMinutes > 0) {
   sliderValue = (savedFiveKTimeMinutes * 60) + savedFiveKTimeSeconds;
 }
 $(function () {
-  $("#slider-range").slider({
-    
-    min: 750, // 12 minutes and 30 seconds in seconds
-    max: 1800, // 30 minutes in seconds
-    value: sliderValue, // Use the previously saved  time or the default value
-    slide: function (event, ui) {
-      updateMinutesAndSeconds(ui.value);
-    }
-  });
+  var slider = $("#slider-range");
 
-  function updateMinutesAndSeconds(totalSeconds) {
+  function updateMinutesAndSeconds() {
+    var totalSeconds = slider.val();
     var minutes = Math.floor(totalSeconds / 60);
     var seconds = totalSeconds - (minutes * 60);
 
     $("#FiveKTimeMinutes").val(minutes);
     $("#FiveKTimeSeconds").val(seconds);
 
-    if (totalSeconds === 1800) {
+    if (totalSeconds == 1800) {
       $("#moreText").show();
     } else {
       $("#moreText").hide();
@@ -73,18 +66,20 @@ $(function () {
     var totalSeconds = minutes * 60 + seconds;
 
     if (totalSeconds >= 750 && totalSeconds <= 1800) {
-      $("#slider-range").slider("value", totalSeconds);
+      slider.val(totalSeconds);
     }
   }
 
-  $("#FiveKTimeMinutes").change(updateSlider);
-  $("#FiveKTimeSeconds").change(updateSlider);
+  slider.on("input", updateMinutesAndSeconds);
+
+  $("#FiveKTimeMinutes, #FiveKTimeSeconds").on("change", updateSlider);
 
   // Initialize
-  updateMinutesAndSeconds($("#slider-range").slider("value"));
+  updateMinutesAndSeconds();
 });
 
- // Tool Tips
+
+// Tool Tips
 $(function () {
   $('[data-bs-toggle="tooltip"]').tooltip();
 });

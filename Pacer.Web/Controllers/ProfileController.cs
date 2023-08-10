@@ -22,10 +22,10 @@ namespace Pacer.Web.Controllers
         [HttpGet]
         public IActionResult CreateProfile()
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.Sid);
             if (userIdClaim == null)
             {
-                // Handle the case where the NameIdentifier claim is missing
+                // Handle the case where the ID claim is missing
                 return RedirectToAction("Login", "User");
             }
 
@@ -45,7 +45,7 @@ namespace Pacer.Web.Controllers
         [HttpPost]
         public IActionResult CreateProfile(RunningProfileViewModel model)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.Sid));
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
 
             if (!ModelState.IsValid)
@@ -77,8 +77,15 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewProfile(int userId)
+        public IActionResult ViewProfile()
         {
+
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid), out var userId))
+            {
+                // Log this occurrence or handle it in a way that's appropriate for your application.
+                Alert("Issue with User ID. Please log out then try again", AlertType.danger);
+            }
+
             var profile = _runningProfileService.GetProfileByUserId(userId);
             if (profile == null)
             {
@@ -86,7 +93,7 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("CreateProfile", "Profile");
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.FindFirstValue(ClaimTypes.Sid);
 
             if (currentUserId != userId.ToString())
             {
@@ -116,7 +123,7 @@ namespace Pacer.Web.Controllers
         [HttpGet]
         public IActionResult EditProfile()
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.Sid));
             var profile = _runningProfileService.GetProfileByUserId(userId);
 
             if (profile == null)
@@ -150,7 +157,7 @@ namespace Pacer.Web.Controllers
             {
                 return View(model);
             }
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.FindFirstValue(ClaimTypes.Sid);
 
             if (currentUserId != userId.ToString())
             {

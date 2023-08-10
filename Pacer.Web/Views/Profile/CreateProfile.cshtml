@@ -39,7 +39,7 @@
 
         <div class="mt-3">
             <label for="FiveKTime" class="form-label"><i class="bi-stopwatch-fill"></i> 5K Time @await Component.InvokeAsync("Tooltip", new { key = "5KTime" })</label>
-            <div id="slider-range"></div>
+            <input id="slider-range" type="range" class="form-control" min="750" max="1800"/>
             <div class="d-flex mt-3">
                 <label for="FiveKTimeMinutes" class="form-label">Minutes:</label>
                 <input type="text" id="FiveKTimeMinutes" name="FiveKTimeMinutes" class="form-control"

@@ -140,8 +140,8 @@ nav.navbar {
   content: "";
   position: absolute;
   top: -50%;
-  left: -50%;
-  width: 200%;
+  left: -70%;
+  width: 250%;
   height: 200%;
   background: linear-gradient(45deg, #fd7101, #fd7090);
   transform: rotate(45deg);
@@ -155,12 +155,12 @@ nav.navbar {
   left: -60%;
 }
 
-#login-button:hover {
+#first-button:hover {
   background-color: #ff6400;
   color: #111;
 }
 
-#register-button:hover {
+#second-button:hover {
   background-color: #000000;
   color: #ff6400;
 }

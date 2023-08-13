@@ -10,22 +10,22 @@ namespace Pacer.Data.Strategies
 
         private readonly string[] WeekPlans = {
             // base phase
-            "X;X;E2;X;E3;R2;X",
-            "E2;X;E2;X;E3;X;R2",
+            "X;X;E2;X;E3;X;R2",
+            "E2;X;R2;X;E3;X;R2",
             "E3;X;T2;X;E3;X;R2",
             "E3;X;V3;X;E4;X;R2",
-            "E3;X;V3;X;E4;X;R3",
+            "E3;X;T3;X;E4;X;R3",
 
             // build phase
-            "E3;X;X;R4;X;T3;R4",
-            "E6;X;T3;X;X;T3;R4",
+            "E3;X;V3;X;E4;X;R4",
+            "E5;X;T3;X;E4;X;R4",
 
             // peak phase
-            "L7;X;E4;R4;X;R3;X",
-            "L9;X;R4;X;I3\"3 miles at target pace but take 60 second walking breaks in between each mile\";X;X",
+            "L7;X;T4;X;R4;X;R3",
+            "L9;X;R4;X;I3\"3 miles at target pace but take 60 second walking breaks in between each mile\";X;R2",
 
             // taper phase
-            "E4;X;X;T2;X;R2;X;X",
+            "E4;X;R2;X;T2;X;R2",
         };
         public BeginnerHalfMarathonWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
         : base(raceDate, targetTime) // Pass the dependencies to the base class constructor

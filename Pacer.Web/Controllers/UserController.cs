@@ -256,6 +256,40 @@ namespace Pacer.Web.Controllers
             return RedirectToAction("Index", "User");
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var user = _svc.GetUser(id);
+            if(user == null)
+            {
+                Alert("User not found", AlertType.warning);
+                return RedirectToAction("Index", "User");
+            }
+            return View(new DeleteViewModel
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role
+            });
+        }
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var deleted = _svc.DeleteUser(id);
+            if(!deleted)
+            {
+                Alert("There was a problem deleting this user. Maybe they were already deleted", AlertType.warning);
+            }
+            else
+            {
+                Alert("User deleted successfully", AlertType.success);
+            }
+            return RedirectToAction("Index","User");
+        }
+        
         // HTTP GET - Display update password page
         [Authorize]
         public IActionResult UpdatePassword()
@@ -388,6 +422,7 @@ namespace Pacer.Web.Controllers
         // HTTP GET - Display not authorised and not authenticated pages
         public IActionResult ErrorNotAuthorised() => View();
         public IActionResult ErrorNotAuthenticated() => View();
+
 
         // -------------------------- Helper Methods ------------------------------
 

@@ -1,3 +1,4 @@
+namespace Pacer.Weather;
 public class WeatherResponse
 {
     public Main Main { get; set; }

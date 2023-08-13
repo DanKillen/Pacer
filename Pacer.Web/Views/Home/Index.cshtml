@@ -6,23 +6,17 @@
         <div id="welcome-section" class="section fade-in">
             @if (User.Identity.IsAuthenticated)
             {
-                <h1 class="display-3">Hello @Model</h1>
-                <h1 class="display-3">Welcome back</h1>
+                <h1 class="display-3">Hello @Model,</h1>
+                <h1 class="display-3">Welcome back to <b>Pacer</b></h1>
             }
             else
             {
                 <h1 class="display-3">Welcome to</h1>
+                <h1 class="display-3"><b>Pacer</b></h1>
             }
             
             <div id="scroll-indicator">
                 <p>Scroll</p>
-                <img src="/images/arrow-down.png" alt="Arrow pointing down">
-            </div>
-        </div>
-
-        <div id="title-section" class="section fade-out">
-            <h1 class="display-3"><b>Pacer</b></h1>
-            <div id="scroll-indicator">
                 <img src="/images/arrow-down.png" alt="Arrow pointing down">
             </div>
         </div>
@@ -43,15 +37,12 @@
             {
                 <a class="menu-button" id="first-button" asp-controller="Profile" asp-action="CreateProfile">Profile</a>
                 <a class="menu-button" id="second-button" asp-controller="Weather" asp-action="Location">Local Weather</a>
-                <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="About">How do I use Pacer?</a>
             }
             else
             {
                 <a class="menu-button" id="first-button" asp-controller="User" asp-action="Login">Log In</a>
-                <a class="menu-button" id="second-button" asp-controller="User" asp-action="Register">Register</a>
-                <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="About">How do I use Pacer?</a>      
+                <a class="menu-button" id="second-button" asp-controller="User" asp-action="Register">Register</a>          
             }
+            <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="About">How do I use Pacer?</a>      
         </div>
 </body>
-
-</div>

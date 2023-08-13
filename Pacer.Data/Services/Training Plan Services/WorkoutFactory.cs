@@ -13,9 +13,9 @@ namespace Pacer.Data.Services
         {
             return targetRace switch
             {
-                RaceType.Marathon => new AdvancedMarathonWorkoutPlanStrategy(raceDate, targetTime),
+                RaceType.Marathon => new MarathonWorkoutPlanStrategy(raceDate, targetTime),
                 RaceType.BMarathon => new BeginnerMarathonWorkoutPlanStrategy(raceDate, targetTime),
-                RaceType.HalfMarathon => new AdvancedHalfMarathonWorkoutPlanStrategy(raceDate, targetTime),
+                RaceType.HalfMarathon => new HalfMarathonWorkoutPlanStrategy(raceDate, targetTime),
                 RaceType.BHalfMarathon => new BeginnerHalfMarathonWorkoutPlanStrategy(raceDate, targetTime),
                 _ => throw new ArgumentException("Invalid targetRace parameter"),
             };

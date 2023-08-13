@@ -1,3 +1,4 @@
+using Pacer.Weather;
 public interface IWeatherService
 {
     Task<WeatherResponse> GetWeather(decimal latitude, decimal longitude);

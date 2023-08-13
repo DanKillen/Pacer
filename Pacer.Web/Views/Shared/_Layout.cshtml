@@ -15,7 +15,6 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-lg rounded mb-3">
-            @* <nav class="navbar navbar-expand-md navbar-light bg-white shadow-lg rounded mb-3"> *@
             <div class="container">
                 <a class="navbar-brand" href="#" style="display: flex; align-items: center;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="bi bi-exclude"
@@ -25,16 +24,13 @@
                     <span>Pacer</span>
                 </a>
                 @await Component.InvokeAsync("Navbar")
-                    <!-- AMC The login partial is added here for authentication -->
-                    <partial name="_LoginPartial" />
-                </div>
+                <partial name="_LoginPartial" />
+            </div>
             </div>
         </nav>
     </header>
 
     <div class="container">
-
-        <!-- AMC Any alert defined in controller is rendered here -->
         <partial name="_Alert" />
 
         <main role="main" class="pb-3">
@@ -49,7 +45,6 @@
     </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="~/js/site.js" asp-append-version="true"></script>
 

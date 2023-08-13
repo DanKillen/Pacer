@@ -20,22 +20,25 @@
         </div>
         <hr>
         <div class="mt-3">
-            <label asp-for="TargetRace" class="form-label">Training Plan @await Component.InvokeAsync("Tooltip", new { key = "CreateTrainingPlan" })</label>
+            <label asp-for="TargetRace" class="form-label">Training Plan @await Component.InvokeAsync("Tooltip", new {
+                key = "CreateTrainingPlan" })</label>
             <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
                 class="form-control" onchange="updateTargetTime();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="RaceDate" class="form-label">Date of Race @await Component.InvokeAsync("Tooltip", new { key = "CreateDateofRace" })</label>
+            <label asp-for="RaceDate" class="form-label">Date of Race @await Component.InvokeAsync("Tooltip", new { key
+                = "CreateDateofRace" })</label>
             <input type="date" asp-for="RaceDate" class="form-control" />
             <span asp-validation-for="RaceDate" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label id="targetTimeLabel" class="form-label"></label>@await Component.InvokeAsync("Tooltip", new { key = "CreateTargetTime" })
-            <input id="targetTimeInput" type="range" class="form-control" min="60" max="240"
-                step="1" oninput="displayTime(this.value)" />
+            <label id="targetTimeLabel" class="form-label"></label>@await Component.InvokeAsync("Tooltip", new { key =
+            "CreateTargetTime" })
+            <input id="targetTimeInput" type="range" class="form-control" min="60" max="240" step="1"
+                oninput="displayTime(this.value)" />
             <span id="targetTimeDisplay">@Model.EstimatedHalfMarathonTime.ToString("h\\:mm")</span>
             <span asp-validation-for="TargetTime" class="text-danger"></span>
         </div>
@@ -81,19 +84,32 @@
             var raceTypeDropdown = document.getElementById('raceTypeDropdown');
             var targetTimeSlider = document.getElementById('targetTimeInput');
             var targetTimeLabel = document.getElementById('targetTimeLabel');
+            var raceDateInput = document.getElementById('RaceDate');
             var selectedRaceType = raceTypeDropdown.options[raceTypeDropdown.selectedIndex].value;
+
+            var today = new Date();
+            var daysUntilSunday = (7 - today.getDay()) % 7;
 
             if (selectedRaceType === '@marathonValue' || selectedRaceType === '@bMarathonValue') {
                 targetTimeSlider.min = 125; // 2 hours 5 minutes in minutes
                 targetTimeSlider.max = 300; // 5 hours in minutes
                 targetTimeSlider.value = '@(Model.EstimatedMarathonTime.TotalMinutes)';
                 targetTimeLabel.textContent = 'Marathon Target Time';
+
+                today.setDate(today.getDate() + daysUntilSunday + 16 * 7); // Add 16 weeks to the date
             } else if (selectedRaceType === '@halfMarathonValue' || selectedRaceType === '@bHalfMarathonValue') {
                 targetTimeSlider.min = 60; // 1 hour in minutes
                 targetTimeSlider.max = 150; // 2.5 hours in minutes
                 targetTimeSlider.value = '@(Model.EstimatedHalfMarathonTime.TotalMinutes)';
                 targetTimeLabel.textContent = 'Half Marathon Target Time';
+                if (selectedRaceType === '@halfMarathonValue') {
+                    today.setDate(today.getDate() + daysUntilSunday + 12 * 7); // Add 12 weeks to the date
+                } else {
+                    today.setDate(today.getDate() + daysUntilSunday + 10 * 7); // Add 10 weeks to the date
+                }
             }
+            var dateString = today.toISOString().split('T')[0];
+            raceDateInput.value = dateString;
             displayTime(targetTimeSlider.value);
         }
         updateTargetTime();

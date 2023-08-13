@@ -17,6 +17,8 @@ namespace Pacer.Data.Services
         Task<User> GetUserByEmail(string email);
         bool IsEmailAvailable(string email, int userId);
         Task <User> AddUserAsync(string name, string email, string password);
+        User VerifyEmail(int userId, string token);
+        User ResendVerificationToken(string email);
         User UpdateUser(User user);
         bool DeleteUser(int id);
         Task<User> Authenticate(string email, string password);

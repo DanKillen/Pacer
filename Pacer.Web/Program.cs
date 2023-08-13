@@ -1,6 +1,7 @@
 using Pacer.Web;
 using Pacer.Data.Services;
 using Pacer.Data.Repositories;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -55,9 +56,13 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000"; 
-app.Urls.Add($"http://*:{port}");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+var bindAddress = port == "5000" ? "localhost" : "*";
+app.Urls.Add($"http://{bindAddress}:{port}");
 
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Application is starting up...");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -68,7 +73,7 @@ if (!app.Environment.IsDevelopment())
             });
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-   app.UseHsts();
+    app.UseHsts();
 }
 else 
 {
@@ -93,7 +98,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
-
 app.Run();
+

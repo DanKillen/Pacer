@@ -17,6 +17,9 @@ body {
   min-height: 100vh;
   color: #f7f7f7; /* Light Grey */
 }
+.custom-hr {
+  border-top: 1px solid #ccc;
+}
 .key-item {
   display: inline-block;
   white-space: nowrap;
@@ -210,6 +213,11 @@ nav.navbar {
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for the paragraph text */
 }
 
+.hidden {
+  display: none;
+}
+
+
 /* Animation to make the header pop in */
 @keyframes popIn {
   0% {
@@ -257,14 +265,32 @@ nav.navbar {
   margin-bottom: 15px;
 }
 
+.completed-workout{
+  border: 2px solid #32CD32 !important;
+  padding: 10px;
+  border-radius: 5px;
+}
 
-.completed-workout {
+#workout-details {
+  border: 2px solid transparent;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#training-plan .completed-workout {
   background-color: #323232; /* Dark Grey */
   color: #f7f7f7; /* Light Grey */
   border: 2px solid #32CD32 !important;
   border-radius: 10px;
   padding: 10px;
 }
+
+.not-fully-complete {
+  border: 2px solid yellow !important;
+  border-radius: 10px;
+  padding: 10px;
+}
+
 
 #training-plan .list-group-item {
   background-color: #323232; /* Dark Grey */
@@ -294,7 +320,6 @@ nav.navbar {
 }
 
 #training-plan button {
-  background-color: #009688; /* Dark Teal */
   border: none;
   border-radius: 5px;
   color: #fff;
@@ -306,6 +331,29 @@ nav.navbar {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
+}
+
+#training-plan button:hover {
+  background-color: #f7f7f7; /* Light Grey */
+  color: #009688; /* Dark Teal */
+}
+
+#training-plan .list-group-item {
+  border: 2px solid transparent;
+}
+#training-plan .list-group-item:hover {
+  border: 2px solid #009688;
+}
+#saveButton {
+  background-color: #009688
+}
+#prevWeek {
+  background-color: transparent;
+  float: left;
+}
+#nextWeek {
+  background-color: transparent;
+  float: right;
 }
 
 #calendar-plan button {
@@ -322,6 +370,18 @@ nav.navbar {
   transition-duration: 0.4s;
   cursor: pointer;
 }
+
+.warning-text {
+  color: red;
+  display: none; /* Hidden by default */
+  margin-left: 10px;
+}
+
+.clear-button {
+  color: darkred !important;
+  border-color: darkred !important;
+}
+
 
 /* Calendar CSS */
 /* Default Theme */

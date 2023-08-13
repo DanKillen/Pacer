@@ -80,8 +80,8 @@ public static class Extensions
 }
 
 public static class EnumExtensions
-    {
-        public static string GetDisplayName(this Enum enumValue)
+{
+    public static string GetDisplayName(this Enum enumValue)
     {
         Type enumType = enumValue.GetType();
         string name = Enum.GetName(enumType, enumValue);
@@ -95,7 +95,7 @@ public static class EnumExtensions
         DisplayAttribute displayAttribute = member.GetCustomAttribute<DisplayAttribute>();
         return displayAttribute?.Name ?? name;
     }
-    }
+}
 
 public static class DateTimeExtensions
 {
@@ -108,7 +108,19 @@ public static class DateTimeExtensions
 
         return (int)Math.Floor((date.Subtract(jan4).TotalDays + day - 1) / 7) + 1;
     }
+
+
+    public static int GetWeekStartingSunday(this DateTime date)
+    {
+        CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+        Calendar calendar = cultureInfo.Calendar;
+
+        // Using FirstDayOfWeek.Sunday to ensure weeks start on Sunday
+        int weekNo = calendar.GetWeekOfYear(date, cultureInfo.DateTimeFormat.CalendarWeekRule, DayOfWeek.Sunday);
+        return weekNo;
+    }
 }
+
 
 
 

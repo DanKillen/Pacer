@@ -1,21 +1,16 @@
-using System;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Pacer.Data.Entities;
+using Pacer.Weather;
 
 public class WeatherService : IWeatherService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
-
     public WeatherService(HttpClient httpClient, IOptions<WeatherApiSettings> settings)
     {
         _httpClient = httpClient;
         _apiKey = settings.Value.ApiKey;
     }
-
     public async Task<WeatherResponse> GetWeather(decimal latitude, decimal longitude)
     {
         string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric";
@@ -42,31 +37,27 @@ public class WeatherService : IWeatherService
         }
     }
 
-public async Task<WeatherResponse> GetWeatherByLocation(string location)
-{
-    string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}&units=metric";
-    Console.WriteLine(openWeatherUrl);
-
-    HttpResponseMessage response = await _httpClient.GetAsync(openWeatherUrl);
-    if (response.IsSuccessStatusCode)
+    public async Task<WeatherResponse> GetWeatherByLocation(string location)
     {
-        var options = new JsonSerializerOptions
+        string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}&units=metric";
+        Console.WriteLine(openWeatherUrl);
+
+        HttpResponseMessage response = await _httpClient.GetAsync(openWeatherUrl);
+        if (response.IsSuccessStatusCode)
         {
-            PropertyNameCaseInsensitive = true
-        };
-        string content = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(content);
-        WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(content, options);
-        Console.WriteLine(weatherResponse.Main?.Temp.ToString() ?? "Main.Temp is null");
-        Console.WriteLine(weatherResponse.Wind?.Speed.ToString() ?? "Wind.Speed is null");
-
-        return weatherResponse;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            string content = await response.Content.ReadAsStringAsync();
+            WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(content, options);
+            return weatherResponse;
+        }
+        else
+        {
+            return null;
+        }
     }
-    else
-    {
-        return null;
-    }
-}
 
     public string GetClothingAdvice(decimal temperature, decimal windSpeed, decimal humidity, string weather)
     {

@@ -18,12 +18,6 @@ namespace Pacer.Data.Services
             _ctx = ctx;
             _raceTimePredictor = raceTimePredictor;
         }
-
-        // public void Initialise()
-        // {
-        //     _ctx.Initialise();
-        // }
-
         // ---------------- Running Profile Management --------------
 
         // Create a new running profile

@@ -32,8 +32,14 @@ namespace Pacer.Web.Controllers
         [Authorize]
         public ActionResult Index(int page = 1, int size = 20, string order = "id", string direction = "asc")
         {
-            var paged = _svc.GetUsers(page, size, order, direction);
-            return View(paged);
+            if (User.HasClaim(ClaimTypes.Role, "admin") || User.HasClaim(ClaimTypes.Role, "manager"))
+            {
+                var paged = _svc.GetUsers(page, size, order, direction);
+                return View(paged);
+            }
+            Alert("You do not have permission to view this page.", AlertType.warning);
+            return RedirectToAction("Index", "Home");
+
         }
 
         // HTTP GET - Display Login page
@@ -55,13 +61,15 @@ namespace Pacer.Web.Controllers
                 ModelState.AddModelError("Password", "Invalid Login Credentials");
                 return View(m);
             }
+            if (!user.EmailVerified)
+            {
+                Alert("Please verify your email before logging in.", AlertType.warning);
+                return View(m);
+            }
 
             // Sign user in using cookie authentication
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, AuthBuilder.BuildClaimsPrincipal(user));
-
-
-            Alert("Successfully Logged in", AlertType.info);
-
+            // No Alert as it will redirect to a welcome page
             return Redirect("/");
         }
 
@@ -90,8 +98,65 @@ namespace Pacer.Web.Controllers
                 Alert("There was a problem Registering. Please try again", AlertType.warning);
                 return View(m);
             }
+            var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
+            var emailSubject = "Email Verification for Pacer";
+            var emailMessage = @$" 
+                                <h3>Email Verification for Pacer</h3>
+                                <p>Please click the link below to verify your email address:</p>
+                                <a href='{verificationUrl}'>
+                                {verificationUrl}</a>. 
+                                <p>If you didn't request this email, please ignore it.</p>
+                                ";
+            _mailer.SendMail(emailSubject, emailMessage, user.Email);
 
-            Alert("Successfully Registered. Now login", AlertType.info);
+
+            Alert("Successfully Registered. Please verify your email by clicking the link in the email we have sent to you.", AlertType.info);
+            _logger.LogInformation($"User {user.Id} successfully registered @ {DateTime.UtcNow}");
+            return RedirectToAction(nameof(Login));
+        }
+        [HttpGet]
+        public IActionResult VerifyEmail(int userId, string token)
+        {
+            var user = _svc.VerifyEmail(userId, token);
+            if (user != null)
+            {
+                Alert("Email verified successfully! You can now log in.", AlertType.success);
+                return RedirectToAction(nameof(Login));
+            }
+            Alert("Invalid verification token, have you requested a new token since?", AlertType.warning);
+            return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet]
+        public IActionResult ResendVerificationToken()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ResendVerificationToken(string email)
+        {
+            var user = _svc.ResendVerificationToken(email);
+
+            if (user == null)
+            {
+                Alert("Either the email doesn't exist or it has already been verified.", AlertType.warning);
+                return View();
+            }
+
+            var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
+            var emailSubject = "Email Verification for Pacer - Resend";
+            var emailMessage = @$" 
+                                    <h3>Email Verification for Pacer</h3>
+                                    <p>Please click the link below to verify your email address:</p>
+                                    <a href='{verificationUrl}'>
+                                    {verificationUrl}</a>. 
+                                    <p>If you didn't request this email, please ignore it.</p>
+                                ";
+            _mailer.SendMail(emailSubject, emailMessage, user.Email);
+
+            Alert("Verification email resent. Please check your inbox.", AlertType.info);
             return RedirectToAction(nameof(Login));
         }
 
@@ -187,7 +252,7 @@ namespace Pacer.Web.Controllers
             }
 
             Alert("Successfully Updated User Account Details", AlertType.info);
-
+            _logger.LogInformation($"User {user.Id} successfully updated @ {DateTime.UtcNow} by {User.GetSignedInUserId()}");
             return RedirectToAction("Index", "User");
         }
 
@@ -316,6 +381,7 @@ namespace Pacer.Web.Controllers
             }
 
             Alert("Password reset successfully", AlertType.success);
+            _logger.LogInformation($"User {user.Email} reset password successfully");
             return RedirectToAction(nameof(Login));
         }
 

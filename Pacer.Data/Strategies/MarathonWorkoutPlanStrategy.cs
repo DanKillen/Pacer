@@ -4,7 +4,7 @@ using Pacer.Data.Utilities;
 
 namespace Pacer.Data.Strategies
 {
-    public class AdvancedMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
+    public class MarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
     {
 
         private readonly string[] WeekPlans = {
@@ -30,8 +30,7 @@ namespace Pacer.Data.Strategies
             "T4;X;R4;M7\"Run the first 5 miles at a comfortable pace and then the last 2 miles at target pace\";X;X;R4;X",
         };
 
-        public AdvancedMarathonWorkoutPlanStrategy( DateTime raceDate, TimeSpan targetTime)
-        : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
+        public MarathonWorkoutPlanStrategy( DateTime raceDate, TimeSpan targetTime) : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
     {
     }
         public override Workout[] GenerateWorkouts()

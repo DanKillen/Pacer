@@ -9,7 +9,7 @@
         <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
     <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
-        <i class="bi bi-list"></i> Week List View</a>
+        <i class="bi bi-list"></i> Week View</a>
     <partial name="_TrainingPlanHeader" model="Model" />
     <partial name="_DetailsButton" model="Model" />
     <div class="col-md-12">
@@ -24,7 +24,7 @@
             <div class="key-item jsCalendar-LongRun">
                 Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
             </div>
-            @if (Model.TargetRace == RaceType.Marathon)
+            @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
             {
                 <div class="key-item jsCalendar-MarathonPace">
                     Race Pace @await Component.InvokeAsync("Tooltip", new { key = "MarathonPace" })
@@ -112,7 +112,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/simple-jscalendar@1.4.4/source/jsCalendar.min.js"></script>
 
-
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 <script>
     var workout;
     var workoutTypeNames = {
@@ -128,8 +131,20 @@
     function confirmClear() {
         return confirm('Are you sure you want to clear this run?');
     }
+    function getDaySuffix(day) {
+        let suffix = '';
+        if (day > 3 && day < 21) return 'th';
+        switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+        }
+    }
 
     $(function () {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         var viewModel = @Html.Raw(viewModelJson);
         var workouts = viewModel.Workouts;
         var raceDate = viewModel.RaceDate.slice(0, 10);
@@ -150,7 +165,7 @@
         var startMonth = viewModel.Month;  // replace with the actual month
         var startYear = viewModel.Year;  // replace with the actual year
 
-        // Code to add classes to dates that have workouts TEST
+        // Code to add classes to dates that have workouts 
         calendar.onDateRender(function (date, element, instance) {
             var localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
             var dateString = localDate.toISOString().slice(0, 10);
@@ -212,19 +227,9 @@
 
             // get the day suffix
             var day = localDate.getDate();
+            var suffix = getDaySuffix(day);
             var suffix = '';
-            if (day > 3 && day < 21) suffix = 'th';
-            else {
-                switch (day % 10) {
-                    case 1: suffix = 'st'; break;
-                    case 2: suffix = 'nd'; break;
-                    case 3: suffix = 'rd'; break;
-                    default: suffix = 'th'; break;
-                }
-            }
 
-            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             var formattedDate = days[localDate.getDay()] + ' ' + day + suffix + ' ' + months[localDate.getMonth()] + ' ' + localDate.getFullYear();
             $('#workout-date').text(formattedDate);
 
@@ -233,7 +238,7 @@
                 let raceParts = raceDisplayName.split(' ');
                 let raceName = raceParts.length > 1 ? raceParts.slice(-2).join(' ') : raceParts.pop();
                 $('#workout-date').text("Race Day!");
-                $('#workout-type').text("@Model.TargetTime "+ raceName);
+                $('#workout-type').text("@Model.TargetTime " + raceName);
                 $('#workout-pace').text("@Model.TargetPace");
                 $('#workout-description').text("Today is the day! Good luck!\nRun the " + raceName + " at @Model.TargetPace per mile");
                 $('#entry-form').hide();
@@ -242,26 +247,14 @@
             }
 
             if (workout) {
-                console.log(workout);
                 // Update the workout details on the page
                 var workoutDate = new Date(workout.DateString); // Use DateString here
                 var workoutDistance = workout.ActualDistance;
 
                 // get the day suffix
                 var day = workoutDate.getDate();
-                var suffix = '';
-                if (day > 3 && day < 21) suffix = 'th';
-                else {
-                    switch (day % 10) {
-                        case 1: suffix = 'st'; break;
-                        case 2: suffix = 'nd'; break;
-                        case 3: suffix = 'rd'; break;
-                        default: suffix = 'th'; break;
-                    }
-                }
+                var suffix = getDaySuffix(day);
 
-                var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                 var formattedDate = days[workoutDate.getDay()] + ' ' + day + suffix + ' ' + months[workoutDate.getMonth()] + ' ' + workoutDate.getFullYear();
                 $('#workout-date').text(formattedDate);
                 $('#workout-type').text(workout.TargetDistance + ' mile ' + workoutTypeNames[workout.Type]);
@@ -280,9 +273,10 @@
                 else {
                     $('#previous-results').hide();
                     $('#entry-form').show();
+                    $('#workout-details').removeClass('completed-workout');
                 }
 
-                if (workout.ActualTime) { // Assuming ActualTime is a serialized TimeSpan
+                if (workout.ActualTime) {
                     var actualTimeParts = workout.ActualTime.split(':');
                     var hours = parseInt(actualTimeParts[0]);
                     var minutes = parseInt(actualTimeParts[1]);
@@ -296,6 +290,9 @@
                         $('#prev-time').text("Duration: " + hours + "h " + minutes + "m " + seconds + "s");
                         $('#prev-pace').text("Pace: " + workout.ActualPace + " min/mile");
                         $('#previous-results').show();
+                        $('#entry-form').hide();
+                        $('#workout-details').addClass('completed-workout');
+
                     }
                 }
 
@@ -305,13 +302,11 @@
                 $('#workout-pace').text("");
                 $('#workout-description').text("No workout scheduled for this date.");
                 $('#entry-form').hide();
+                $('#previous-results').hide();
+                $('#workout-details').removeClass('completed-workout');
             }
         });
+        });
 
-
-    }, function (error) {
-        console.log(error);
-    });
 </script>
-
-
+}

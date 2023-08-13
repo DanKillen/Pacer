@@ -1,6 +1,5 @@
 using Pacer.Data.Entities;
 using Pacer.Data.Utilities;
-using System.Collections.Generic;
 
 public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 {

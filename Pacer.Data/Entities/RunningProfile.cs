@@ -1,14 +1,11 @@
-﻿using System;
-namespace Pacer.Data.Entities
-{
+﻿namespace Pacer.Data.Entities;
+
     public class RunningProfile
     {
         public int Id { get; set; }
-
+        public int UserId { get; set; }
         // User entity reference - to link a user to a running profile
         public User User { get; set; }
-        public int UserId { get; set; }
-
         // Running specific properties
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
@@ -17,5 +14,5 @@ namespace Pacer.Data.Entities
         public TimeSpan EstimatedMarathonTime { get; set; }
         public TimeSpan EstimatedHalfMarathonTime { get; set; }
     }
-}
+
 

@@ -1,9 +1,9 @@
 ﻿// Purpose: JavaScript for the site.
 
-// Intro Scroll JavaScript
+// Intro/About Page Scroll JavaScript
 const displaysections = Array.from(document.getElementsByClassName('section'));
 let currentSection = 0;
-
+// Handle scrolling
 function handleWheel(event) {
   event.preventDefault();
   const delta = event.deltaY;
@@ -28,16 +28,11 @@ function handleWheel(event) {
     }
   });
 }
-
-if (document.querySelector('#index-page')) {
-  window.addEventListener('wheel', handleWheel, { passive: false });
-}
-
-if (document.querySelector('#about-page')) {
+// Conditional loading
+if (document.querySelector('#index-page') || document.querySelector('#about-page')) {
   window.addEventListener('wheel', handleWheel, { passive: false });
 }
 // 5k time slider 
-var sliderValue = 1800; // Default value if no savedFiveKTimeMinutes
 if (typeof savedFiveKTimeMinutes !== 'undefined' && savedFiveKTimeMinutes > 0) {
   sliderValue = (savedFiveKTimeMinutes * 60) + savedFiveKTimeSeconds;
 }
@@ -77,8 +72,10 @@ $(function () {
   // Initialize
   updateMinutesAndSeconds();
 });
-
-
+// Confirm clear run
+function confirmClear() {
+  return confirm('Are you sure you want to clear this run?');
+}
 // Tool Tips
 $(function () {
   $('[data-bs-toggle="tooltip"]').tooltip();

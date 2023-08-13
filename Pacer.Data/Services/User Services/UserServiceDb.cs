@@ -10,18 +10,12 @@ namespace Pacer.Data.Services
 {
     public class UserServiceDb : IUserService
     {
-        private readonly DatabaseContext  ctx;
-      
-        public UserServiceDb(DatabaseContext ctx) 
+        private readonly DatabaseContext ctx;
+
+        public UserServiceDb(DatabaseContext ctx)
         {
-            this.ctx = ctx; 
+            this.ctx = ctx;
         }
-
-        // public void Initialise()
-        // {
-        //    ctx.Initialise(); 
-        // }
-
         // ------------------ User Related Operations ------------------------
 
         // retrieve list of Users
@@ -32,19 +26,19 @@ namespace Pacer.Data.Services
 
         // retrieve paged list of users
         public Paged<User> GetUsers(int page = 1, int size = 10, string orderBy = "id", string direction = "asc")
-        {          
-            var query = (orderBy.ToLower(),direction.ToLower()) switch
+        {
+            var query = (orderBy.ToLower(), direction.ToLower()) switch
             {
-                ("id","asc")     => ctx.Users.OrderBy(r => r.Id),
-                ("id","desc")    => ctx.Users.OrderByDescending(r => r.Id),
-                ("name","asc")   => ctx.Users.OrderBy(r => r.Name),
-                ("name","desc")  => ctx.Users.OrderByDescending(r => r.Name),
-                ("email","asc")  => ctx.Users.OrderBy(r => r.Email),
-                ("email","desc") => ctx.Users.OrderByDescending(r => r.Email),
-                _                => ctx.Users.OrderBy(r => r.Id)
+                ("id", "asc") => ctx.Users.OrderBy(r => r.Id),
+                ("id", "desc") => ctx.Users.OrderByDescending(r => r.Id),
+                ("name", "asc") => ctx.Users.OrderBy(r => r.Name),
+                ("name", "desc") => ctx.Users.OrderByDescending(r => r.Name),
+                ("email", "asc") => ctx.Users.OrderBy(r => r.Email),
+                ("email", "desc") => ctx.Users.OrderByDescending(r => r.Email),
+                _ => ctx.Users.OrderBy(r => r.Id)
             };
 
-            return query.ToPaged(page,size,orderBy,direction);
+            return query.ToPaged(page, size, orderBy, direction);
         }
 
         // Retrive User by Id 
@@ -55,23 +49,50 @@ namespace Pacer.Data.Services
 
         // Add a new User checking a User with same email does not exist
         public async Task<User> AddUserAsync(string name, string email, string password)
-        {     
+        {
             var existing = await GetUserByEmail(email);
             if (existing != null)
             {
                 return null;
-            } 
+            }
 
             var user = new User
-            {            
+            {
                 Name = name,
                 Email = email,
+                EmailVerified = false,
+                EmailVerificationToken = Guid.NewGuid().ToString(),
                 Password = Hasher.CalculateHash(password), // can hash if required 
-                Role = Role.guest              
+                Role = Role.guest
             };
             ctx.Users.Add(user);
             ctx.SaveChanges();
             return user; // return newly added User
+        }
+        // Verify the email address of user
+        public User VerifyEmail(int userId, string token)
+        {
+            var user = ctx.Users.FirstOrDefault(u => u.Id == userId && u.EmailVerificationToken == token);
+            if (user != null)
+            {
+                user.EmailVerified = true;
+                user.EmailVerificationToken = null; // Clear the token after verification
+                ctx.SaveChanges();
+                return user;
+            }
+            return null;
+        }
+        public User ResendVerificationToken(string email)
+        {
+            var user = ctx.Users.FirstOrDefault(u => u.Email == email && !u.EmailVerified);
+            if(user == null)
+            {
+                return null; // Either user doesn't exist or has already verified email.
+            }
+
+            user.EmailVerificationToken = Guid.NewGuid().ToString();
+            ctx.SaveChanges();
+            return user;
         }
 
         // Delete the User identified by Id returning true if deleted and false if not found
@@ -104,10 +125,11 @@ namespace Pacer.Data.Services
             // update the details of the User retrieved and save
             User.Name = updated.Name;
             User.Email = updated.Email;
-            User.Password = Hasher.CalculateHash(updated.Password);  
-            User.Role = updated.Role; 
+            User.Password = Hasher.CalculateHash(updated.Password);
+            User.Role = updated.Role;
 
-            ctx.SaveChanges();          
+
+            ctx.SaveChanges();
             return User;
         }
 
@@ -125,7 +147,7 @@ namespace Pacer.Data.Services
             return ctx.Users.FirstOrDefault(u => u.Email == email && u.Id != userId) == null;
         }
 
-        public IList<User> GetUsersQuery(Func<User,bool> q)
+        public IList<User> GetUsersQuery(Func<User, bool> q)
         {
             return ctx.Users.Where(q).ToList();
         }
@@ -141,10 +163,11 @@ namespace Pacer.Data.Services
             //return (user != null && user.Password == password ) ? user: null;
         }
 
-         public string ForgotPassword(string email)
+        public string ForgotPassword(string email)
         {
             var user = ctx.Users.FirstOrDefault(u => u.Email == email);
-            if (user != null) {
+            if (user != null)
+            {
                 // invalidate any previous tokens
                 ctx.ForgotPasswords
                     .Where(t => t.Email == email && t.ExpiresAt > DateTime.Now).ToList()
@@ -156,19 +179,19 @@ namespace Pacer.Data.Services
             }
             return null;
         }
-        
+
         public User ResetPassword(string email, string token, string password)
         {
             // find user by email
             var user = ctx.Users.FirstOrDefault(u => u.Email == email);
-            if (user == null) 
+            if (user == null)
             {
                 return null; // user not found
             }
             // find valid reset token for user
             var reset = ctx.ForgotPasswords
                            .FirstOrDefault(t => t.Email == email && t.Token == token && t.ExpiresAt > DateTime.Now);
-            if (reset == null) 
+            if (reset == null)
             {
                 return null; // reset token invalid
             }
@@ -180,12 +203,13 @@ namespace Pacer.Data.Services
             return user;
         }
 
-        public IList<string> GetValidPasswordResetTokens() {
+        public IList<string> GetValidPasswordResetTokens()
+        {
             // return non expired tokens
             return ctx.ForgotPasswords.Where(t => t.ExpiresAt > DateTime.Now)
                                       .Select(t => t.Token)
                                       .ToList();
         }
-   
+
     }
 }

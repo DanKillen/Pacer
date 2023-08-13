@@ -6,8 +6,8 @@ public class RaceTimePredictor : IRaceTimePredictor
     private const double Distance5K = 3.1;
     
     // Marathon and Half Marathon distances in miles
-    private const double MarathonDistance = 26.2;
-    private const double HalfMarathonDistance = 13.1;
+    private const double MarathonDistance = 26.2188;
+    private const double HalfMarathonDistance = 13.1094;
 
     // Riegel formula coefficient
     private const double RiegelCoefficient = 1.06;

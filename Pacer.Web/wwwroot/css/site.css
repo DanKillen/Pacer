@@ -20,6 +20,7 @@ body {
 .custom-hr {
   border-top: 1px solid #ccc;
 }
+
 .key-item {
   display: inline-block;
   white-space: nowrap;
@@ -29,6 +30,37 @@ body {
   vertical-align: top;
   display: inline-block;
 }
+/* Modern style for primary buttons */
+.btn-primary {
+  background-color: #007BFF; /* Keeping it blue */
+  border: none;
+  border-radius: 25px; /* Rounded corners */
+  padding: 10px 20px; /* A bit more padding */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: all 0.3s; /* Smooth transition for hover effects */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Styles for link buttons */
+.btn-link {
+  color: #007BFF;
+  text-decoration: none;
+  border: none;
+  transition: color 0.2s;
+  padding: 5px 10px;
+  border-radius: 15px; /* Rounded corners for hover background */
+  background-color: transparent; /* No background initially */
+}
+
+.btn-link:hover {
+  color: #fff; /* White text on hover */
+  background-color: #007BFF; /* Blue background on hover */
+}
+
 .table,
 .card {
   background-color: #323232; /* Dark Grey */
@@ -375,6 +407,10 @@ nav.navbar {
   color: red;
   display: none; /* Hidden by default */
   margin-left: 10px;
+}
+
+#warningField {
+  color: red;
 }
 
 .clear-button {
@@ -756,6 +792,50 @@ nav.navbar {
 }
 /* End of Calendar CSS */
 /* End of Training View */
+
+/* Start of Tutorial View */
+
+#tutorial .intro-section {
+  background-color: #d86b11; /* Light blueish background for contrast */
+  padding: 20px 40px; /* Spacing inside the box */
+  border-radius: 15px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px; 
+  font-style: bold; /* Italicized text to emphasize the content */
+  font-style: italic;
+  text-align: center; /* Centered text */
+}
+
+#tutorial .intro-section p {
+  font-size: 18px; /* Increased font size for readability */
+  line-height: 1.6; /* Spaced out lines for better readability */
+  color: #000; 
+}
+#tutorial .workout-info {
+  border-radius: 20px;  /* Rounded corners */
+  padding: 15px;  /* Padding to space out content */
+  margin-bottom: 15px;  /* Space between each item */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+  transition: all 0.3s;  /* Smooth transition effects */
+}
+
+#tutorial .workout-info:hover {
+  transform: scale(1.02);  /* Slightly enlarge when hovered */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);  /* Increase shadow depth when hovered */
+}
+
+#tutorial .workout-info h4 {
+  font-weight: bold;
+  margin-bottom: 10px;  /* Space between the title and the description */
+  color: #000;  /* Darker text color for the title */
+}
+
+#tutorial .workout-info p {
+  color: #000;  /* Medium color for paragraphs */
+  line-height: 1.5;  /* Spaced out lines for readability */
+  font-size: large;
+}
+
 
 /* Start of Weather View */
 .weather-icon {

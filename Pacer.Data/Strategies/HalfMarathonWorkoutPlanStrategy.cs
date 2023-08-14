@@ -17,7 +17,7 @@ namespace Pacer.Data.Strategies
 
             // build phase
             "E4;X;T4;R3;E4;X;R3",
-            "L6;X;E4;X;V2;X;E4;R4",
+            "L6;X;E4;X;V3;X;E4;R4",
             "L8;X;E4;X;I4\"4 miles at target pace but take 60 second walking breaks in between each mile\";X;X;R4",
 
             // peak phase

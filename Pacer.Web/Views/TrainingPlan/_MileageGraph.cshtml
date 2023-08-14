@@ -13,25 +13,28 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var week in Model)
+            @for (int i = 0; i < Model.Count; i++)
             {
                 <tr>
-                    <td>@week.Week</td>
-                    <td>@week.TargetDistance miles</td>
-                    <td>@week.ActualDistance miles</td>
-                    <td>@week.PercentageComplete.ToString("0.")%</td>
+                    <td>@(i + 1)</td>
+                    <td>@Model[i].TargetDistance miles</td>
+                    <td>@Model[i].ActualDistance miles</td>
+                    <td>@((Model[i].ActualDistance / Model[i].TargetDistance *
+                            100).ToString("0.0"))%</td>
                 </tr>
             }
         </tbody>
+
     </table>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var ctx = document.getElementById('weekDistancesChart').getContext('2d');
 
-    var weekNumbers = @Html.Raw(ViewBag.WeekNumbers);
-    var targetDistances = @Html.Raw(ViewBag.TargetDistances);
-    var actualDistances = @Html.Raw(ViewBag.ActualDistances);
+    var weekNumbers = @Html.Raw(Json.Serialize(Model.Select((_, index) => index + 1)));
+    var targetDistances = @Html.Raw(Json.Serialize(Model.Select(w => w.TargetDistance)));
+    var actualDistances = @Html.Raw(Json.Serialize(Model.Select(w => w.ActualDistance)));
+
 
     new Chart(ctx, {
         type: 'line',

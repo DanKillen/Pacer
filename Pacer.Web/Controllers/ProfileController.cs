@@ -5,6 +5,7 @@ using Pacer.Data.Services;
 using Pacer.Data.Entities;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using Pacer.Web.Views.Shared.Components;
 
 namespace Pacer.Web.Controllers
 {
@@ -12,7 +13,6 @@ namespace Pacer.Web.Controllers
     public class ProfileController : BaseController
     {
         private readonly IRunningProfileService _runningProfileService;
-
 
         public ProfileController(IRunningProfileService runningProfileService, ILogger<ProfileController> logger) : base(logger)
         {
@@ -118,8 +118,7 @@ namespace Pacer.Web.Controllers
 
             return View(model);
         }
-
-
+        
         [HttpGet]
         public IActionResult EditProfile()
         {
@@ -135,8 +134,7 @@ namespace Pacer.Web.Controllers
                 Alert("You do not have permission to edit this profile", AlertType.danger);
                 return RedirectToAction("Index", "Home");
             }
-
-            var model = new RunningProfileViewModel
+            var model = new EditProfileViewModel
             {
                 UserId = profile.UserId,
                 UserName = profile.User.Name,
@@ -151,7 +149,7 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditProfile(int userId, RunningProfileViewModel model)
+        public IActionResult EditProfile(int userId, EditProfileViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -183,8 +181,6 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("ViewProfile", new { userId = updatedProfile.UserId });
             }
         }
-
-
 
     }
 }

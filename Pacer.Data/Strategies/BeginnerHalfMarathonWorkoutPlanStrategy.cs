@@ -13,11 +13,11 @@ namespace Pacer.Data.Strategies
             "X;X;E2;X;E3;X;R2",
             "E2;X;R2;X;E3;X;R2",
             "E3;X;T2;X;E3;X;R2",
-            "E3;X;V3;X;E4;X;R2",
+            "E3;X;V2;X;E4;X;R2",
             "E3;X;T3;X;E4;X;R3",
 
             // build phase
-            "E3;X;V3;X;E4;X;R4",
+            "E3;X;V2;X;E4;X;R4",
             "E5;X;T3;X;E4;X;R4",
 
             // peak phase

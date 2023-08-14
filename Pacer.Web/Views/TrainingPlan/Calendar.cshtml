@@ -36,11 +36,14 @@
             <div class="key-item jsCalendar-TempoRun">
                 Tempo Run @await Component.InvokeAsync("Tooltip", new { key = "TempoRun" })
             </div>
+            @if (Model.TargetRace == RaceType.HalfMarathon || Model.TargetRace == RaceType.BHalfMarathon)
+            {
             <div class="key-item jsCalendar-VO2Max">
                 VO2 Max @await Component.InvokeAsync("Tooltip", new { key = "VO2Max" })
             </div>
+            }
         </div>
-        <hr style="border-top: 5px solid #ccc;">
+        <hr class="custom-hr">
 
     </div>
     <div class="container">
@@ -83,8 +86,8 @@
                             <div style="display: flex; justify-content: space-between; max-width: 200px;">
                                 <div>
                                     <label for="actualHours">Hours:</label>
-                                    <input type="number" id="actualHours" name="ActualHours" min="0" max="10" required
-                                        value="0">
+                                    <input type="number" id="actualHours" name="ActualHours" min="0" max="6" 
+                                        required value="0">
                                 </div>
                                 <div>
                                     <label for="actualMinutes">Minutes:</label>
@@ -94,9 +97,12 @@
                                 <div>
                                     <label for="actualSeconds">Seconds:</label>
                                     <input type="number" id="actualSeconds" name="ActualSeconds" min="0" max="59"
-                                        ((double) required value="0">
+                                        required value="0">
                                 </div>
                             </div>
+                        </div>
+                        <div>
+                            <span id=warningField></span>
                         </div>
                         <button type="submit">Save</button>
                     </form>
@@ -106,7 +112,7 @@
     </div>
 </div>
 
-<partial name="_MileageGraph" model="@ViewBag.WeekDistances" />
+<partial name="_MileageGraph" model="@Model.WeekDistances" />
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

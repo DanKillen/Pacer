@@ -29,7 +29,7 @@ namespace Pacer.Web.Controllers
         }
 
         // HTTP GET - Display Paged List of Users
-        [Authorize]
+        [Authorize(Policy = "RolePolicy")]
         public ActionResult Index(int page = 1, int size = 20, string order = "id", string direction = "asc")
         {
             if (User.HasClaim(ClaimTypes.Role, "admin") || User.HasClaim(ClaimTypes.Role, "manager"))
@@ -209,8 +209,8 @@ namespace Pacer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // HTTP GET - Allow admin to update a User
-        [Authorize(Roles = "admin")]
+        // HTTP GET - Allow admin or manager to update a User
+        [Authorize(Policy = "RolePolicy")]
         public IActionResult Update(int id)
         {
             // retrieve user 
@@ -226,7 +226,7 @@ namespace Pacer.Web.Controllers
         }
 
         // HTTP POST - Update User action
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "RolePolicy")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Update([Bind("Id,Name,Email,Role")] ProfileViewModel m)
@@ -255,7 +255,8 @@ namespace Pacer.Web.Controllers
             _logger.LogInformation($"User {user.Id} successfully updated @ {DateTime.UtcNow} by {User.GetSignedInUserId()}");
             return RedirectToAction("Index", "User");
         }
-
+        
+        // HTTP GET - Allow admin to delete a User   
         [Authorize(Roles = "admin")]
         [HttpGet]
         public IActionResult Delete(int id)
@@ -274,6 +275,7 @@ namespace Pacer.Web.Controllers
                 Role = user.Role
             });
         }
+        // HTTP POST - Delete User action
         [Authorize(Roles = "admin")]
         [HttpPost]
         public IActionResult DeleteConfirmed(int id)
@@ -294,7 +296,6 @@ namespace Pacer.Web.Controllers
         [Authorize]
         public IActionResult UpdatePassword()
         {
-            // use BaseClass helper method to retrieve Id of signed in user 
             var user = _svc.GetUser(User.GetSignedInUserId());
             var passwordViewModel = new PasswordViewModel
             {
@@ -312,8 +313,11 @@ namespace Pacer.Web.Controllers
         public async Task<IActionResult> UpdatePassword([Bind("Id,OldPassword,Password,PasswordConfirm")] PasswordViewModel m)
         {
             var user = _svc.GetUser(m.Id);
-            if (!ModelState.IsValid || user == null)
+            var loggedInUser = _svc.GetUser(User.GetSignedInUserId());
+            // Catching errors, and unauthorised password changes
+            if (!ModelState.IsValid || user == null || user != loggedInUser)
             {
+                Alert("There was a problem Updating the password. Please try again", AlertType.warning);
                 return View(m);
             }
             // update the password
@@ -339,6 +343,7 @@ namespace Pacer.Web.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Alert("Successfully Logged Out", AlertType.info);
             return RedirectToAction(nameof(Login));
         }
 
@@ -357,7 +362,7 @@ namespace Pacer.Web.Controllers
             var token = _svc.ForgotPassword(m.Email);
             if (token == null)
             {
-                // No such account. Alert only for testing
+                // No such account.
                 Alert("No account found", AlertType.warning);
                 return RedirectToAction(nameof(Login));
             }

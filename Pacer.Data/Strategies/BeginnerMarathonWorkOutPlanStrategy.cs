@@ -19,13 +19,13 @@ namespace Pacer.Data.Strategies
 
             // build phase
             "L10;X;E5;X;E6;X;R5",
-            "L12;X;E5;X;T5\"Maintain a consistent pace\";X;E5",
+            "L12;X;E5;X;T5\"Maintain a consistent, slightly challenging pace\";X;E5",
             "L15;X;I4\"Run fast for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;E5;X;R5",
             "L16;X;E6;X;T7\"Maintain a consistent, slightly challenging pace\";X;E6",
 
             // peak phase
             "L20;X;I5\"Run target pace for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;E6;X;R5",
-            "L16;X;E6;X;T8\"Maintain a consistent pace\";X;E7",
+            "M14\"Run 4 miles at a comfortable pace, and then 10 miles at target pace\";X;E6;X;T8\"Maintain a consistent, slightly challenging pace\";X;E7",
             "L20;X;E5;X;I5\"Run target pace for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;R5",
 
             // taper phase

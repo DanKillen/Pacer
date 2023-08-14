@@ -1,4 +1,4 @@
-@model RunningProfileViewModel
+@model EditProfileViewModel
 
 <script>
     var savedFiveKTimeMinutes = @Model.FiveKTimeMinutes;
@@ -10,7 +10,8 @@
         <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
 
-    <h1 class="mx-auto">Edit Running Profile</h1>
+    <h1 class="mx-auto">Edit Running Profile @await Component.InvokeAsync("Tooltip", new { key = "EditProfile"})</h1>
+    <hr class="custom-hr">
 
     <form asp-action="EditProfile" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>

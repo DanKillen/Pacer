@@ -10,14 +10,14 @@
         <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
 
-    <h1 class="mx-auto">Create Running Profile</h1>
+    <h1 class="mx-auto">Create Running Profile @await Component.InvokeAsync("Tooltip", new { key = "CreateProfile" })</h1>
 
     <form asp-action="CreateProfile" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="mt-3">
             <label asp-for="DateOfBirth" class="form-label"><i class="bi-calendar3"></i> Date of Birth</label>
-            <input asp-for="DateOfBirth" type="date" class="form-control" />
+            <input asp-for="DateOfBirth" type="date" class="form-control" placeholder="2005-01-01" />
             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
         </div>
 

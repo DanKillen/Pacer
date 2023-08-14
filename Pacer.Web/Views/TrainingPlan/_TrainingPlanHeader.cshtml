@@ -1,9 +1,11 @@
 @using Pacer.Web;
 
-<hr style="border-top: 5px solid #ccc;">
+<hr class="custom-hr">
 <h1 class="my-3 mx-auto">@Model.TargetTime @Model.TargetRaceDisplayName Training Plan 
     @await Component.InvokeAsync("Tooltip", new { key = "TrainingPlan"})</h1>
 <h2 class="mx-auto"><a href="@Url.Action("EditTargetTime", new { id = Model.Id })" class="btn btn-warning">
         <i class="bi bi-clock-fill"></i> Edit Target Time</a>
     <a href="@Url.Action("DeleteTrainingPlan", new { id = Model.Id })" class="btn btn-danger">
-        <i class="bi bi-trash-fill"></i> Delete Training Plan</a></h3>
+        <i class="bi bi-trash-fill"></i> Delete Training Plan</a></h2>
+<h2 class="mx-auto"><a href="@Url.Action("Tutorial", new { id = Model.Id })" class="btn btn-secondary">
+    <i class="bi bi-lightbulb-fill"></i> Understanding Your Workouts</a></h2>

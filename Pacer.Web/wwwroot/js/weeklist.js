@@ -28,7 +28,7 @@ function validateForm(workoutId) {
         var hours = parseInt(document.getElementById("actualHours-" + workoutId).value);
         var minutes = parseInt(document.getElementById("actualMinutes-" + workoutId).value);
         var seconds = parseInt(document.getElementById("actualSeconds-" + workoutId).value);
-        var warningField = document.getElementById("durationWarning-" + workoutId); // Assuming you've added a warning field for time
+        var warningField = document.getElementById("durationWarning-" + workoutId);
 
         if (hours === 0 && minutes === 0 && seconds === 0) {
             warningField.innerText = 'Duration cannot be zero. Please enter a valid duration.';

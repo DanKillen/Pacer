@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Pacer.Web.AgeValidationAttribute;
 
-public class RunningProfileViewModel
+public class EditProfileViewModel
 {
     public int UserId { get; set; }
     public string UserName { get; set; }
@@ -14,13 +14,11 @@ public class RunningProfileViewModel
     public DateTime DateOfBirth { get; set; }
     public int Age => (int)((DateTime.Now - DateOfBirth).TotalDays / 365.25);
     public string Gender { get; set; }
-
     [Required]
     [Range(0, 120, ErrorMessage = "Weekly Mileage must be between 0 and 120.")]
     public int WeeklyMileage { get; set; }
     public int FiveKTimeMinutes { get; set; }
     public int FiveKTimeSeconds { get; set; }
-    public string FiveKTimeFormatted => (TimeSpan.FromMinutes(FiveKTimeMinutes) + TimeSpan.FromSeconds(FiveKTimeSeconds)).ToString("m\\:ss");
-
+    public bool HasTrainingPlan { get; set; }
 
 }

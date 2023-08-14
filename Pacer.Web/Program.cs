@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure Authentication / Authorisation via extension methods 
 builder.Services.AddCookieAuthentication();
-//builder.Services.AddPolicyAuthorisation();
+builder.Services.AddPolicyAuthorisation();
 
-// Connectioned to Heroku MySql database
+// Connection to Heroku MySql database
 var herokuConnectionString = builder.Configuration.GetConnectionString("HerokuMySqlConnection");
 var uri = new Uri(herokuConnectionString);
 var userInfo = uri.UserInfo.Split(':');
@@ -21,16 +21,10 @@ var host = uri.Host;
 var database = uri.AbsolutePath.Trim('/');
 var standardConnectionString = $"Server={host};Database={database};User ID={user};Password={password};";
 
-
-    // Configure connection string for selected database in appsettings.json
-
-    //options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));   
+// Configure Database Context
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseMySql(standardConnectionString, ServerVersion.AutoDetect(standardConnectionString)));
 
-    //options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
-    //options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
-    //builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
 
 // Add Services to DI   

@@ -218,15 +218,10 @@ public class TrainingPlanController : BaseController
             grouped[i].Week = i + 1; // assign week numbers starting from 1
         }
 
-        ViewBag.WeekDistances = grouped;
-        ViewBag.WeekNumbers = JsonSerializer.Serialize(grouped.Select(x => x.Week).ToList());
-        ViewBag.TargetDistances = JsonSerializer.Serialize(grouped.Select(x => x.TargetDistance).ToList());
-        ViewBag.ActualDistances = JsonSerializer.Serialize(grouped.Select(x => x.ActualDistance).ToList());
-
+        viewModel.WeekDistances = grouped;
 
         return View("Calendar", viewModel);
     }
-
     private TrainingPlanCalendarViewModel GetTrainingPlanCalendarViewModel()
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
@@ -249,20 +244,11 @@ public class TrainingPlanController : BaseController
         }
 
         var firstWorkoutDate = trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
-        string FormattedTargetTime;
-        if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
-        {
-            FormattedTargetTime = trainingPlan.TargetTime.ToString(@"mm\:ss");
-        }
-        else
-        {
-            FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
-        }
-
+        var formattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
         return new TrainingPlanCalendarViewModel
         {
             Id = trainingPlan.Id,
-            TargetTime = FormattedTargetTime,
+            TargetTime = formattedTargetTime,
             Month = firstWorkoutDate.Month,
             Year = firstWorkoutDate.Year,
             RaceDate = trainingPlan.RaceDate,
@@ -298,6 +284,20 @@ public class TrainingPlanController : BaseController
         return minPace ?? maxPace;
     }
 
+    [HttpGet] public IActionResult Tutorial(int id)
+    {
+        var trainingPlan = _trainingPlanService.GetPlanById(id);
+        if (trainingPlan == null)
+        {
+            Alert("Error: Training plan not found", AlertType.danger);
+            return RedirectToAction("Index", "TrainingPlan");
+        }
+        var tutorial = new TutorialViewModel{
+            Id = trainingPlan.Id,
+            TargetRace = trainingPlan.TargetRace,
+        };
+        return View(tutorial);
+    }
     [HttpPost("SaveWorkoutActuals")]
     public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
     {

@@ -80,6 +80,7 @@ $(function () {
             }
         }
     });
+    // Choosing today or the date the training plan starts, whichever is later
     var today = new Date();
     var startDate = new Date(startYear, startMonth - 1);
     var laterDate = new Date(Math.max(today, startDate));
@@ -125,6 +126,7 @@ $(function () {
         }
 
         if (workout) {
+            resetWorkoutInputs();
             // Update the workout details on the page
             var workoutDate = new Date(workout.DateString); // Use DateString here
             var workoutDistance = workout.ActualDistance;
@@ -142,9 +144,9 @@ $(function () {
             $('#clearWorkoutId').val(workout.Id);
             $('#actualDistance').val(workout.TargetDistance);
 
-            if (workout.ActualDistance > 0) {
-                $('#actualDistance').val(workout.ActualDistance);
-                $('#prev-distance').text("Distance Ran: " + workout.ActualDistance + " miles");
+            if (workoutDistance > 0) {
+                $('#actualDistance').val(workoutDistance);
+                $('#prev-distance').text("Distance Ran: " + workoutDistance + " miles");
                 $('#previous-results').show();
                 $('#entry-form').hide();
             }
@@ -184,4 +186,26 @@ $(function () {
             $('#workout-details').removeClass('completed-workout');
         }
     });
+    // Clearing the form
+    function resetWorkoutInputs() {
+        $('#actualHours').val(0);
+        $('#actualMinutes').val(0);
+        $('#actualSeconds').val(0);
+        $('#warningField').text('');
+    }
+    // Ensuring correct data is input
+    $(document).ready(function () {
+        $('#entry-form').on('submit', function (e) {
+            var actualDistance = parseFloat($('#actualDistance').val());
+            var actualHours = parseInt($('#actualHours').val());
+            var actualMinutes = parseInt($('#actualMinutes').val());
+            var actualSeconds = parseInt($('#actualSeconds').val());
+
+            if (actualDistance === 0 || (actualHours === 0 && actualMinutes === 0 && actualSeconds === 0)) {
+                warningField.innerText = 'Neither duration or distance can be zero. Please enter valid values.';
+                e.preventDefault();
+            }
+        });
+    });
+
 });

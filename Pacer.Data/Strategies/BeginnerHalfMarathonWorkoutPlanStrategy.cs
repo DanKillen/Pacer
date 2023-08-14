@@ -23,7 +23,7 @@ namespace Pacer.Data.Strategies
         * L - Long Run
         *
         * Notes:
-        * Some runs have additional instructions in quotes. For instance, 'I4"4 miles at target pace but take 60...' 
+        * Some runs have additional instructions in quotes. For instance, 'I4\"4 miles at target pace but take 60...' 
         * means that it's a 4-mile Interval Training run with additional guidance in the description.
         * 
         * Phases:

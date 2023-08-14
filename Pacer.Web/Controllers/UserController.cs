@@ -128,7 +128,7 @@ namespace Pacer.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResendVerificationToken()
+        public IActionResult ResendVerificationEmail()
         {
             return View();
         }

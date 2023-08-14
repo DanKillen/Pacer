@@ -1,6 +1,4 @@
-using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 // import the Entities (database models representing structure of tables in database)
 using Pacer.Data.Entities;
@@ -11,7 +9,6 @@ namespace Pacer.Data.Repositories
     // We define DbSet properties for each table in the database
     public class DatabaseContext : DbContext
     {
-        // authentication store
         public DbSet<User> Users { get; set; }
         public DbSet<ForgotPassword> ForgotPasswords { get; set; }
         public DbSet<RunningProfile> RunningProfiles { get; set; }
@@ -75,6 +72,5 @@ namespace Pacer.Data.Repositories
 
         }
         public static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder => new();
-
     }
 }

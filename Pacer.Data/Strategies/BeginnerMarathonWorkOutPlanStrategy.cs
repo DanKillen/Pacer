@@ -6,8 +6,35 @@ using Microsoft.Extensions.Logging;
 
 namespace Pacer.Data.Strategies
 {
+   
     public class BeginnerMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
-    {
+    { 
+        /*
+        * WeekPlans Key:
+        * Each string in the WeekPlans array represents a week's workout plan. Every day's workout is separated by a semicolon.
+        * Each workout has the symbol for the type of run followed by the distance in miles.
+        * The phases of training (base, build, peak, taper) are grouped together, and each phase has a specific focus for the athlete.
+        *
+        * Symbols and Abbreviations:
+        * E - Easy Run
+        * R - Recovery Run
+        * X - Rest
+        * I - Interval Training
+        * T - Tempo Run
+        * L - Long Run
+        * M - Race Pace
+        *
+        * Notes:
+        * Some runs have additional instructions in quotes. For instance, 'M13"Run the first 8 miles...' 
+        * means that it's a 13-mile medium run with specific guidance for pacing.
+        * 
+        * Phases:
+        * Base Phase: This is the foundation phase where the athlete builds up mileage and gets ready for more specific workouts.
+        * Build Phase: This phase introduces more specialized workouts, and the mileage increases.
+        * Peak Phase: The most intensive phase where the athlete reaches their highest mileage and does specific workouts to 
+        * prepare for the race.
+        * Taper Phase: Mileage and intensity are reduced to allow the athlete to recover and be fresh for the race.
+        */
         private readonly string[] WeekPlans = {
             // base phase
             "E4;R2;X;E4;X;L5;X",

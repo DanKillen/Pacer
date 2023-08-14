@@ -18,7 +18,7 @@ public class TrainingPlanController : BaseController
         _trainingPlanService = trainingPlanService;
         _runningProfileService = runningProfileService;
     }
-
+    // Private Helper Methods
     private int? GetUserId()
     {
         if (!User.Identity.IsAuthenticated)
@@ -35,6 +35,136 @@ public class TrainingPlanController : BaseController
 
         return userId;
     }
+    private TrainingPlanViewModel ConstructTrainingPlanViewModel(TrainingPlan trainingPlan, string formattedTargetTime)
+    {
+        int currentWeek = 1;
+        var viewModel = new TrainingPlanViewModel
+        {
+            Id = trainingPlan.Id,
+            TargetRace = trainingPlan.TargetRace,
+            TargetTime = formattedTargetTime,
+            TargetPace = trainingPlan.TargetPace,
+            RaceDate = trainingPlan.RaceDate,
+            Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetWeekStartingSunday())
+                             .Select(g => new WeekViewModel
+                             {
+                                 WeekNumber = currentWeek++,
+                                 Workouts = g.Select(w => new WorkoutViewModel
+                                 {
+                                     Id = w.Id,
+                                     Type = w.Type,
+                                     Date = w.Date,
+                                     TargetDistance = w.TargetDistance,
+                                     TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
+                                     ActualDistance = w.ActualDistance,
+                                     ActualTime = w.ActualTime,
+                                     ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null,
+                                     WorkoutDescription = w.WorkoutDescription
+                                 }).ToList()
+                             }).ToList()
+        };
+        return viewModel;
+    }
+
+    private TrainingPlanCalendarViewModel GetTrainingPlanCalendarViewModel()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.Sid);
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning("User ID (Sid claim) is not set.");
+            return null;
+        }
+
+        if (!int.TryParse(userId, out int parsedUserId))
+        {
+            _logger.LogError($"Failed to parse User ID: {userId}");
+            return null;
+        }
+
+        var trainingPlan = _trainingPlanService.GetPlanByUserId(parsedUserId);
+        if (!ValidateTrainingPlan(trainingPlan))
+        {
+            return null;
+        }
+
+        var firstWorkoutDate = GetFirstWorkoutDate(trainingPlan);
+        var formattedTargetTime = FormatTargetTime(trainingPlan.TargetTime);
+
+        var workouts = CreateWorkoutViewModels(trainingPlan);
+
+        return new TrainingPlanCalendarViewModel
+        {
+            Id = trainingPlan.Id,
+            TargetTime = formattedTargetTime,
+            Month = firstWorkoutDate.Month,
+            Year = firstWorkoutDate.Year,
+            RaceDate = trainingPlan.RaceDate,
+            TargetRace = trainingPlan.TargetRace,
+            TargetPace = trainingPlan.TargetPace,
+            Workouts = workouts
+        };
+    }
+
+    private DateTime GetFirstWorkoutDate(TrainingPlan trainingPlan)
+    {
+        return trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
+    }
+
+    private string FormatTargetTime(TimeSpan targetTime)
+    {
+        return targetTime.ToString(@"h\:mm");
+    }
+
+    private List<WorkoutViewModel> CreateWorkoutViewModels(TrainingPlan trainingPlan)
+    {
+        return trainingPlan.Workouts.Select(w => new WorkoutViewModel
+        {
+            Id = w.Id,
+            Type = w.Type,
+            Date = w.Date,
+            TargetDistance = w.TargetDistance,
+            ActualDistance = w.ActualDistance,
+            TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
+            ActualTime = w.ActualTime,
+            ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null
+        }).ToList();
+    }
+
+    private string LookupTargetPaceForWorkout(WorkoutType type, ICollection<TrainingPlanPace> paces)
+    {
+        var minPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Min)?.PaceString;
+        var maxPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Max)?.PaceString;
+
+        // If both paces are available, return a range.
+        if (minPace != null && maxPace != null)
+        {
+            return $"{minPace} - {maxPace}";
+        }
+        // Otherwise, return whichever is available, or null if neither are.
+        return minPace ?? maxPace;
+    }
+    
+    private bool ValidateTrainingPlan(TrainingPlan trainingPlan)
+    {
+        if (trainingPlan == null)
+        {
+            Alert("Error: Training plan not found", AlertType.danger);
+            return false;
+        }
+        if (trainingPlan.Workouts == null)
+        {
+            Alert("Error: Training plan has null workouts", AlertType.danger);
+            return false;
+        }
+        if (!trainingPlan.Workouts.Any())
+        {
+            Alert("Error: Training plan has no workouts", AlertType.danger);
+            return false;
+        }
+        return true;
+    }
+    
+    // Controller Endpoints
     [HttpGet]
     public IActionResult Index()
     {
@@ -132,64 +262,14 @@ public class TrainingPlanController : BaseController
         }
         var trainingPlan = _trainingPlanService.GetPlanByUserId(userId.Value);
 
-        if (trainingPlan == null)
+        if (!ValidateTrainingPlan(trainingPlan))
         {
-            TempData["Alert.Message"] = "Error: Training plan not found";
-            TempData["Alert.Type"] = "danger";
             return RedirectToAction("Error", "Home");
         }
-
-        if (trainingPlan.Workouts == null)
-        {
-            TempData["Alert.Message"] = "Error: Training plan has null workouts";
-            TempData["Alert.Type"] = "danger";
-            return RedirectToAction("Error", "Home");
-        }
-
-        if (!trainingPlan.Workouts.Any())
-        {
-            TempData["Alert.Message"] = "Error: Training plan has no workouts";
-            TempData["Alert.Type"] = "danger";
-            return RedirectToAction("Error", "Home");
-        }
-        string FormattedTargetTime;
-        if (trainingPlan.TargetTime < TimeSpan.FromHours(1))
-        {
-            FormattedTargetTime = trainingPlan.TargetTime.ToString(@"mm\:ss");
-        }
-        else
-        {
-            FormattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
-        }
-        int currentWeek = 1;
-        var viewModel = new TrainingPlanViewModel
-        {
-            Id = trainingPlan.Id,
-            TargetRace = trainingPlan.TargetRace,
-            TargetTime = FormattedTargetTime,
-            TargetPace = trainingPlan.TargetPace,
-            RaceDate = trainingPlan.RaceDate,
-            Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetWeekStartingSunday())
-                         .Select(g => new WeekViewModel
-                         {
-                             WeekNumber = currentWeek++,
-                             Workouts = g.Select(w => new WorkoutViewModel
-                             {
-                                 Id = w.Id,
-                                 Type = w.Type,
-                                 Date = w.Date,
-                                 TargetDistance = w.TargetDistance,
-                                 TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
-                                 ActualDistance = w.ActualDistance,
-                                 ActualTime = w.ActualTime,
-                                 ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null,
-                                 WorkoutDescription = w.WorkoutDescription
-                             }).ToList()
-                         }).ToList()
-        };
+        string formattedTargetTime = FormatTargetTime(trainingPlan.TargetTime);
+        var viewModel = ConstructTrainingPlanViewModel(trainingPlan, formattedTargetTime);
         return View(viewModel);
     }
-
     [HttpGet]
     public IActionResult Calendar()
     {
@@ -198,7 +278,6 @@ public class TrainingPlanController : BaseController
         if (viewModel == null)
         {
             // Redirecting to TrainingPlanIndex. This action will further check if the user has a training plan, is logged in, etc.
-            Alert("Error: Training plan not found", AlertType.danger);
             return RedirectToAction("Index", "TrainingPlan");
         }
 
@@ -222,69 +301,9 @@ public class TrainingPlanController : BaseController
 
         return View("Calendar", viewModel);
     }
-    private TrainingPlanCalendarViewModel GetTrainingPlanCalendarViewModel()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.Sid);
-        if (string.IsNullOrEmpty(userId))
-        {
-            _logger.LogWarning("User ID (Sid claim) is not set.");
-            return null;
-        }
 
-        if (!int.TryParse(userId, out int parsedUserId))
-        {
-            _logger.LogError($"Failed to parse User ID: {userId}");
-            return null;
-        }
-        var trainingPlan = _trainingPlanService.GetPlanByUserId(Int32.Parse(userId));
-
-        if (trainingPlan == null || trainingPlan.Workouts == null || !trainingPlan.Workouts.Any())
-        {
-            return null;
-        }
-
-        var firstWorkoutDate = trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
-        var formattedTargetTime = trainingPlan.TargetTime.ToString(@"h\:mm");
-        return new TrainingPlanCalendarViewModel
-        {
-            Id = trainingPlan.Id,
-            TargetTime = formattedTargetTime,
-            Month = firstWorkoutDate.Month,
-            Year = firstWorkoutDate.Year,
-            RaceDate = trainingPlan.RaceDate,
-            TargetRace = trainingPlan.TargetRace,
-            TargetPace = trainingPlan.TargetPace,
-
-
-            Workouts = trainingPlan.Workouts.Select(w => new WorkoutViewModel
-            {
-                Id = w.Id,
-                Type = w.Type,
-                Date = w.Date,
-                TargetDistance = w.TargetDistance,
-                ActualDistance = w.ActualDistance,
-                TargetPace = LookupTargetPaceForWorkout(w.Type, trainingPlan.Paces),
-                ActualTime = w.ActualTime,
-                ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null
-
-            }).ToList()
-        };
-    }
-    private string LookupTargetPaceForWorkout(WorkoutType type, ICollection<TrainingPlanPace> paces)
-    {
-        var minPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Min)?.PaceString;
-        var maxPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Max)?.PaceString;
-
-        // If both paces are available, return a range.
-        if (minPace != null && maxPace != null)
-        {
-            return $"{minPace} - {maxPace}";
-        }
-        // Otherwise, return whichever is available, or null if neither are.
-        return minPace ?? maxPace;
-    }
-
-    [HttpGet] public IActionResult Tutorial(int id)
+    [HttpGet]
+    public IActionResult Tutorial(int id)
     {
         var trainingPlan = _trainingPlanService.GetPlanById(id);
         if (trainingPlan == null)
@@ -292,7 +311,8 @@ public class TrainingPlanController : BaseController
             Alert("Error: Training plan not found", AlertType.danger);
             return RedirectToAction("Index", "TrainingPlan");
         }
-        var tutorial = new TutorialViewModel{
+        var tutorial = new TutorialViewModel
+        {
             Id = trainingPlan.Id,
             TargetRace = trainingPlan.TargetRace,
         };

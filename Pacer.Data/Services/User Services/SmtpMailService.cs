@@ -59,6 +59,7 @@ public class SmtpMailService : IMailService
             DeliveryMethod = SmtpDeliveryMethod.Network,
             Timeout = 20000
         };
+        Console.WriteLine($"Sending email from {_from} to {to}. {client.Host}:{client.Port}");
         try
         {
             // construct the mail message

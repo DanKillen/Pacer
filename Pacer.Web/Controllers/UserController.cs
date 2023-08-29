@@ -83,7 +83,7 @@ namespace Pacer.Web.Controllers
         // HTTP POST - Register action
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Name,Email,Password,PasswordConfirm,Role")] RegisterViewModel m)
+        public async Task<IActionResult> Register([Bind("Name,Email,Password,PasswordConfirm")] RegisterViewModel m)
         {
             if (!ModelState.IsValid)
             {
@@ -98,19 +98,24 @@ namespace Pacer.Web.Controllers
                 Alert("There was a problem Registering. Please try again", AlertType.warning);
                 return View(m);
             }
-            var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
-            var emailSubject = "Email Verification for Pacer";
-            var emailMessage = @$" 
-                                <h3>Email Verification for Pacer</h3>
-                                <p>Please click the link below to verify your email address:</p>
-                                <a href='{verificationUrl}'>
-                                {verificationUrl}</a>. 
-                                <p>If you didn't request this email, please ignore it.</p>
-                                ";
-            _mailer.SendMail(emailSubject, emailMessage, user.Email);
+            /*Email verification disabled due to university's data collection policy */
+            /*Service method has also been edited*/
+            
+            // var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
+            // var emailSubject = "Email Verification for Pacer";
+            // var emailMessage = @$" 
+            //                     <h3>Email Verification for Pacer</h3>
+            //                     <p>Please click the link below to verify your email address:</p>
+            //                     <a href='{verificationUrl}'>
+            //                     {verificationUrl}</a>. 
+            //                     <p>If you didn't request this email, please ignore it.</p>
+            //                     ";
+            // _mailer.SendMail(emailSubject, emailMessage, user.Email);
 
 
-            Alert("Successfully Registered. Please verify your email by clicking the link in the email we have sent to you.", AlertType.info);
+            // Alert("Successfully Registered. Please verify your email by clicking the link in the email we have sent to you.", AlertType.info);
+
+            Alert("Successfully Registered. You may log in.", AlertType.info);
             _logger.LogInformation($"User {user.Id} successfully registered @ {DateTime.UtcNow}");
             return RedirectToAction(nameof(Login));
         }

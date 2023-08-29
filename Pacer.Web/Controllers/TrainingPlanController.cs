@@ -18,7 +18,7 @@ public class TrainingPlanController : BaseController
         _trainingPlanService = trainingPlanService;
         _runningProfileService = runningProfileService;
     }
-    // Private Helper Methods
+    // Private Training Plan Methods
     private int? GetUserId()
     {
         if (!User.Identity.IsAuthenticated)
@@ -187,9 +187,14 @@ public class TrainingPlanController : BaseController
             return RedirectToAction("ViewTrainingPlan");
         }
 
-        return RedirectToAction("CreateTrainingPlan");
+        return RedirectToAction("Disclaimer");
     }
 
+    [HttpGet]
+    public IActionResult Disclaimer()
+    {
+        return View();
+    }
     [HttpGet]
     public IActionResult CreateTrainingPlan()
     {
@@ -226,7 +231,6 @@ public class TrainingPlanController : BaseController
 
         return View(model);
     }
-
     [HttpPost]
     public IActionResult CreateTrainingPlan(TrainingPlanCreateModel model)
     {
@@ -318,6 +322,7 @@ public class TrainingPlanController : BaseController
         };
         return View(tutorial);
     }
+    
     [HttpPost("SaveWorkoutActuals")]
     public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
     {
@@ -346,7 +351,6 @@ public class TrainingPlanController : BaseController
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving data: " + ex.Message });
         }
     }
-
     [HttpPost("ClearWorkoutActuals")]
     public IActionResult ClearWorkoutActuals(int WorkoutId, string returnUrl)
     {
@@ -387,7 +391,6 @@ public class TrainingPlanController : BaseController
         // Pass the view model to the view.
         return View(viewModel);
     }
-
     [HttpPost("EditTargetTime")]
     public IActionResult EditTargetTime(EditTargetTimeViewModel model)
     {
@@ -404,6 +407,7 @@ public class TrainingPlanController : BaseController
         Alert("New Target Time saved successfully!", AlertType.success);
         return RedirectToAction("ViewTrainingPlan", new { id = model.TrainingPlanId });
     }
+    
     [HttpGet("DeleteTrainingPlan")]
     public IActionResult DeleteTrainingPlan()
     {

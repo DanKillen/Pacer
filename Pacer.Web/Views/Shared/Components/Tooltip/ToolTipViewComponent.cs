@@ -17,8 +17,8 @@ public class TooltipViewComponent : ViewComponent
             
             // Training Plan Tooltips
             {"TrainingPlan", "All paces are given in minutes and seconds per mile. Add workout data to get feedback."},
-            {"CreateTrainingPlan","Beginner Training Plans are designed to carefully build up your mileage. The Standard Half Marathon plan will begin at 10 miles a week and the Standard Marathon Plan will begin at 25 miles a week."},
-            {"CreateDateofRace","This will update to the length of the training plan. Your race should be on this date or later."},
+            {"CreateTrainingPlan","Beginner Training Plans are designed to carefully build up your mileage and are less demanding overall than Standard Plans. The Standard Half Marathon plan will begin at 10 miles a week and the Standard Marathon Plan will begin at 25 miles a week."},
+            {"CreateDateofRace","This will update to the length of the selected training plan. Your race should be on this date or later."},
             {"CreateTargetTime","Times are given in hours and minutes. You may edit your target time if you like."},
 
             // Workout Type Tooltips

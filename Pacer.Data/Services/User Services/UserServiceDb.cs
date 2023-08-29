@@ -56,13 +56,28 @@ namespace Pacer.Data.Services
                 return null;
             }
 
+            // Capitalize the first letter of the name if it's a letter
+            if (char.IsLetter(name[0]))
+            {
+                name = char.ToUpper(name[0]) + name[1..];
+            }          
+            // Email verifications are currently disabled
+            // var user = new User
+            // {
+            //     Name = name,
+            //     Email = email,
+            //     EmailVerified = false,
+            //     EmailVerificationToken = Guid.NewGuid().ToString(),
+            //     Password = Hasher.CalculateHash(password),
+            //     Role = Role.guest
+            // };
             var user = new User
             {
                 Name = name,
                 Email = email,
-                EmailVerified = false,
-                EmailVerificationToken = Guid.NewGuid().ToString(),
-                Password = Hasher.CalculateHash(password), // can hash if required 
+                EmailVerified = true,
+                EmailVerificationToken = null,
+                Password = Hasher.CalculateHash(password),
                 Role = Role.guest
             };
             ctx.Users.Add(user);
@@ -85,7 +100,7 @@ namespace Pacer.Data.Services
         public User ResendVerificationToken(string email)
         {
             var user = ctx.Users.FirstOrDefault(u => u.Email == email && !u.EmailVerified);
-            if(user == null)
+            if (user == null)
             {
                 return null; // Either user doesn't exist or has already verified email.
             }
@@ -172,7 +187,13 @@ namespace Pacer.Data.Services
                 ctx.ForgotPasswords
                     .Where(t => t.Email == email && t.ExpiresAt > DateTime.Now).ToList()
                     .ForEach(t => t.ExpiresAt = DateTime.Now);
-                var f = new ForgotPassword { Email = email };
+
+                var f = new ForgotPassword
+                {
+                    Email = email,
+                    CreatedAt = DateTime.Now, // Setting the current time to CreatedAt
+                    ExpiresAt = DateTime.Now.AddHours(24) // Setting the token to expire in 24 hours
+                };
                 ctx.ForgotPasswords.Add(f);
                 ctx.SaveChanges();
                 return f.Token;

@@ -9,9 +9,9 @@ namespace Pacer.Data.Entities;
 
 public enum RaceType
 {
-    [Display(Name = "Beginner Half Marathon")]
+    [Display(Name = "Beginner Half-Marathon")]
     BHalfMarathon,
-    [Display(Name = "Half Marathon")]
+    [Display(Name = "Half-Marathon")]
     HalfMarathon,
     [Display(Name = "Beginner Marathon")]
     BMarathon,

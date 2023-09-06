@@ -16,7 +16,7 @@ public class NavbarViewComponent : ViewComponent
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var userEmail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
-        var user = await _svc.GetUserByEmail(userEmail);
+        var user = await _svc.AsyncGetUserByEmail(userEmail);
 
         var navbarViewModel = new NavbarViewModel
         {

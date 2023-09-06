@@ -11,14 +11,20 @@
         <input type="hidden" asp-for="RunningProfileId" />
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <hr>
         <div class="mt-3 text-center">
+            Beginner Training Plans are designed to carefully build up your mileage and are less demanding overall than
+            Standard Plans. You will be more likely to hit your target time if you complete a Standard plan instead of
+            Beginner.
+        </div>
+        <hr class="custom-hr">
+        <div class="mt-3 text-center">
+
             @foreach (var recommendationPart in Model.Recommendation)
             {
                 <p><b>@recommendationPart</b></p>
             }
         </div>
-        <hr>
+        <hr class="custom-hr">
         <div class="mt-3">
             <label asp-for="TargetRace" class="form-label">Training Plan @await Component.InvokeAsync("Tooltip", new {
                 key = "CreateTrainingPlan" })</label>
@@ -93,20 +99,16 @@
             if (selectedRaceType === '@marathonValue' || selectedRaceType === '@bMarathonValue') {
                 targetTimeSlider.min = 125; // 2 hours 5 minutes in minutes
                 targetTimeSlider.max = 300; // 5 hours in minutes
-                targetTimeSlider.value = '@(Model.EstimatedMarathonTime.TotalMinutes)';
+                targetTimeSlider.value = Math.floor('@(Model.EstimatedMarathonTime.TotalMinutes)');
                 targetTimeLabel.textContent = 'Marathon Target Time';
 
                 today.setDate(today.getDate() + daysUntilSunday + 16 * 7); // Add 16 weeks to the date
             } else if (selectedRaceType === '@halfMarathonValue' || selectedRaceType === '@bHalfMarathonValue') {
                 targetTimeSlider.min = 60; // 1 hour in minutes
                 targetTimeSlider.max = 150; // 2.5 hours in minutes
-                targetTimeSlider.value = '@(Model.EstimatedHalfMarathonTime.TotalMinutes)';
+                targetTimeSlider.value = Math.floor('@(Model.EstimatedHalfMarathonTime.TotalMinutes)');
                 targetTimeLabel.textContent = 'Half Marathon Target Time';
-                if (selectedRaceType === '@halfMarathonValue') {
-                    today.setDate(today.getDate() + daysUntilSunday + 12 * 7); // Add 12 weeks to the date
-                } else {
-                    today.setDate(today.getDate() + daysUntilSunday + 10 * 7); // Add 10 weeks to the date
-                }
+                today.setDate(today.getDate() + daysUntilSunday + 12 * 7); // Add 12 weeks to the date
             }
             var dateString = today.toISOString().split('T')[0];
             raceDateInput.value = dateString;

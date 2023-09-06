@@ -6,7 +6,7 @@ namespace Pacer.Data.Services
 {
     public interface IWorkoutFactory
     {
-        BaseWorkoutPlanStrategy CreateStrategy(RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
+        BasePlanStrategy CreateStrategy(RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
         
         Workout[] AssignWorkouts(RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
     }

@@ -396,7 +396,7 @@ public class TrainingPlanController : BaseController
     {
         if (!ModelState.IsValid) return View(model);
 
-        var result = _trainingPlanService.EditTargetTime(model.TrainingPlanId, model.TargetRace, model.TargetTime);
+        var result = _trainingPlanService.EditTargetTime(model.TrainingPlanId, model.TargetTime);
 
         if (!result)
         {

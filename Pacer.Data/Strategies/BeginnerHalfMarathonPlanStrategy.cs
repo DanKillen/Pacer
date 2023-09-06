@@ -5,7 +5,7 @@ using Pacer.Data.Utilities;
 
 namespace Pacer.Data.Strategies
 {
-    public class BeginnerHalfMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
+    public class BeginnerHalfMarathonPlanStrategy : BasePlanStrategy
     {
         /*
         * WeekPlans Key:
@@ -39,21 +39,23 @@ namespace Pacer.Data.Strategies
             "X;X;E2;X;E3;X;R2",
             "E2;X;R2;X;E3;X;R2",
             "E3;X;T2;X;E3;X;R2",
-            "E3;X;V2;X;E4;X;R2",
-            "E3;X;T3;X;E4;X;R3",
+            "E3;X;T2;X;E3;X;R3",
+            "E4;X;V2;X;E4;X;R2",
+            "E5;X;T3;X;E4;X;R3",
 
             // build phase
-            "E3;X;V2;X;E4;X;R4",
-            "E5;X;T3;X;E4;X;R4",
+            "E5;X;V2;X;E4;X;R4",
+            "L7;X;T3;X;E4;X;R4",
 
             // peak phase
-            "L7;X;T4;X;R4;X;R3",
-            "L9;X;R4;X;I3\"3 miles at target pace but take 60 second walking breaks in between each mile\";X;R2",
+            "L9;X;T4;X;R4;X;R3",
+            "L10;X;R4;X;I3\"3 miles at target pace but take 60 second walking breaks in between each mile\";X;R2",
 
             // taper phase
             "E4;X;R2;X;T2;X;R2",
+            "E3;X;R2;X;T2;X;R1"
         };
-        public BeginnerHalfMarathonWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
+        public BeginnerHalfMarathonPlanStrategy(DateTime raceDate, TimeSpan targetTime)
         : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
     {
     }

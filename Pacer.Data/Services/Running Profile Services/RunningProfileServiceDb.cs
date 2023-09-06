@@ -10,10 +10,10 @@ namespace Pacer.Data.Services
 {
     public class RunningProfileServiceDb : IRunningProfileService
     {
-        private readonly DatabaseContext _ctx;
+        private readonly IDatabaseContext _ctx;
         private readonly IRaceTimePredictor _raceTimePredictor;
 
-        public RunningProfileServiceDb(DatabaseContext ctx, IRaceTimePredictor raceTimePredictor)
+        public RunningProfileServiceDb(IDatabaseContext ctx, IRaceTimePredictor raceTimePredictor)
         {
             _ctx = ctx;
             _raceTimePredictor = raceTimePredictor;
@@ -24,10 +24,26 @@ namespace Pacer.Data.Services
         public RunningProfile CreateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // First, confirm that a User with the given userId exists
-            User user = _ctx.Users.Find(userId) ?? throw new ArgumentException("No user found with the given userId");
-
-            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(fiveKTime);
-            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(fiveKTime);
+            User user = _ctx.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return null;
+            }
+            var age = DateTime.Now.Year - dateOfBirth.Year;
+            if (age < 18 || age > 85)
+            {
+                throw new ArgumentException("DateOfBirth must correspond to an age between 18 and 85.");
+            }
+            if (fiveKTime.TotalMinutes < 12.5 || fiveKTime.TotalMinutes > 30)
+            {
+                throw new ArgumentException("FiveKTime must be between 12.5 and 30 minutes.");
+            }
+            if (weeklyMileage < 0 || weeklyMileage > 200)
+            {
+                throw new ArgumentException("WeeklyMileage must be between 0 and 200.");
+            }
+            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(age, fiveKTime, gender);
+            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(age, fiveKTime, gender);
 
             RunningProfile newProfile = new()
             {
@@ -46,23 +62,38 @@ namespace Pacer.Data.Services
             return newProfile;
         }
 
-        // Get a running profile by id
+        // Get a running profile by User id
         public RunningProfile GetProfileByUserId(int userId)
         {
             return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.User.Id == userId);
         }
-        
+
+        // Get a running profile by id
         public RunningProfile GetProfileByProfileId(int profileId)
         {
             return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.Id == profileId);
         }
+
         // Update a running profile
         public RunningProfile UpdateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
             // Check if the profile exists in the context
             RunningProfile existingProfile = _ctx.RunningProfiles.FirstOrDefault(rp => rp.UserId == userId) ?? throw new ArgumentException("No running profile found with the given profile Id");
-            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(fiveKTime);
-            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(fiveKTime);
+            var age = DateTime.Now.Year - dateOfBirth.Year;
+            if (age < 18 || age > 85)
+            {
+                throw new ArgumentException("DateOfBirth must correspond to an age between 18 and 85.");
+            }
+            if (fiveKTime.TotalMinutes < 12.5 || fiveKTime.TotalMinutes > 30)
+            {
+                throw new ArgumentException("FiveKTime must be between 12.5 and 30 minutes.");
+            }
+            if (weeklyMileage < 0 || weeklyMileage > 200)
+            {
+                throw new ArgumentException("WeeklyMileage must be between 0 and 200.");
+            }
+            TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(age, fiveKTime, gender);
+            TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(age, fiveKTime, gender);
 
             // Update the profile properties
             existingProfile.DateOfBirth = dateOfBirth;
@@ -75,14 +106,6 @@ namespace Pacer.Data.Services
             _ctx.SaveChanges();
 
             return existingProfile;
-        }
-        // Delete a running profile
-        public void DeleteProfile(RunningProfile profile)
-        {
-            // Check if the profile exists in the context
-            RunningProfile existingProfile = _ctx.RunningProfiles.Find(profile.Id) ?? throw new ArgumentException("No running profile found with the given profile Id");
-            _ctx.RunningProfiles.Remove(existingProfile);
-            _ctx.SaveChanges();
         }
 
     }

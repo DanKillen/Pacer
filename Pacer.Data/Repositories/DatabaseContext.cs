@@ -1,13 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-
-// import the Entities (database models representing structure of tables in database)
 using Pacer.Data.Entities;
 
 namespace Pacer.Data.Repositories
 {
-    // The Context is How EntityFramework communicates with the database
-    // We define DbSet properties for each table in the database
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext, IDatabaseContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<ForgotPassword> ForgotPasswords { get; set; }
@@ -72,5 +68,10 @@ namespace Pacer.Data.Repositories
 
         }
         public static DbContextOptionsBuilder<DatabaseContext> OptionsBuilder => new();
+
+        public void SetEntityState<TEntity>(TEntity entity, EntityState state) where TEntity : class
+        {
+            this.Entry(entity).State = state;
+        }
     }
 }

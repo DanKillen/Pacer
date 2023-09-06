@@ -1,24 +1,22 @@
 @model NavbarViewModel
 
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-    data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-    aria-label="Toggle navigation">
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
     <div class="navbar-nav">
         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-        <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
-        @* <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        <a class="nav-link" asp-controller="Home" asp-action="Secure">Secure</a> *@
+        <a class="nav-link" asp-controller="Home" asp-action="UserGuide">User Guide</a>
+        <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
         @if (User.IsInRole("admin") || User.IsInRole("manager"))
         {
-        <a class="nav-link" asp-controller="User" asp-action="Index">Users</a>
+            <a class="nav-link" asp-controller="User" asp-action="Index">Users</a>
         }
         @if (User.Identity.IsAuthenticated)
         {
-            <a class="nav-link" asp-controller="Profile" asp-action="CreateProfile">Running
-                Profile</a>
+            <a class="nav-link" asp-controller="Profile" asp-action="CreateProfile">Running Profile</a>
             @if (Model?.User?.RunningProfile != null)
             {
                 <a class="nav-link" asp-controller="TrainingPlan" asp-action="Index">Training Plan</a>

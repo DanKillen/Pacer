@@ -36,7 +36,7 @@ namespace Pacer.Web.Controllers
 
         }
 
-        public IActionResult About()
+        public IActionResult UserGuide()
         {
             return View();
         }
@@ -53,13 +53,6 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("Login", "User");
             }
         }
-
-        [Authorize]
-        public IActionResult Secure()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();

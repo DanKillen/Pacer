@@ -49,15 +49,19 @@
                 <td>@u.Role</td>  
                 <td>
                     <div style="display: flex; align-items: center;">
-    <a asp-action="Update" asp-route-id="@u.Id" style="margin-right: 10px;"> 
-        <i class="bi bi-pencil-fill"></i>
-    </a>      
-    @if (User.HasOneOfRoles("admin") && u.Role != Role.admin) {
-        <a asp-action="Delete" asp-route-id="@u.Id">
-            <i class="bi bi-trash-fill" style="color: red;"></i>
-        </a>  
-        }       
-    </div>       
+                        @if ((User.IsInRole("admin")) || 
+                             (User.IsInRole("manager") && u.Role != Role.admin))
+                        {       
+                            <a asp-action="Update" asp-route-id="@u.Id" style="margin-right: 10px;"> 
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>      
+                        }
+                        @if (User.HasOneOfRoles("admin") && u.Role != Role.admin) {
+                            <a asp-action="Delete" asp-route-id="@u.Id">
+                                <i class="bi bi-trash-fill" style="color: red;"></i>
+                            </a>  
+                            }       
+                    </div>       
 </td>             
             </tr>
         }        

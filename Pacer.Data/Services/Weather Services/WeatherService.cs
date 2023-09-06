@@ -63,6 +63,14 @@ public class WeatherService : IWeatherService
     {
         // Basic clothing advice based on temperature.
         string advice = "Wear shorts and a tank top.";
+        if (temperature < -10 || temperature > 40)
+        {
+            return "Dangerous temperatures detected. It is not advisable to run outdoors.";
+        }
+        if (windSpeed > 40)
+        {
+            return "High wind speeds detected. It is not advisable to run outdoors.";
+        }
 
         if (temperature < 5)
         {

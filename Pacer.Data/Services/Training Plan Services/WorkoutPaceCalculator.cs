@@ -10,9 +10,11 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
         _raceTimePredictor = raceTimePredictor ?? throw new ArgumentNullException(nameof(raceTimePredictor));
     }
 
-    public ICollection<TrainingPlanPace> CalculatePaces(TimeSpan targetTime, RaceType raceType)
+    public ICollection<TrainingPlanPace> CalculatePaces(TimeSpan targetTime, RaceType raceType, int age, string gender)
     {
-        TimeSpan equivalentMarathonPace = _raceTimePredictor.CalculateEquivalentMarathonPace(targetTime, raceType);
+
+        TimeSpan equivalentMarathonPace = _raceTimePredictor.CalculateEquivalentMarathonPace(targetTime, raceType, age, gender);
+
 
         var paces = new List<TrainingPlanPace>();
 
@@ -37,6 +39,7 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 
         return paces;
     }
+    
     private Tuple<PaceTime, PaceTime> CalculatePace(WorkoutType type, TimeSpan equivalentMarathonPace)
     {
         double minMultiplier, maxMultiplier;

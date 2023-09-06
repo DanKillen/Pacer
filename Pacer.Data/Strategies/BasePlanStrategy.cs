@@ -6,7 +6,7 @@ using Pacer.Data.Services;
 
 namespace Pacer.Data.Strategies
 {
-    public abstract class BaseWorkoutPlanStrategy
+    public abstract class BasePlanStrategy
     {
         protected enum RunType
         {
@@ -26,7 +26,7 @@ namespace Pacer.Data.Strategies
         protected readonly TimeSpan TargetTime;
 
 
-        protected BaseWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
+        protected BasePlanStrategy(DateTime raceDate, TimeSpan targetTime)
         {
             RaceDate = raceDate;
             TargetTime = targetTime;

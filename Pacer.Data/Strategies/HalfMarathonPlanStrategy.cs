@@ -5,7 +5,7 @@ using Pacer.Data.Utilities;
 
 namespace Pacer.Data.Strategies
 {
-    public class HalfMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
+    public class HalfMarathonPlanStrategy : BasePlanStrategy
     {
         /*
         * WeekPlans Key:
@@ -54,7 +54,7 @@ namespace Pacer.Data.Strategies
             "L6;X;T2;E2;X;R2;X;X",
         };
 
-        public HalfMarathonWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
+        public HalfMarathonPlanStrategy(DateTime raceDate, TimeSpan targetTime)
         : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
     {
     }

@@ -8,7 +8,6 @@
     <link rel="shortcut icon" type="image/x-icon" href="/images/LogoTrimWIP.ico" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Pacer.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 </head>
 
@@ -29,20 +28,37 @@
             </div>
         </nav>
     </header>
+    <div class="wrapper">
+        <div class="container">
+            <partial name="_Alert" />
 
-    <div class="container">
-        <partial name="_Alert" />
-
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
+    @{
+        var controller = ViewContext.RouteData.Values["controller"].ToString();
+        var action = ViewContext.RouteData.Values["action"].ToString();
+    }
 
-    @* <footer class="border-top footer text-muted">
-    <div class="container">
-    &copy; @DateTime.Now.Year - Pacer.Web - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-    </footer> *@
+    @if (!(controller == "Home" && action == "Index"))
+    {
+        <footer class="sticky-footer border-top footer text-muted">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div>
+                    &copy; @DateTime.Now.Year - Pacer - 
+                    <a asp-controller="Home" asp-action="Privacy" style="color: inherit;">Privacy</a> - 
+                    <a asp-controller="Home" asp-action="UserGuide" style="color: inherit;">User Guide</a>
+                </div>
+                <div>
+                    <a href="mailto:feedback.pacer@outlook.com" style="color: inherit;">
+                        <i class="bi bi-envelope-fill"></i> Send Feedback
+                    </a>
+                </div>
+            </div>
+        </footer>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">

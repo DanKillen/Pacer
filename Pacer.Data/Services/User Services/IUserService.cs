@@ -14,9 +14,10 @@ namespace Pacer.Data.Services
         IList<User> GetUsers();
         Paged<User> GetUsers(int page=1, int size=20, string orderBy="id", string direction="asc");
         User GetUser(int id);
-        Task<User> GetUserByEmail(string email);
+        Task<User> AsyncGetUserByEmail(string email);
         bool IsEmailAvailable(string email, int userId);
         Task <User> AddUserAsync(string name, string email, string password);
+        User AddUser(string name, string email, string password);
         User VerifyEmail(int userId, string token);
         User ResendVerificationToken(string email);
         User UpdateUser(User user);

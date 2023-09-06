@@ -17,8 +17,27 @@ body {
   min-height: 100vh;
   color: #f7f7f7; /* Light Grey */
 }
+
+.wrapper {
+  min-height: 100%;
+  margin-bottom: -50px;
+}
+
+.wrapper:after {
+  content: "";
+  height: 50px;
+  display: block;
+}
+
+.sticky-footer {
+  position: fixed;
+    bottom: 0;
+    width: 100%;
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+}
 .custom-hr {
-  border-top: 1px solid #ccc;
+  border-top: 3px solid #ccc;
 }
 
 .key-item {
@@ -105,7 +124,7 @@ nav.navbar {
   justify-content: center;
 }
 
-#about-page .section {
+#user-guide .section {
   position: absolute; /* Makes each section stack on top of each other */
   top: 50%; /* Starts the section at the middle of the page */
   left: 50%; /* Starts the section at the middle of the page */
@@ -115,7 +134,7 @@ nav.navbar {
 }
 
 #index-page #welcome-section,
-#about-page #welcome-section {
+#user-guide #welcome-section {
   padding: 20px;
 }
 
@@ -130,7 +149,7 @@ nav.navbar {
   margin-top: 10px;
 }
 
-#about-page .scroll-indicator {
+#user-guide .scroll-indicator {
   position: absolute !important;  
   bottom: 500px !important;
   left: 50%;
@@ -226,7 +245,7 @@ nav.navbar {
   opacity: 0 !important;
 }
 
-#about-page .section {
+#user-guide .section {
   background-color: #fd7101; /* A bright background to make the section pop */
   color: #000000; /* White text for contrast */
   padding: 30px; /* Padding to give the content some space */
@@ -234,13 +253,13 @@ nav.navbar {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-#about-page .section h1 {
+#user-guide .section h1 {
   margin-bottom: 20px; /* Space between the header and paragraph */
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); /* Shadow to make the header stand out */
   animation: popIn 0.5s ease-out; /* Animation to make the header pop in */
 }
 
-#about-page .section p {
+#user-guide .section p {
   font-size: 1.2em; /* Increase the font size of the paragraph */
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for the paragraph text */
 }

@@ -8,15 +8,15 @@ namespace Pacer.Data.Services
 {
     public class TrainingPlanServiceDb : ITrainingPlanService
     {
-        private readonly DatabaseContext ctx;
+        private readonly IDatabaseContext _ctx;
         private readonly ILogger<TrainingPlanServiceDb> _logger;
         private readonly IWorkoutFactory _workoutFactory;
         private readonly IWorkoutPaceCalculator _workoutPaceCalculator;
         private readonly IRunningProfileService _runningProfileService;
 
-        public TrainingPlanServiceDb(DatabaseContext ctx, ILogger<TrainingPlanServiceDb> logger, IWorkoutFactory workoutFactory, IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator)
+        public TrainingPlanServiceDb(IDatabaseContext ctx, ILogger<TrainingPlanServiceDb> logger, IWorkoutFactory workoutFactory, IRunningProfileService runningProfileService, IWorkoutPaceCalculator workoutPaceCalculator)
         {
-            this.ctx = ctx;
+            _ctx = ctx;
             _logger = logger;
             _workoutFactory = workoutFactory;
             _runningProfileService = runningProfileService;
@@ -39,6 +39,15 @@ namespace Pacer.Data.Services
         {
 
             var runningProfile = _runningProfileService.GetProfileByProfileId(runningProfileId);
+            if (runningProfile == null)
+            {
+                throw new ArgumentException($"No running profile found with id {runningProfileId}");
+            }
+            if (targetTime.TotalHours < 1 || targetTime.TotalHours > 5)
+            {
+                throw new ArgumentException("Target time must be between 1 and 5 hours.");
+            }
+            _ctx.SetEntityState(runningProfile, EntityState.Unchanged);
             var workouts = _workoutFactory.AssignWorkouts(targetRace, raceDate, targetTime);
             var targetPace = CalculateTargetPace(targetRace, targetTime);
 
@@ -53,16 +62,15 @@ namespace Pacer.Data.Services
                 Paces = new List<TrainingPlanPace>()
             };
 
-
-            ctx.TrainingPlans.Add(newTrainingPlan);
-
-            var paces = _workoutPaceCalculator.CalculatePaces(targetTime, targetRace);
+            _ctx.TrainingPlans.Add(newTrainingPlan);
+            var age = DateTime.Now.Year - runningProfile.DateOfBirth.Year;
+            var paces = _workoutPaceCalculator.CalculatePaces(targetTime, targetRace, age, runningProfile.Gender);
             foreach (var pace in paces)
             {
                 newTrainingPlan.Paces.Add(pace);
             }
 
-            ctx.SaveChanges();
+            _ctx.SaveChanges();
             return newTrainingPlan;
         }
 
@@ -82,18 +90,24 @@ namespace Pacer.Data.Services
             return string.Format("{0}:{1:D2}", paceTimeSpan.Minutes, paceTimeSpan.Seconds);
         }
 
-        public bool EditTargetTime(int trainingPlanId, RaceType targetRace, TimeSpan targetTime)
+        public bool EditTargetTime(int trainingPlanId, TimeSpan targetTime)
         {
-            using var transaction = ctx.Database.BeginTransaction();
+            var trainingPlan = GetOnlyPlanById(trainingPlanId);
+            if (trainingPlan == null)
+            {
+                Console.WriteLine($"No training plan found with id {trainingPlanId}");
+                return false;
+            }
+            var runningProfile = _runningProfileService.GetProfileByProfileId(trainingPlan.RunningProfileId);
+            if (runningProfile == null)
+            {
+                Console.WriteLine($"No running profile found with id {trainingPlan.RunningProfileId}");
+                return false;
+            }
+            using var transaction = _ctx.Database.BeginTransaction();
             try
             {
-                var trainingPlan = GetPlanById(trainingPlanId);
-                if (trainingPlan == null)
-                {
-                    Console.WriteLine($"No training plan found with id {trainingPlanId}");
-                    return false;
-                }
-
+                var age = DateTime.Now.Year - runningProfile.DateOfBirth.Year;
                 trainingPlan.TargetTime = targetTime;
                 trainingPlan.TargetPace = CalculateTargetPace(trainingPlan.TargetRace, targetTime);
 
@@ -106,13 +120,13 @@ namespace Pacer.Data.Services
                     trainingPlan.Paces = new List<TrainingPlanPace>();
                 }
 
-                var paces = _workoutPaceCalculator.CalculatePaces(targetTime, trainingPlan.TargetRace);
+                var paces = _workoutPaceCalculator.CalculatePaces(targetTime, trainingPlan.TargetRace, age, runningProfile.Gender);
                 foreach (var pace in paces)
                 {
                     trainingPlan.Paces.Add(pace);
                 }
 
-                ctx.SaveChanges();
+                _ctx.SaveChanges();
 
                 transaction.Commit();  // Commit the transaction if all operations were successful
                 return true;
@@ -128,47 +142,49 @@ namespace Pacer.Data.Services
         public string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth)
         {
             int age = DateTime.Now.Year - dateOfBirth.Year;
-            string marathonRecommendation;
+            string recommendation;
+            bool slowMarathonTime = estimatedMarathonTime.TotalHours > 5;
+            bool slowHalfMarathonTime = estimatedHalfMarathonTime.TotalHours > 2.5;
 
-            // Marathon Recommendations
             if (age > 70)
             {
-                marathonRecommendation = "Given your age, we would recommend our Beginner Training Plans and would discourage you from a whole Marathon.";
+                recommendation = "Given your age, we would advise against the longer distances here. If you wish to continue, we suggest our Beginner Training Plans tailored for shorter distances.";
             }
-            else if (estimatedMarathonTime.TotalHours < 3.5)
+            else if (estimatedMarathonTime.TotalHours < 3.5 || estimatedHalfMarathonTime.TotalHours < 1.5)
             {
-                marathonRecommendation = weeklyMileage > 20 ?
-                    "Given your weekly mileage and estimated pace, we recommend the Standard Training Plans for you." :
-                    "While you have promising estimated times, we would be concerned about the lack of weekly mileage. At this stage we would recommend our Beginner Training Plans.";
+                recommendation = weeklyMileage > 20 ?
+                    "Your strong estimated times and weekly mileage make you a good candidate for our Standard Training Plans." :
+                    "Your estimated times are promising, but we suggest increasing your weekly mileage for optimal results. Consider our Beginner Training Plans.";
             }
-            else if (estimatedMarathonTime.TotalHours < 4)
+            else if (slowMarathonTime || slowHalfMarathonTime)
             {
-                marathonRecommendation = weeklyMileage >= 20 ?
-                    (age < 45 ?
-                        "Considering your age and performance, our Standard Training Plans seem suitable." :
-                        "Given your age and performance, the Beginner Plans might be more appropriate. However, if you have past marathon experience, the Standard Plan remains an option.") :
-                        "Your estimated times suggest potential, but building up your mileage will benefit your training. We advise starting with our Beginner Training Plans.";
+                string raceTypeAdvice = slowMarathonTime ? "marathon" : "half-marathon";
+                if (slowMarathonTime && slowHalfMarathonTime) raceTypeAdvice = "both marathon and half-marathon";
+                recommendation = $"Your estimated times for the {raceTypeAdvice} suggest you could benefit from focusing on improving your fitness before attempting a longer race. If you wish to continue, we recommend our Beginner Training Plans.";
             }
             else
             {
-                marathonRecommendation = "Given your current estimated times, we suggest starting with one of our Beginner Training Plans.";
+                recommendation = "Your current performance indicates that our Beginner Training Plans would be a suitable starting point.";
             }
-
             return new string[]
             {
-        $"Estimated Marathon Time: {estimatedMarathonTime.Hours}:{estimatedMarathonTime.Minutes:D2}.",
-        $"Estimated Half Marathon Time: {estimatedHalfMarathonTime.Hours}:{estimatedHalfMarathonTime.Minutes:D2}.",
-        marathonRecommendation,
-        "These are just estimations. Actual race performance can vary based on a myriad of factors."
+                $"Estimated Marathon Time: {estimatedMarathonTime.Hours}:{estimatedMarathonTime.Minutes:D2}.",
+                $"Estimated Half Marathon Time: {estimatedHalfMarathonTime.Hours}:{estimatedHalfMarathonTime.Minutes:D2}.",
+                recommendation,
+                "Please note, these are estimations and actual race performance can vary."
             };
         }
 
         public TrainingPlan GetPlanById(int id)
         {
-            return ctx.TrainingPlans.AsSplitQuery()
+            return _ctx.TrainingPlans.AsSplitQuery()
                                     .Include(plan => plan.Workouts)
                                     .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                     .FirstOrDefault(plan => plan.Id == id);
+        }
+        private TrainingPlan GetOnlyPlanById(int id)
+        {
+            return _ctx.TrainingPlans.Find(id);
         }
 
         // Get a training plan by user
@@ -181,7 +197,7 @@ namespace Pacer.Data.Services
 
                 return null;
             }
-            return ctx.TrainingPlans.AsSplitQuery()
+            return _ctx.TrainingPlans.AsSplitQuery()
                                     .Include(plan => plan.Workouts)
                                     .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                     .FirstOrDefault(plan => plan.RunningProfileId == profile.Id);
@@ -190,16 +206,16 @@ namespace Pacer.Data.Services
         // Update a training plan
         public TrainingPlan UpdatePlan(TrainingPlan plan)
         {
-            ctx.TrainingPlans.Update(plan);
-            ctx.SaveChanges();
+            _ctx.TrainingPlans.Update(plan);
+            _ctx.SaveChanges();
             return plan;
         }
 
         // Delete a training plan
         public bool DeletePlan(TrainingPlan plan)
         {
-            ctx.TrainingPlans.Remove(plan);
-            ctx.SaveChanges();
+            _ctx.TrainingPlans.Remove(plan);
+            _ctx.SaveChanges();
             return true;
         }
 
@@ -214,7 +230,7 @@ namespace Pacer.Data.Services
                     workout.ActualDistance = actualDistance;
                     workout.ActualTime = actualTime;
                     Console.WriteLine("Workout Actuals Saved: " + workoutId + " " + actualDistance + " " + workout.ActualTime);
-                    ctx.SaveChanges();
+                    _ctx.SaveChanges();
                     return true;
                 }
                 else
@@ -253,7 +269,7 @@ namespace Pacer.Data.Services
                 workout.ActualDistance = 0;
                 workout.ActualTime = new TimeSpan(0, 0, 0);
 
-                ctx.SaveChanges();
+                _ctx.SaveChanges();
 
                 return true;
             }

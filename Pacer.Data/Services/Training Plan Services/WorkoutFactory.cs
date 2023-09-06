@@ -9,14 +9,14 @@ namespace Pacer.Data.Services
     public class WorkoutFactory : IWorkoutFactory
     {
 
-        public BaseWorkoutPlanStrategy CreateStrategy(RaceType targetRace, DateTime raceDate, TimeSpan targetTime)
+        public BasePlanStrategy CreateStrategy(RaceType targetRace, DateTime raceDate, TimeSpan targetTime)
         {
             return targetRace switch
             {
-                RaceType.Marathon => new MarathonWorkoutPlanStrategy(raceDate, targetTime),
-                RaceType.BMarathon => new BeginnerMarathonWorkoutPlanStrategy(raceDate, targetTime),
-                RaceType.HalfMarathon => new HalfMarathonWorkoutPlanStrategy(raceDate, targetTime),
-                RaceType.BHalfMarathon => new BeginnerHalfMarathonWorkoutPlanStrategy(raceDate, targetTime),
+                RaceType.Marathon => new MarathonPlanStrategy(raceDate, targetTime),
+                RaceType.BMarathon => new BeginnerMarathonPlanStrategy(raceDate, targetTime),
+                RaceType.HalfMarathon => new HalfMarathonPlanStrategy(raceDate, targetTime),
+                RaceType.BHalfMarathon => new BeginnerHalfMarathonPlanStrategy(raceDate, targetTime),
                 _ => throw new ArgumentException("Invalid targetRace parameter"),
             };
         }

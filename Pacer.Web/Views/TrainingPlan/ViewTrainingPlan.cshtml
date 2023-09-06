@@ -1,197 +1,286 @@
 @model TrainingPlanViewModel
+@{
+    bool isMobile = Context.Request.Headers["User-Agent"].ToString().Contains("Mobi");
+    int currentWeekToShow = 1;
+}
 
-<div id="training-plan" class="card shadow p-5 mt-4 mx-auto w-75">
-    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
-        <img src="\images\LogoTrimWIP.png" height="50px">
-    </div>
-    <a href="@Url.Action("Calendar")" class="btn btn-info">
-        <i class="bi bi-calendar"></i> Calendar View</a>
-    <partial name="_TrainingPlanHeader" model="Model" />
-    <partial name="_DetailsButton" model="Model" />
-    <div class="row align-items-center justify-content-center">
-        <div class="col-md-6 text-center p-2">
-            <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
-        </div>
-        <div class="col-md-6 text-center">
-            <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
-        </div>
-        <hr class="custom-hr">
-    </div>
-
-    @{
-        int currentWeekToShow = 1; // Default to week 1
-        DateTime today = DateTime.Today;
-        for (int j = 0; j < Model.Weeks.Count; j++)
+@if (isMobile)
+{
+    // Mobile-only view
+    DateTime today = DateTime.Today;
+    var todayWorkout = Model.Weeks
+    .SelectMany(w => w.Workouts)
+    .FirstOrDefault(w => w.Date.Date == today);
+    if (todayWorkout != null)
+    {
+        <h3>@todayWorkout.Date.ToString("dddd, MMMM d, yyyy")</h3>
+        <h4>@todayWorkout.Type.GetDisplayName()</h4>
+        <p>Distance: @todayWorkout.TargetDistance miles</p>
+        <p>Target Pace: @todayWorkout.TargetPace per mile</p>
+        <p>@todayWorkout.WorkoutDescription</p>
+        @if (todayWorkout.ActualDistance > 0)
         {
-            if (Model.Weeks[j].Workouts.Any(w => w.Date.Date >= today && w.Date.Date <= today.AddDays(6)))
-            {
-                currentWeekToShow = j + 1;
-                break;
-            }
+            <div class="col-md-4">
+                <div id="previous-results-@todayWorkout.Id">
+                    <h4>Workout Complete!
+                <img src="/images/GreenTick.png" width="10%" alt="Green Tick" /></h4>
+                    <p id="prev-distance-@todayWorkout.Id">Distance Ran: @todayWorkout.ActualDistance miles</p>
+                    <p id="prev-time-@todayWorkout.Id">Duration: @todayWorkout.ActualTime</p>
+                    <p id="prev-pace-@todayWorkout.Id">Pace: @todayWorkout.ActualPace min/mile</p>
+                    <form method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
+                        onsubmit="return confirmClear();">
+                        <input type="hidden" name="WorkoutId" value="@todayWorkout.Id" />
+                        <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                        <button type="submit" class="clear-button">Clear</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <form id="entry-form-@todayWorkout.Id" method="post" action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")"
+                onsubmit="return validateForm(@todayWorkout.Id)">
+                <input type="hidden" name="WorkoutId" value="@todayWorkout.Id" />
+                <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                <div class="mb-1">
+                    <label for="actualDistance-@todayWorkout.Id"><b>Actual Distance Ran:</b></label>
+                    <input type="number" id="actualDistance-@todayWorkout.Id" name="ActualDistance"
+                        value=@todayWorkout.TargetDistance min="0" max="50" required> miles
+                    <div>
+                        <span id="distanceWarning-@todayWorkout.Id" class="warning-text"></span>
+                    </div>
+                </div>
+                <div>
+                    <label for="actualTime-@todayWorkout.Id"><b>Actual Duration:</b></label>
+                    <div style="display: flex; justify-content: space-between; max-width: 200px;">
+                        <div>
+                            <label for="actualHours-@todayWorkout.Id">Hours:</label>
+                            <input type="number" id="actualHours-@todayWorkout.Id" name="ActualHours" min="0" max="10" required
+                                value="0">
+                        </div>
+                        <div>
+                            <label for="actualMinutes-@todayWorkout.Id">Minutes:</label>
+                            <input type="number" id="actualMinutes-@todayWorkout.Id" name="ActualMinutes" min="0" max="59" required
+                                value="0">
+                        </div>
+                        <div>
+                            <label for="actualSeconds-@todayWorkout.Id">Seconds:</label>
+                            <input type="number" id="actualSeconds-@todayWorkout.Id" name="ActualSeconds" min="0" max="59" required
+                                value="0">
+                        </div>
+                    </div>
+                    <div>
+                        <span id="durationWarning-@todayWorkout.Id" class="warning-text"></span>
+                    </div>
+
+                </div>
+                <button id="saveButton" type="submit">Save Workout</button>
+            </form>
         }
     }
-    @for (int i = 0; i < Model.Weeks.Count; i++)
+    else
     {
-        var week = Model.Weeks[i];
-        <div class="week-content" id="week-@week.WeekNumber"
-            style="display: @(i + 1 == currentWeekToShow ? "block" : "none")">
-            <h3>Week @week.WeekNumber</h3>
-            <ul class="list-group mb-3">
-                @foreach (var workout in week.Workouts)
+        <h3>@today.Date.ToString("dddd, MMMM d, yyyy")</h3>
+        <h3>No Workout Today</h3>
+    }
+}
+else
+{
+    <div id="training-plan" class="card shadow p-5 mt-4 mx-auto w-75">
+        <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
+            <img src="\images\LogoTrimWIP.png" height="50px">
+        </div>
+        <a href="@Url.Action("Calendar")" class="btn btn-info">
+            <i class="bi bi-calendar"></i> Calendar View</a>
+        <partial name="_TrainingPlanHeader" model="Model" />
+        <partial name="_DetailsButton" model="Model" />
+        <div class="row align-items-center justify-content-center">
+            <div class="col-12 col-md-6 text-center p-2">
+                <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+            </div>
+            <div class="col-12 col-md-6 text-center">
+                <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
+            </div>
+            <hr class="custom-hr">
+        </div>
+
+        @{
+            DateTime today = DateTime.Today;
+            for (int j = 0; j < Model.Weeks.Count; j++)
+            {
+                if (Model.Weeks[j].Workouts.Any(w => w.Date.Date >= today && w.Date.Date <= today.AddDays(6)))
                 {
-                    string listItemClass = "";
-                    if (workout.ActualDistance > 0)
+                    currentWeekToShow = j + 1;
+                    break;
+                }
+            }
+        }
+        @for (int i = 0; i < Model.Weeks.Count; i++)
+        {
+            var week = Model.Weeks[i];
+            <div class="week-content" id="week-@week.WeekNumber"
+                style="display: @(i + 1 == currentWeekToShow ? "block" : "none")">
+                <h3>Week @week.WeekNumber</h3>
+                <ul class="list-group mb-3">
+                    @foreach (var workout in week.Workouts)
                     {
-                        if (workout.ActualDistance < workout.TargetDistance)
+                        string listItemClass = "";
+                        if (workout.ActualDistance > 0)
                         {
-                            listItemClass = "not-fully-complete";
-                        }
-                        else
-                        {
-                            listItemClass = "completed-workout";
-                        }
-                    }
-
-                    <li class="list-group-item @listItemClass">
-                        <div class="row">
-                            <h5>@workout.Date.ToString("dddd, MMMM d")</h5>
-                            <hr class="custom-hr">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center">
-                                    <h4 class="text-bold" style="margin-right: 10px;">@workout.Type.GetDisplayName() </h4>
-                                    @await Component.InvokeAsync("Tooltip", new { key = workout.Type.ToString() })
-                                </div>
-
-                                <h6>
-                                    <p>Distance: @workout.TargetDistance miles</p>
-                                    <p>Target Pace: @workout.TargetPace per mile</p>
-                                    <p>@workout.WorkoutDescription</p>
-                                </h6>
-                            </div>
-
-                            @if (workout.ActualDistance > 0)
+                            if (workout.ActualDistance < workout.TargetDistance)
                             {
-                                <div class="col-md-4">
-                                    <div id="previous-results-@workout.Id">
-                                        <h4>Workout Complete</h4>
-                                        <p id="prev-distance-@workout.Id">Distance Ran: @workout.ActualDistance miles</p>
-                                        <p id="prev-time-@workout.Id">Duration: @workout.ActualTime</p>
-                                        <p id="prev-pace-@workout.Id">Pace: @workout.ActualPace min/mile</p>
-                                        <form method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
-                                            onsubmit="return confirmClear();">
-                                            <input type="hidden" name="WorkoutId" value="@workout.Id" />
-                                            <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
-                                            <button type="submit" class="clear-button">Clear</button>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <img src="/images/GreenTick.png" width="100%" alt="Green Tick" />
-                                </div>
+                                listItemClass = "not-fully-complete";
                             }
                             else
                             {
-                                <div class="col-md-6" style="padding-top: 20px;">
-                                    <form id="entry-form-@workout.Id" method="post"
-                                        action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")"
-                                        onsubmit="return validateForm(@workout.Id)">
-                                        <input type="hidden" name="WorkoutId" value="@workout.Id" />
-                                        <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
-                                        <div class="mb-1">
-                                            <label for="actualDistance-@workout.Id"><b>Actual Distance Ran:</b></label>
-                                            <input type="number" id="actualDistance-@workout.Id" name="ActualDistance"
-                                                value=@workout.TargetDistance min="0" max="50" required> miles
-                                            <div>
-                                                <span id="distanceWarning-@workout.Id" class="warning-text"></span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label for="actualTime-@workout.Id"><b>Actual Duration:</b></label>
-                                            <div style="display: flex; justify-content: space-between; max-width: 200px;">
-                                                <div>
-                                                    <label for="actualHours-@workout.Id">Hours:</label>
-                                                    <input type="number" id="actualHours-@workout.Id" name="ActualHours" min="0"
-                                                        max="10" required value="0">
-                                                </div>
-                                                <div>
-                                                    <label for="actualMinutes-@workout.Id">Minutes:</label>
-                                                    <input type="number" id="actualMinutes-@workout.Id" name="ActualMinutes" min="0"
-                                                        max="59" required value="0">
-                                                </div>
-                                                <div>
-                                                    <label for="actualSeconds-@workout.Id">Seconds:</label>
-                                                    <input type="number" id="actualSeconds-@workout.Id" name="ActualSeconds" min="0"
-                                                        max="59" required value="0">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <span id="durationWarning-@workout.Id" class="warning-text"></span>
-                                            </div>
-
-                                        </div>
-                                        <button id="saveButton" type="submit">Save Workout</button>
-                                    </form>
-                                </div>
+                                listItemClass = "completed-workout";
                             }
+                        }
+
+                        <li class="list-group-item @listItemClass">
+                            <div class="row">
+                                <h5>@workout.Date.ToString("dddd, MMMM d")</h5>
+                                <hr class="custom-hr">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <h4 class="text-bold" style="margin-right: 10px;">@workout.Type.GetDisplayName() </h4>
+                                        @await Component.InvokeAsync("Tooltip", new { key = workout.Type.ToString() })
+                                    </div>
+
+                                    <h6>
+                                        <p>Distance: @workout.TargetDistance miles</p>
+                                        <p>Target Pace: @workout.TargetPace per mile</p>
+                                        <p>@workout.WorkoutDescription</p>
+                                    </h6>
+                                </div>
+
+                                @if (workout.ActualDistance > 0)
+                                {
+                                    <div class="col-md-4">
+                                        <div id="previous-results-@workout.Id">
+                                            <h4>Workout Complete</h4>
+                                            <p id="prev-distance-@workout.Id">Distance Ran: @workout.ActualDistance miles</p>
+                                            <p id="prev-time-@workout.Id">Duration: @workout.ActualTime</p>
+                                            <p id="prev-pace-@workout.Id">Pace: @workout.ActualPace min/mile</p>
+                                            <form method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
+                                                onsubmit="return confirmClear();">
+                                                <input type="hidden" name="WorkoutId" value="@workout.Id" />
+                                                <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                                                <button type="submit" class="clear-button">Clear</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <img src="/images/GreenTick.png" width="100%" alt="Green Tick" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-6" style="padding-top: 20px;">
+                                        <form id="entry-form-@workout.Id" method="post"
+                                            action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")"
+                                            onsubmit="return validateForm(@workout.Id)">
+                                            <input type="hidden" name="WorkoutId" value="@workout.Id" />
+                                            <input type="hidden" name="returnUrl" value="ViewTrainingPlan" />
+                                            <div class="mb-1">
+                                                <label for="actualDistance-@workout.Id"><b>Actual Distance Ran:</b></label>
+                                                <input type="number" id="actualDistance-@workout.Id" name="ActualDistance"
+                                                    value=@workout.TargetDistance min="0" max="50" required> miles
+                                                <div>
+                                                    <span id="distanceWarning-@workout.Id" class="warning-text"></span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="actualTime-@workout.Id"><b>Actual Duration:</b></label>
+                                                <div style="display: flex; justify-content: space-between; max-width: 200px;">
+                                                    <div>
+                                                        <label for="actualHours-@workout.Id">Hours:</label>
+                                                        <input type="number" id="actualHours-@workout.Id" name="ActualHours" min="0"
+                                                            max="10" required value="0">
+                                                    </div>
+                                                    <div>
+                                                        <label for="actualMinutes-@workout.Id">Minutes:</label>
+                                                        <input type="number" id="actualMinutes-@workout.Id" name="ActualMinutes" min="0"
+                                                            max="59" required value="0">
+                                                    </div>
+                                                    <div>
+                                                        <label for="actualSeconds-@workout.Id">Seconds:</label>
+                                                        <input type="number" id="actualSeconds-@workout.Id" name="ActualSeconds" min="0"
+                                                            max="59" required value="0">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span id="durationWarning-@workout.Id" class="warning-text"></span>
+                                                </div>
+
+                                            </div>
+                                            <button id="saveButton" type="submit">Save Workout</button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        </li>
+
+                    }
+                </ul>
+            </div>
+            {
+                <!-- Race Day Card -->
+                <div class="week-content" id="week-@(@Model.Weeks.Count + 1)" style="display: none">
+                    <div id="race-day-card" class="card shadow p-4 mt-5 mx-auto w-75">
+                        <div class="position-absolute top-0 start-50 translate-middle p-2">
+                            <img src="/images/race-day-gold-star.png" alt="Star" height="50" z-index: 100; />
                         </div>
-                    </li>
 
-                }
-            </ul>
-        </div>
-        {
-            <!-- Race Day Card -->
-            <div class="week-content" id="week-@(@Model.Weeks.Count + 1)" style="display: none">
-                <div id="race-day-card" class="card shadow p-4 mt-5 mx-auto w-75">
-                    <div class="position-absolute top-0 start-50 translate-middle p-2">
-                        <img src="/images/race-day-gold-star.png" alt="Star" height="50" z-index: 100; />
-                    </div>
+                        <h3 class="my-3 mx-auto">Race Day!</h3>
 
-                    <h3 class="my-3 mx-auto">Race Day!</h3>
-
-                    <div class="list-group-item text-center">
-                        <h3>@Model.RaceDate.ToString("dddd, MMMM d, yyyy")</h3>
-                        <div class="row justify-content-center">
-                            <div>
-                                <h3>@Model.TargetTime @GetRaceName(Model.TargetRace.GetDisplayName())</h3>
-                                <p>Today is the day! Good luck!</p>
-                                <p>Run the @GetRaceName(Model.TargetRace.GetDisplayName()) at
-                                    @Model.TargetPace minutes per mile.</p>
+                        <div class="list-group-item text-center">
+                            <h3>@Model.RaceDate.ToString("dddd, MMMM d, yyyy")</h3>
+                            <div class="row justify-content-center">
+                                <div>
+                                    <h3>@Model.TargetTime @GetRaceName(Model.TargetRace.GetDisplayName())</h3>
+                                    <p>Today is the day! Good luck!</p>
+                                    <p>Run the @GetRaceName(Model.TargetRace.GetDisplayName()) at
+                                        @Model.TargetPace minutes per mile.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            }
+
+        }
+        <div class="row align-items-center justify-content-center">
+            <hr class="custom-hr">
+            <div class="col-md-6 text-center">
+                <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
             </div>
-        }
+            <div class="col-md-6 text-center">
+                <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
+            </div>
 
-    }
-    <div class="row align-items-center justify-content-center">
-        <hr class="custom-hr">
-        <div class="col-md-6 text-center">
-            <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+
+
         </div>
-        <div class="col-md-6 text-center">
-            <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
-        </div>
-
-
-
     </div>
-    @functions {
-        string GetRaceName(string displayName)
-        {
-            return displayName.Replace("Beginner ", "");
-        }
+}
 
+
+@functions {
+    string GetRaceName(string displayName)
+    {
+        return displayName.Replace("Beginner ", "");
     }
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
-        <script>
-            window.currentWeek = @currentWeekToShow;
-            window.totalWeeks = @Model.Weeks.Count + 1;
-        </script>
-        <script src="~/js/weeklist.js" asp-append-version="true"></script>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        window.currentWeek = @currentWeekToShow;
+        window.totalWeeks = @Model.Weeks.Count + 1;
+    </script>
+    <script src="~/js/weeklist.js" asp-append-version="true"></script>
+}

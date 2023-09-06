@@ -1,14 +1,11 @@
-
 using Pacer.Data.Entities;
 using Pacer.Data.Services;
 using Pacer.Data.Utilities;
-using Microsoft.Extensions.Logging;
 
 namespace Pacer.Data.Strategies
 {
-   
-    public class BeginnerMarathonWorkoutPlanStrategy : BaseWorkoutPlanStrategy
-    { 
+    public class MarathonPlanStrategy : BasePlanStrategy
+    {
         /*
         * WeekPlans Key:
         * Each string in the WeekPlans array represents a week's workout plan. Every day's workout is separated by a semicolon.
@@ -35,38 +32,33 @@ namespace Pacer.Data.Strategies
         * prepare for the race.
         * Taper Phase: Mileage and intensity are reduced to allow the athlete to recover and be fresh for the race.
         */
+
         private readonly string[] WeekPlans = {
             // base phase
-            "E4;R2;X;E4;X;L5;X",
-            "E5;R3;X;E4;X;L5;X",
-            "E4;R3;X;E5;X;L7;X",
-            "E4;X;E4;R2;E5;X;R4",
-            "E5;X;E4;R2;E5;X;R5",
-            "L8;X;E4;R3;E5;X;R5",
-
+            "L6;X;E6;R3;E5;X;R5",
+            "L7;X;E6;R3;E5;X;R5",
+            "L8;X;E6;R3;E5;X;R5",
+            "L8;X;E8;E9;X;E5;R4",
             // build phase
-            "L10;X;E5;X;E6;X;R5",
-            "L12;X;E5;X;T5\"Maintain a consistent, slightly challenging pace\";X;E5",
-            "L15;X;I4\"Run fast for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;E5;X;R5",
-            "L16;X;E6;X;T7\"Maintain a consistent, slightly challenging pace\";X;E6",
-
+            "L12;X;R5;X;E9;X;R5",
+            "M13\"Run the first 8 miles at a comfortable pace and then the last 5 miles at target pace\";X;T10\"Run the first 5 miles at a comfortable pace and then the last 5 miles at target pace\";X;E6;X;R6",
+            "L18;X;E6;T8\"Run the first 3 miles at a comfortable pace and then the last 5 miles at target pace\";X;E8",
+            "M16\"Run the first 8 miles at a comfortable pace and then the last 8 at target pace\";X;I5\"5 miles at target pace but take 60 second walking breaks in between each mile\";R5;X;E5;R4",
+            "L18;X;E8;T8\"Run the first 3 miles at a comfortable pace and then the last 5 miles at target pace\";X;E10",
             // peak phase
-            "L20;X;I5\"Run target pace for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;E6;X;R5",
-            "M14\"Run 4 miles at a comfortable pace, and then 10 miles at target pace\";X;E6;X;T8\"Maintain a consistent, slightly challenging pace\";X;E7",
-            "L20;X;E5;X;I5\"Run target pace for 1 minute, then walk or jog for 2 minutes. Repeat.\";X;R5",
-
+            "L20;X;R7;T10\"Run the first 3 miles at a comfortable pace and then the last 7 miles at target pace\";X;E8;R5",
+            "M18\"Run the first 8 miles at a comfortable pace and then the last 10 at target pace\";X;E7;I8\"8 miles at target pace but take 60 second walking breaks in between each mile\";X;L13;R4",
+            "L16;X;E8;L11;X;T6;R4",
+            "L17;X;R7;I7\"7 miles at target pace but take 60 second walking breaks in between each mile\";X;L11;R4",
             // taper phase
-            "L14;X;E6;X;T6\"Maintain a consistent, slightly challenging pace\";X;R5",
-            "L8;X;T5\"Maintain a consistent, slightly challenging pace\";X;E5;X;R4",
-            "L6;X;R4;M4\"Run 2 miles at a comfortable pace, and then 2 miles at target pace\";X;R3;R2",
-
+            "E10;X;E8;R6;X;R4;I5\"5 miles at target pace but take 60 second walking breaks in between each mile\"",
+            "E5;X;R5;T5;X;R5;X",
+            "T4;X;R4;M7\"Run the first 5 miles at a comfortable pace and then the last 2 miles at target pace\";X;X;R4;X",
         };
 
-        public BeginnerMarathonWorkoutPlanStrategy(DateTime raceDate, TimeSpan targetTime)
-        : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
+        public MarathonPlanStrategy(DateTime raceDate, TimeSpan targetTime) : base(raceDate, targetTime) // Pass the dependencies to the base class constructor
         {
         }
-
         public override Workout[] GenerateWorkouts()
         {
             var workouts = new List<Workout>();
@@ -81,7 +73,6 @@ namespace Pacer.Data.Strategies
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred during the parsing of week {week + 1}: {ex.Message}");
-                    // If you wish to stop the execution when an error occurs, uncomment the line below
                     // throw;
                 }
 

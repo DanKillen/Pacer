@@ -10,7 +10,7 @@ namespace Pacer.Data.Services
 
         // Create a new training plan
         TrainingPlan CreatePlan(int RunningProfileId, RaceType targetRace, DateTime raceDate, TimeSpan targetTime);
-        bool EditTargetTime(int trainingPlanId, RaceType targetRace, TimeSpan targetTime);
+        bool EditTargetTime(int trainingPlanId, TimeSpan targetTime);
         string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth);
 
         TrainingPlan GetPlanById(int Id);

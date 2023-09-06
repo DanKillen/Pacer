@@ -28,6 +28,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 
 // Add Services to DI   
+builder.Services.AddScoped<IDatabaseContext, DatabaseContext>();
 builder.Services.AddTransient<IUserService,UserServiceDb>();
 builder.Services.AddTransient<IMailService,SmtpMailService>();
 builder.Services.AddTransient<ITrainingPlanService, TrainingPlanServiceDb>();

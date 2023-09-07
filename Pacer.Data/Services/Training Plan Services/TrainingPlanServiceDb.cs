@@ -95,13 +95,13 @@ namespace Pacer.Data.Services
             var trainingPlan = GetOnlyPlanById(trainingPlanId);
             if (trainingPlan == null)
             {
-                Console.WriteLine($"No training plan found with id {trainingPlanId}");
+                _logger.LogWarning($"No training plan found with id {trainingPlanId}");
                 return false;
             }
             var runningProfile = _runningProfileService.GetProfileByProfileId(trainingPlan.RunningProfileId);
             if (runningProfile == null)
             {
-                Console.WriteLine($"No running profile found with id {trainingPlan.RunningProfileId}");
+                _logger.LogWarning($"No running profile found with id {trainingPlan.RunningProfileId}");
                 return false;
             }
             using var transaction = _ctx.Database.BeginTransaction();
@@ -134,7 +134,7 @@ namespace Pacer.Data.Services
             catch (Exception ex)
             {
                 transaction.Rollback();  // Rollback the transaction in case of an exception
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                _logger.LogError($"Error editing target time: {ex.Message}");
                 return false;
             }
         }
@@ -229,19 +229,18 @@ namespace Pacer.Data.Services
                 {
                     workout.ActualDistance = actualDistance;
                     workout.ActualTime = actualTime;
-                    Console.WriteLine("Workout Actuals Saved: " + workoutId + " " + actualDistance + " " + workout.ActualTime);
                     _ctx.SaveChanges();
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine("Workout not found.");
+                    _logger.LogWarning($"No workout found with id {workoutId}");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError($"Error saving workout actuals: {e.Message}");
                 return false;
             }
         }
@@ -254,7 +253,7 @@ namespace Pacer.Data.Services
 
                 if (trainingPlan == null)
                 {
-                    Console.WriteLine($"No training plan found for user {userId}");
+                    _logger.LogWarning($"No training plan found for user id: {userId}");
                     return false;
                 }
 
@@ -262,7 +261,7 @@ namespace Pacer.Data.Services
 
                 if (workout == null)
                 {
-                    Console.WriteLine($"No workout found with id {workoutId}");
+                    _logger.LogWarning($"No workout found with id {workoutId}");
                     return false;
                 }
 
@@ -275,7 +274,7 @@ namespace Pacer.Data.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError($"Error clearing workout actuals: {e.Message}");
                 return false;
             }
         }

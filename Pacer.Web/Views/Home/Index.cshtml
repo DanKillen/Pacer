@@ -3,67 +3,79 @@
     bool isMobile = Context.Request.Headers["User-Agent"].ToString().Contains("Mobi");
 }
 
-<body id="index-page">
+<body id="index-page" role="main">
     <div id="fixed-container">
         @if (isMobile)
         {
-            <a asp-controller="TrainingPlan" asp-action="Index" style="text-decoration: none; color: inherit;">
-                <div class="section fade-in">
+            <a asp-controller="TrainingPlan" asp-action="Index" style="text-decoration: none; color: inherit;"
+                aria-label="Go to Training Plan">
+                <div class="section fade-in" role="region" aria-label="Welcome Section">
                     @if (User.Identity.IsAuthenticated)
                     {
                         <img src="/images/LogoTrimWIP.png" width="50%" alt="Logo">
-                        <h1 class="display-3">Welcome back @Model</h1>
+                        <h1 class="display-3" aria-label="Welcome back">Welcome back @Model</h1>
                     }
                     else
                     {
                         <img src="/images/LogoTrimWIP.png" width="50%" alt="Logo">
-                        <h1 class="display-3">Welcome to <b>Pacer</b></h1>
+                        <h1 class="display-3" aria-label="Welcome to Pacer">Welcome to <b>Pacer</b></h1>
                     }
+
+                    <div role="region" aria-label="Instruction Section">
+                        Click to continue
+                    </div>
+                </div>
+                <div class="mobile-footer">
+                    <p><i>Note: Mobile functionality is limited. Pacer is best experienced on a desktop computer.</i></p>
                 </div>
             </a>
         }
         else
         {
-            <div id="welcome-section" class="section fade-in">
+            <div id="welcome-section" class="section fade-in" role="region" aria-label="Welcome Section">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <h1 class="display-3">Hello @Model,</h1>
-                    <h1 class="display-3">Welcome back to <b>Pacer</b></h1>
+                    <h1 class="display-3" aria-label="Hello User">Hello @Model,</h1>
+                    <h1 class="display-3" aria-label="Welcome back to Pacer">Welcome back to <b>Pacer</b></h1>
                 }
                 else
                 {
-                    <h1 class="display-3">Welcome to</h1>
-                    <h1 class="display-3"><b>Pacer</b></h1>
+                    <h1 class="display-3" aria-label="Welcome to">Welcome to</h1>
+                    <h1 class="display-3" aria-label="Pacer"><b>Pacer</b></h1>
                 }
 
-                <div id="scroll-indicator">
+                <div id="scroll-indicator" role="navigation" aria-label="Scroll Indicator">
                     <p>Scroll Down</p>
-                    <img src="/images/arrow-down.png" alt="Arrow pointing down">
+                    <img src="/images/arrow-down.png" alt="Arrow pointing down" tabindex="0">
                 </div>
             </div>
 
             <!-- Logo section -->
-            <div id="logo-section" class="section fade-out">
+            <div id="logo-section" class="section fade-out" role="region" aria-label="Logo Section">
                 <img src="/images/LogoTrimWIP.png" width="75%" alt="Logo">
-                <div id="scroll-indicator">
-                    <img src="/images/arrow-down.png" alt="Arrow pointing down">
+                <div id="scroll-indicator" role="navigation" aria-label="Scroll Indicator">
+                    <img src="/images/arrow-down.png" alt="Arrow pointing down" tabindex="0">
                 </div>
             </div>
 
             <!-- Bespoke menu section -->
-            <div id="menu-section" class="section fade-out">
-
+            <div id="menu-section" class="section fade-out" role="navigation" aria-label="Menu Section">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="menu-button" id="first-button" asp-controller="Profile" asp-action="CreateProfile">Profile</a>
-                    <a class="menu-button" id="second-button" asp-controller="Weather" asp-action="Location">Local Weather</a>
+                    <a class="menu-button" id="first-button" asp-controller="Profile" asp-action="CreateProfile"
+                        aria-label="Go to Profile">Profile</a>
+                    <a class="menu-button" id="second-button" asp-controller="Weather" asp-action="Location"
+                        aria-label="Check Local Weather">Local Weather</a>
                 }
                 else
                 {
-                    <a class="menu-button" id="first-button" asp-controller="User" asp-action="Login">Log In</a>
-                    <a class="menu-button" id="second-button" asp-controller="User" asp-action="Register">Register</a>
+                    <a class="menu-button" id="first-button" asp-controller="User" asp-action="Login" aria-label="Log In">Log
+                        In</a>
+                    <a class="menu-button" id="second-button" asp-controller="User" asp-action="Register"
+                        aria-label="Register">Register</a>
                 }
-                <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="UserGuide">How do I use Pacer?</a>
+                <a class="menu-button" id="how-to-button" asp-controller="Home" asp-action="UserGuide"
+                    aria-label="How to use Pacer">How do I use Pacer?</a>
             </div>
         }
 </body>

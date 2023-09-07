@@ -3,12 +3,12 @@
 <body id="tutorial">
     <div class="card shadow p-4 mt-4 mx-auto w-75">
         <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
-            <img src="\images\LogoTrimWIP.png" height="50px">
+            <img src="\images\LogoTrimWIP.png" height="50px" alt="Logo">
         </div>
-        <h1 class="mx-auto">Understanding Your Workouts</h1>
+        <h1 class="mx-auto" aria-label="Understanding Your Workouts">Understanding Your Workouts</h1>
 
         <hr class="custom-hr">
-        <div class="intro-section">
+        <section class="intro-section" aria-label="Introduction">
             <p>
                 Training for a long-distance race is not just about clocking in the miles. It's
                 necessary to balance various types of workouts, each serving a unique purpose in preparing your body for
@@ -22,11 +22,12 @@
             </p>
             <p>
                 Each workout has a pace range that you should aim to stay within. A perfect run would
-                begin at the lower end, with your second-half pace being at the higher end. This helps to build a habit of 
-                finishing strong. 
+                begin at the lower end, with your second-half pace being at the higher end. This helps to build a habit
+                of
+                finishing strong.
             </p>
-        </div>
-        <h2 class="mx-auto">
+        </section>
+        <h2 class="mx-auto" role="navigation" aria-label="Navigation Buttons">
             <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
                 <i class="bi bi-list"></i> Return to Week List</a>
             <a href="@Url.Action("Calendar")" class="btn btn-info">
@@ -34,71 +35,78 @@
         </h2>
         <hr class="custom-hr">
         <!-- Recovery Run -->
-        <div class="workout-info jsCalendar-RecoveryRun">
-            <h4>Recovery Run</h4>
-            <p>Recovery runs are slower-paced and shorter in distance. They're designed to help your muscles
-                recover from more intense workouts. By promoting circulation without causing additional strain,
-                recovery runs can speed up the healing process and help prevent injuries.</p>
-        </div>
-
-        <!-- Easy Run -->
-        <div class="workout-info jsCalendar-EasyRun">
-            <h4>Easy Run</h4>
-            <p>Easy runs are your standard, moderate-paced runs. They build aerobic capacity, increase endurance,
-                and serve as a foundation for more challenging workouts. They're a staple in most training plans
-                and are crucial for building a solid running base without overtaxing the body.</p>
-        </div>
-
-        <!-- Long Run -->
-        <div class="workout-info jsCalendar-LongRun">
-            <h4>Long Run</h4>
-            <p>Long runs are essential for building stamina and endurance. These runs are typically longer than your
-                regular runs and are done at a comfortable pace. They help your body adapt to longer distances,
-                improving
-                your cardiovascular system and muscle strength, and are a cornerstone of most training programs.</p>
-        </div>
-        @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
-        {
-            <!-- Race Pace -->
-            <div class="workout-info jsCalendar-MarathonPace">
-                <h4>Race Pace</h4>
-                <p>Race pace workouts are about practicing the pace you aim to achieve on race day. It helps you understand
-                    how it feels to run at that specific speed and builds both physical and mental confidence. These runs
-                    are typically shorter than the actual race but are important for building comfort at that pace.</p>
+        <article class="workout-info-section" aria-label="Workout Information">
+            <div class="workout-info jsCalendar-RecoveryRun" aria-label="Recovery Run">
+                <h4>Recovery Run</h4>
+                <p>Recovery runs are slower-paced and shorter in distance. They're designed to help your muscles
+                    recover from more intense workouts. By promoting circulation without causing additional strain,
+                    recovery runs can speed up the healing process and help prevent injuries.</p>
             </div>
-        }
-        <!-- Interval Training -->
-        <div class="workout-info jsCalendar-IntervalTraining">
-            <h4>Interval Training</h4>
-            <p>Interval training involves short bursts of high-intensity running followed by recovery periods. This
-                type of workout improves speed and cardiovascular fitness. By pushing your body into the anaerobic
-                zone for brief moments, you increase your aerobic capacity, helping you run faster over longer
-                distances.</p>
-        </div>
 
-        <!-- Tempo Run -->
-        <div class="workout-info jsCalendar-TempoRun">
-            <h4>Tempo Run</h4>
-            <p>Tempo runs, also known as threshold runs, are comfortably hard runs where you push the pace but not so
-                much that you can't sustain it. They train your body to sustain faster speeds over longer periods,
-                improving metabolic fitness and teaching your body to use oxygen for metabolism more efficiently.</p>
-        </div>
-        @if (Model.TargetRace != RaceType.BMarathon)
-        {
-        <!-- VO2 Max -->
-        <div class="workout-info jsCalendar-VO2Max">
-            <h4>VO2 Max</h4>
-            <p>VO2 Max workouts aim to improve the maximum rate at which your body can take in and use oxygen during
-                exercise. These are high-intensity workouts that push your body to its limits. Enhancing your VO2 Max
-                can lead to improvements in race times and overall running economy.</p>
-        </div>
-        }
-        <h2 class="mx-auto">
-            <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
-                <i class="bi bi-list"></i> Return to Week List</a>
-            <a href="@Url.Action("Calendar")" class="btn btn-info">
-                <i class="bi bi-calendar"></i> Return to Calendar</a>
-        </h2>
+            <!-- Easy Run -->
+            <div class="workout-info jsCalendar-EasyRun" aria-label="Easy Run">
+                <h4>Easy Run</h4>
+                <p>Easy runs are your standard, moderate-paced runs. They build aerobic capacity, increase endurance,
+                    and serve as a foundation for more challenging workouts. They're a staple in most training plans
+                    and are crucial for building a solid running base without overtaxing the body.</p>
+            </div>
+
+            <!-- Long Run -->
+            <div class="workout-info jsCalendar-LongRun" aria-label="Long Run">
+                <h4>Long Run</h4>
+                <p>Long runs are essential for building stamina and endurance. These runs are typically longer than your
+                    regular runs and are done at a comfortable pace. They help your body adapt to longer distances,
+                    improving
+                    your cardiovascular system and muscle strength, and are a cornerstone of most training programs.</p>
+            </div>
+            @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
+            {
+                <!-- Race Pace -->
+                <div class="workout-info jsCalendar-MarathonPace" aria-label="Race Pace">
+                    <h4>Race Pace</h4>
+                    <p>Race pace workouts are about practicing the pace you aim to achieve on race day. It helps you
+                        understand
+                        how it feels to run at that specific speed and builds both physical and mental confidence. These
+                        runs
+                        are typically shorter than the actual race but are important for building comfort at that pace.</p>
+                </div>
+            }
+            <!-- Interval Training -->
+            <div class="workout-info jsCalendar-IntervalTraining" aria-label="Interval Training">
+                <h4>Interval Training</h4>
+                <p>Interval training involves short bursts of high-intensity running followed by recovery periods. This
+                    type of workout improves speed and cardiovascular fitness. By pushing your body into the anaerobic
+                    zone for brief moments, you increase your aerobic capacity, helping you run faster over longer
+                    distances.</p>
+            </div>
+
+            <!-- Tempo Run -->
+            <div class="workout-info jsCalendar-TempoRun" aria-label="Tempo Run">
+                <h4>Tempo Run</h4>
+                <p>Tempo runs, also known as threshold runs, are comfortably hard runs where you push the pace but not
+                    so
+                    much that you can't sustain it. They train your body to sustain faster speeds over longer periods,
+                    improving metabolic fitness and teaching your body to use oxygen for metabolism more efficiently.
+                </p>
+            </div>
+            @if (Model.TargetRace != RaceType.BMarathon)
+            {
+                <!-- VO2 Max -->
+                <div class="workout-info jsCalendar-VO2Max" aria-label="VO2 Max">
+                    <h4>VO2 Max</h4>
+                    <p>VO2 Max workouts aim to improve the maximum rate at which your body can take in and use oxygen during
+                        exercise. These are high-intensity workouts that push your body to its limits. Enhancing your VO2
+                        Max
+                        can lead to improvements in race times and overall running economy.</p>
+                </div>
+            }
+            <h2 class="mx-auto">
+                <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
+                    <i class="bi bi-list"></i> Return to Week List</a>
+                <a href="@Url.Action("Calendar")" class="btn btn-info">
+                    <i class="bi bi-calendar"></i> Return to Calendar</a>
+            </h2>
+        </article>
 
     </div>
 </body>

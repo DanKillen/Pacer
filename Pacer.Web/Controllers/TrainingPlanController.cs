@@ -13,7 +13,7 @@ public class TrainingPlanController : BaseController
     private readonly ITrainingPlanService _trainingPlanService;
     private readonly IRunningProfileService _runningProfileService;
 
-    public TrainingPlanController(ITrainingPlanService trainingPlanService, IRunningProfileService runningProfileService, ILogger<UserController> logger) : base(logger)
+    public TrainingPlanController(ITrainingPlanService trainingPlanService, IRunningProfileService runningProfileService, ILogger<TrainingPlanController> logger) : base(logger)
     {
         _trainingPlanService = trainingPlanService;
         _runningProfileService = runningProfileService;
@@ -23,6 +23,7 @@ public class TrainingPlanController : BaseController
     {
         if (!User.Identity.IsAuthenticated)
         {
+            _logger.LogWarning("User is not authenticated.");
             Alert("You need to be logged in to access this page.", AlertType.danger);
             return null;
         }
@@ -148,16 +149,19 @@ public class TrainingPlanController : BaseController
     {
         if (trainingPlan == null)
         {
+            _logger.LogError("Training plan not found.");
             Alert("Error: Training plan not found", AlertType.danger);
             return false;
         }
         if (trainingPlan.Workouts == null)
         {
+            _logger.LogError("Training plan has null workouts.");
             Alert("Error: Training plan has null workouts", AlertType.danger);
             return false;
         }
         if (!trainingPlan.Workouts.Any())
         {
+            _logger.LogError("Training plan has no workouts.");
             Alert("Error: Training plan has no workouts", AlertType.danger);
             return false;
         }
@@ -236,6 +240,13 @@ public class TrainingPlanController : BaseController
     {
         if (ModelState.IsValid)
         {
+            var userId = GetUserId();
+            var planCheck = _trainingPlanService.GetPlanByUserId(userId.Value);
+            if (planCheck != null)
+            {
+                Alert("Error: Training Plan already exists", AlertType.danger);
+                return RedirectToAction("Index", "TrainingPlan");
+            }
             try
             {
                 var plan = _trainingPlanService.CreatePlan(model.RunningProfileId, model.TargetRace, model.RaceDate, model.TargetTime);
@@ -244,11 +255,13 @@ public class TrainingPlanController : BaseController
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error creating Training Plan: {ex}");
                 Alert("Error creating Training Plan: " + ex.Message, AlertType.danger);
             }
         }
         else
         {
+            _logger.LogWarning("Model state is invalid.");
             Alert("Error creating Training Plan", AlertType.danger);
         }
 
@@ -331,8 +344,9 @@ public class TrainingPlanController : BaseController
         {
             actualTime = new TimeSpan(ActualHours, ActualMinutes, ActualSeconds);
         }
-        catch (FormatException)
+        catch (FormatException ex)
         {
+            _logger.LogError($"Error parsing time: {ex.Message}");
             return BadRequest(new { message = "Error: Invalid time format" });
         }
 
@@ -340,14 +354,14 @@ public class TrainingPlanController : BaseController
         {
             var userId = GetUserId();
             _trainingPlanService.SaveWorkoutActuals(WorkoutId, userId.Value, ActualDistance, actualTime);
-
-
+            _logger.LogInformation("Workout actuals saved successfully.");
             Alert("Workout added successfully. Great job!", AlertType.success);
             return RedirectToAction(returnUrl);
 
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Error saving workout actuals: {ex.Message}");
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving data: " + ex.Message });
         }
     }
@@ -364,6 +378,7 @@ public class TrainingPlanController : BaseController
         }
         else
         {
+            _logger.LogWarning("Workout not cleared. Potential issue.");
             Alert("Workout not cleared. Please try again", AlertType.danger);
             return RedirectToAction(returnUrl);
         }
@@ -377,6 +392,7 @@ public class TrainingPlanController : BaseController
         if (trainingPlan == null)
         {
             // No training plan with the provided ID exists.
+            _logger.LogWarning("No Training Plan found for ID.");
             return NotFound();
         }
 
@@ -401,6 +417,7 @@ public class TrainingPlanController : BaseController
         if (!result)
         {
             Alert("New Target Time did not save", AlertType.danger);
+            _logger.LogWarning("Edited Target Time did not save.");
             return Index();
 
         }
@@ -433,8 +450,8 @@ public class TrainingPlanController : BaseController
 
         if (trainingPlan == null)
         {
-            TempData["Alert.Message"] = "Error: Training plan not found";
-            TempData["Alert.Type"] = "danger";
+            _logger.LogError("Training plan not found.");
+            Alert("Error: Training plan not found", AlertType.danger);
             return RedirectToAction("Error", "Home");
         }
 
@@ -442,6 +459,7 @@ public class TrainingPlanController : BaseController
 
         if (!result)
         {
+            _logger.LogWarning("Training Plan not deleted. Potential issue.");
             Alert("Training Plan not deleted. Please try again", AlertType.danger);
             return RedirectToAction("ViewTrainingPlan");
         }

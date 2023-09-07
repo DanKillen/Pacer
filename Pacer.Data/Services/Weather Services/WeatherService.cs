@@ -14,7 +14,6 @@ public class WeatherService : IWeatherService
     public async Task<WeatherResponse> GetWeather(decimal latitude, decimal longitude)
     {
         string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric";
-        Console.WriteLine(openWeatherUrl);
 
         HttpResponseMessage response = await _httpClient.GetAsync(openWeatherUrl);
         if (response.IsSuccessStatusCode)
@@ -24,11 +23,8 @@ public class WeatherService : IWeatherService
                 PropertyNameCaseInsensitive = true
             };
             string content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(content);
-            WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(content, options);
-            Console.WriteLine(weatherResponse.Main?.Temp.ToString() ?? "Main.Temp is null");
-            Console.WriteLine(weatherResponse.Wind?.Speed.ToString() ?? "Wind.Speed is null");
 
+            WeatherResponse weatherResponse = JsonSerializer.Deserialize<WeatherResponse>(content, options);
             return weatherResponse;
         }
         else
@@ -40,7 +36,6 @@ public class WeatherService : IWeatherService
     public async Task<WeatherResponse> GetWeatherByLocation(string location)
     {
         string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}&units=metric";
-        Console.WriteLine(openWeatherUrl);
 
         HttpResponseMessage response = await _httpClient.GetAsync(openWeatherUrl);
         if (response.IsSuccessStatusCode)
@@ -110,7 +105,7 @@ public class WeatherService : IWeatherService
         {
             advice += " Bring a waterproof running jacket.";
         }
-        if (weather.ToLower().Contains("sun"))
+        if (weather.ToLower().Contains("sun") || weather.ToLower().Contains("clear"))
         {
             advice += " Make sure to apply suncream.";
         }

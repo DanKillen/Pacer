@@ -23,7 +23,8 @@
             <div class="col-md-4">
                 <div id="previous-results-@todayWorkout.Id">
                     <h4>Workout Complete!
-                <img src="/images/GreenTick.png" width="10%" alt="Green Tick" /></h4>
+                        <img src="/images/GreenTick.png" width="10%" alt="Green Tick" />
+                    </h4>
                     <p id="prev-distance-@todayWorkout.Id">Distance Ran: @todayWorkout.ActualDistance miles</p>
                     <p id="prev-time-@todayWorkout.Id">Duration: @todayWorkout.ActualTime</p>
                     <p id="prev-pace-@todayWorkout.Id">Pace: @todayWorkout.ActualPace min/mile</p>
@@ -83,27 +84,35 @@
         <h3>@today.Date.ToString("dddd, MMMM d, yyyy")</h3>
         <h3>No Workout Today</h3>
     }
+    <div class="mobile-footer">
+        <p><i>Note: Mobile functionality is limited. Pacer is best experienced on a desktop computer.</i></p>
+    </div>
 }
 else
 {
     <div id="training-plan" class="card shadow p-5 mt-4 mx-auto w-75">
         <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
-            <img src="\images\LogoTrimWIP.png" height="50px">
+            <img src="\images\LogoTrimWIP.png" height="50px" alt="Logo">
         </div>
+
+        <!-- Navigation and Header Partial Views -->
         <a href="@Url.Action("Calendar")" class="btn btn-info">
             <i class="bi bi-calendar"></i> Calendar View</a>
         <partial name="_TrainingPlanHeader" model="Model" />
         <partial name="_DetailsButton" model="Model" />
+
+        <!-- Week navigation buttons -->
         <div class="row align-items-center justify-content-center">
             <div class="col-12 col-md-6 text-center p-2">
-                <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
             </div>
             <div class="col-12 col-md-6 text-center">
-                <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
+                <button id="nextWeek" aria-label="Next Week">Next Week <i class="bi bi-caret-right-fill"></i></button>
             </div>
             <hr class="custom-hr">
         </div>
 
+        <!-- Week Content -->
         @{
             DateTime today = DateTime.Today;
             for (int j = 0; j < Model.Weeks.Count; j++)
@@ -250,17 +259,15 @@ else
             }
 
         }
+         <!-- Week navigation buttons (repeated) -->
         <div class="row align-items-center justify-content-center">
             <hr class="custom-hr">
             <div class="col-md-6 text-center">
-                <button id="prevWeek"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
             </div>
             <div class="col-md-6 text-center">
-                <button id="nextWeek">Next Week <i class="bi bi-caret-right-fill"></i></button>
+                <button id="nextWeek" aria-label="Next Week">Next Week <i class="bi bi-caret-right-fill"></i></button>
             </div>
-
-
-
         </div>
     </div>
 }

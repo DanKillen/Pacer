@@ -25,12 +25,20 @@ public class WeatherController : BaseController
         // Show a page asking for the user's permission to use their location.
         return View();
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Weather(decimal latitude, decimal longitude)
     {
+        _logger.LogInformation($"Fetching weather for latitude: {latitude}, longitude: {longitude}");
+
         var weatherResponse = await _weatherService.GetWeather(latitude, longitude);
-        Console.WriteLine(JsonSerializer.Serialize(weatherResponse));
+
+        if (weatherResponse == null)
+        {
+            _logger.LogError("Weather response is null");
+            Alert("Error Receiving Response, please try again later", AlertType.warning);
+            return RedirectToAction(nameof(Location));
+        }
 
         if (weatherResponse.Name == "Londonderry County Borough")
         {
@@ -53,6 +61,7 @@ public class WeatherController : BaseController
 
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Model state is not valid.");
             Alert("Error Receiving Response", AlertType.warning);
             return RedirectToAction(nameof(Location));
         }
@@ -62,8 +71,11 @@ public class WeatherController : BaseController
     [HttpGet]
     public async Task<IActionResult> WeatherByLocation(string location)
     {
+        _logger.LogInformation($"Fetching weather by location: {location}");
+
         if (string.IsNullOrWhiteSpace(location))
         {
+            _logger.LogWarning("Location is empty or null");
             Alert("Please enter a location", AlertType.warning);
             return RedirectToAction(nameof(Location));
         }
@@ -74,7 +86,6 @@ public class WeatherController : BaseController
             Alert("Location not found", AlertType.warning);
             return RedirectToAction(nameof(Location));
         }
-        Console.WriteLine(JsonSerializer.Serialize(weatherResponse));
 
         if (weatherResponse.Name == "Londonderry County Borough" || weatherResponse.Name == "Londonderry")
         {
@@ -95,19 +106,18 @@ public class WeatherController : BaseController
             Advice = _weatherService.GetClothingAdvice(weatherResponse.Main.Temp, weatherResponse.Wind.Speed, weatherResponse.Main.Humidity, weatherResponse.Weather[0].Main)
         };
 
-        if (!ModelState.IsValid)
+       if (!ModelState.IsValid)
         {
-            // Log or print the errors
+            _logger.LogError("Weather Model State is not valid");
             foreach (var modelState in ModelState.Values)
             {
                 foreach (var error in modelState.Errors)
                 {
-                    Console.WriteLine(error.ErrorMessage);
+                    _logger.LogError("Weather Model State Error:" + error.ErrorMessage);
                 }
             }
-        }
-        Console.WriteLine(weatherViewModel);
-        return View(weatherViewModel);
+        };
+        return View("Weather", weatherViewModel); ;
     }
 
 }

@@ -14,7 +14,5 @@ public class TrainingPlanCalendarViewModel
     public int Year { get; set; }
     public List<WorkoutViewModel> Workouts { get; set; }
     public List<WeekDistance> WeekDistances { get; set; }
-    public List<double> TargetDistances => WeekDistances.Select(w => w.TargetDistance).ToList();
-    public List<double> ActualDistances => WeekDistances.Select(w => w.ActualDistance).ToList();
 
 }

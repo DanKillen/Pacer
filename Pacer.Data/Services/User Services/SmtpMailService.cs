@@ -1,12 +1,14 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Pacer.Data.Services;
 
 namespace Pacer.Data.Services;
 
 public class SmtpMailService : IMailService
 {
+    protected readonly ILogger _logger;
     private readonly string _from;
     private readonly string _host;
     private readonly int _port;
@@ -14,8 +16,9 @@ public class SmtpMailService : IMailService
     private readonly string _password;
 
     // appsettings.json section MailSettings contains mail configuration
-    public SmtpMailService(IConfiguration config)
+    public SmtpMailService(IConfiguration config, ILogger<SmtpMailService> logger)
 {
+    _logger = logger;
     // First, try to get values from environment variables
     _from = Environment.GetEnvironmentVariable("FromAddress");
     _host = Environment.GetEnvironmentVariable("Host");
@@ -59,7 +62,7 @@ public class SmtpMailService : IMailService
             DeliveryMethod = SmtpDeliveryMethod.Network,
             Timeout = 20000
         };
-        Console.WriteLine($"Sending email from {_from} to {to}. {client.Host}:{client.Port}");
+        _logger.LogInformation($"Sending email from {_from} to {to}. {client.Host}:{client.Port}");
         try
         {
             // construct the mail message
@@ -77,22 +80,22 @@ public class SmtpMailService : IMailService
             try
             {
                 client.Send(mail);
+                _logger.LogInformation($"Email sent to {to}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                _logger.LogError($"Error sending email: {ex.Message}");
                 if (ex.InnerException != null)
                 {
-                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                    _logger.LogError($"Inner exception: {ex.InnerException.Message}");
                 }
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error constructing email: {ex.Message}");
+            _logger.LogError($"Error constructing email: {ex.Message}");
             return false;
         }
     }

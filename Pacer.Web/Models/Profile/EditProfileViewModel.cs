@@ -19,6 +19,5 @@ public class EditProfileViewModel
     public int WeeklyMileage { get; set; }
     public int FiveKTimeMinutes { get; set; }
     public int FiveKTimeSeconds { get; set; }
-    public bool HasTrainingPlan { get; set; }
 
 }

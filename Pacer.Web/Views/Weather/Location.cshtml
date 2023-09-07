@@ -1,9 +1,9 @@
 <div class="card shadow p-4 mt-4 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
-        <img src="\images\LogoTrimWIP.png" height="50px">
+        <img src="\images\LogoTrimWIP.png" height="50px" alt="Logo">
     </div>
     <h1 class="mx-auto">Location Permission</h1>
-    <hr style="border-top: 5px solid #ccc;">
+    <hr class="custom-hr">
     <p>We will use weather data to give you clothing recommendations for running.</p>
     <p>If you are comfortable with sharing your Geolocation data you can proceed with the button below.</p>
 
@@ -13,7 +13,7 @@
         <input type="hidden" name="latitude" id="latitude" value="">
         <input type="hidden" name="longitude" id="longitude" value="">
     </form>
-    <hr style="border-top: 5px solid #ccc;">
+    <hr class="custom-hr">
     <form asp-controller="Weather" asp-action="WeatherByLocation" method="get" id="manual-form">
         <p>Alternatively, you can enter a location here.</p>
         <p>To make it more precise put the city's name followed by the 2-letter country code @await Component.InvokeAsync("Tooltip", new { key = "CountryCode" }). </p>
@@ -24,40 +24,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById('request-geo-button').addEventListener('click', function () {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-
-                    // Enable the "Proceed with Geolocation Data" button
-                    document.getElementById('geo-button').disabled = false;
-
-                }, function (error) {
-                    console.error('Error obtaining geolocation: ', error);
-                });
-            } else {
-                console.error('Geolocation not available in this browser.');
-            }
-        });
-
-        document.getElementById('location-form').addEventListener('submit', function (event) {
-            var location = document.getElementById('location').value;
-            var latitude = document.getElementById('latitude').value;
-            var longitude = document.getElementById('longitude').value;
-
-            if (location) {
-                event.preventDefault(); // prevent the default form submission
-                window.location.href = `/Weather/WeatherByLocation?location=${location}`;
-            }
-            // If latitude and longitude are available, it will use the form's default action, i.e., post to Weather/Weather
-            else if (!(latitude && longitude)) {
-                console.error('No location data available.');
-                event.preventDefault(); // prevent the form submission if no data available
-            }
-        });
-
-
-    </script>
+    <script src="~/js/location-permission.js" asp-append-version="true"></script>
 }

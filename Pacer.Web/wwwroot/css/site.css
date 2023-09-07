@@ -11,11 +11,13 @@ html {
 }
 
 body {
-  background-color: #333030; /* Dark Grey */
+  background-color: #333030;
+  /* Dark Grey */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  color: #f7f7f7; /* Light Grey */
+  color: #f7f7f7;
+  /* Light Grey */
 }
 
 .wrapper {
@@ -31,11 +33,22 @@ body {
 
 .sticky-footer {
   position: fixed;
-    bottom: 0;
-    width: 100%;
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+  bottom: 0;
+  width: 100%;
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
 }
+
+.mobile-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  font-size: small;
+}
+
 .custom-hr {
   border-top: 3px solid #ccc;
 }
@@ -44,19 +57,26 @@ body {
   display: inline-block;
   white-space: nowrap;
 }
+
 .tooltip-icon {
   font-size: 12px;
   vertical-align: top;
   display: inline-block;
 }
+
 /* Modern style for primary buttons */
 .btn-primary {
-  background-color: #007BFF; /* Keeping it blue */
+  background-color: #007BFF;
+  /* Keeping it blue */
   border: none;
-  border-radius: 25px; /* Rounded corners */
-  padding: 10px 20px; /* A bit more padding */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  transition: all 0.3s; /* Smooth transition for hover effects */
+  border-radius: 25px;
+  /* Rounded corners */
+  padding: 10px 20px;
+  /* A bit more padding */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  transition: all 0.3s;
+  /* Smooth transition for hover effects */
 }
 
 .btn-primary:hover {
@@ -71,19 +91,25 @@ body {
   border: none;
   transition: color 0.2s;
   padding: 5px 10px;
-  border-radius: 15px; /* Rounded corners for hover background */
-  background-color: transparent; /* No background initially */
+  border-radius: 15px;
+  /* Rounded corners for hover background */
+  background-color: transparent;
+  /* No background initially */
 }
 
 .btn-link:hover {
-  color: #fff; /* White text on hover */
-  background-color: #007BFF; /* Blue background on hover */
+  color: #fff;
+  /* White text on hover */
+  background-color: #007BFF;
+  /* Blue background on hover */
 }
 
 .table,
 .card {
-  background-color: #323232; /* Dark Grey */
-  color: #f7f7f7; /* Light Grey */
+  background-color: #323232;
+  /* Dark Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   margin: 20px 0;
@@ -100,16 +126,19 @@ nav.navbar {
 
 /* Start of Index/About Page CSS */
 .fixed-container {
-  position: fixed; /* This makes sure the container covers the entire viewport */
+  position: fixed;
+  /* This makes sure the container covers the entire viewport */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex; /* Flexbox to center its children */
+  display: flex;
+  /* Flexbox to center its children */
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* Prevents any overflow from children */
+  overflow: hidden;
+  /* Prevents any overflow from children */
 }
 
 #index-page .section {
@@ -125,12 +154,18 @@ nav.navbar {
 }
 
 #user-guide .section {
-  position: absolute; /* Makes each section stack on top of each other */
-  top: 50%; /* Starts the section at the middle of the page */
-  left: 50%; /* Starts the section at the middle of the page */
-  transform: translate(-50%, -50%); /* Ensures true centering */
-  width: 80%; /* Adjust as necessary for desired width */
-  text-align: center; /* Center the content inside each section */
+  position: absolute;
+  /* Makes each section stack on top of each other */
+  top: 50%;
+  /* Starts the section at the middle of the page */
+  left: 50%;
+  /* Starts the section at the middle of the page */
+  transform: translate(-50%, -50%);
+  /* Ensures true centering */
+  width: 80%;
+  /* Adjust as necessary for desired width */
+  text-align: center;
+  /* Center the content inside each section */
 }
 
 #index-page #welcome-section,
@@ -150,7 +185,7 @@ nav.navbar {
 }
 
 #user-guide .scroll-indicator {
-  position: absolute !important;  
+  position: absolute !important;
   bottom: 500px !important;
   left: 50%;
   transform: translateX(-50%);
@@ -246,22 +281,32 @@ nav.navbar {
 }
 
 #user-guide .section {
-  background-color: #fd7101; /* A bright background to make the section pop */
-  color: #000000; /* White text for contrast */
-  padding: 30px; /* Padding to give the content some space */
-  border-radius: 15px; /* Rounded corners for a softer appearance */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  background-color: #fd7101;
+  /* A bright background to make the section pop */
+  color: #000000;
+  /* White text for contrast */
+  padding: 30px;
+  /* Padding to give the content some space */
+  border-radius: 15px;
+  /* Rounded corners for a softer appearance */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
 }
 
 #user-guide .section h1 {
-  margin-bottom: 20px; /* Space between the header and paragraph */
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); /* Shadow to make the header stand out */
-  animation: popIn 0.5s ease-out; /* Animation to make the header pop in */
+  margin-bottom: 20px;
+  /* Space between the header and paragraph */
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  /* Shadow to make the header stand out */
+  animation: popIn 0.5s ease-out;
+  /* Animation to make the header pop in */
 }
 
 #user-guide .section p {
-  font-size: 1.2em; /* Increase the font size of the paragraph */
-  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for the paragraph text */
+  font-size: 1.2em;
+  /* Increase the font size of the paragraph */
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  /* Subtle shadow for the paragraph text */
 }
 
 .hidden {
@@ -272,12 +317,13 @@ nav.navbar {
 /* Animation to make the header pop in */
 @keyframes popIn {
   0% {
-      transform: scale(0.9);
-      opacity: 0;
+    transform: scale(0.9);
+    opacity: 0;
   }
+
   100% {
-      transform: scale(1);
-      opacity: 1;
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -285,23 +331,35 @@ nav.navbar {
 /* Training View  */
 
 #detailsButton {
-  font-size: 1em;        /* Font size of text */
-  color: #009688;        /* Dark Teal */
-  cursor: pointer;         /* Change cursor to hand pointer on hover */
-  transition: all 0.3s;   /* Smooth transition for hover effects */
-  display: inline-block;  /* To apply padding correctly */
-  padding: 10px 10px;      /* Some padding to make it look more button-like */
-  border-radius: 5px;     /* Rounded corners */
-  border: 2px solid #009688; /* Dark Teal */
+  font-size: 1em;
+  /* Font size of text */
+  color: #009688;
+  /* Dark Teal */
+  cursor: pointer;
+  /* Change cursor to hand pointer on hover */
+  transition: all 0.3s;
+  /* Smooth transition for hover effects */
+  display: inline-block;
+  /* To apply padding correctly */
+  padding: 10px 10px;
+  /* Some padding to make it look more button-like */
+  border-radius: 5px;
+  /* Rounded corners */
+  border: 2px solid #009688;
+  /* Dark Teal */
+  background-color: #009688;
 }
 
 #detailsButton:hover {
-  background-color: #f7f7f713; /* Light background on hover */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  background-color: #f7f7f713;
+  /* Light background on hover */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  /* Slight shadow for depth */
 }
 
 #detailsButton i {
-  margin-right: 5px; /* Spacing between icon and text */
+  margin-right: 5px;
+  /* Spacing between icon and text */
 }
 
 #detailsBox {
@@ -316,7 +374,7 @@ nav.navbar {
   margin-bottom: 15px;
 }
 
-.completed-workout{
+.completed-workout {
   border: 2px solid #32CD32 !important;
   padding: 10px;
   border-radius: 5px;
@@ -329,8 +387,10 @@ nav.navbar {
 }
 
 #training-plan .completed-workout {
-  background-color: #323232; /* Dark Grey */
-  color: #f7f7f7; /* Light Grey */
+  background-color: #323232;
+  /* Dark Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   border: 2px solid #32CD32 !important;
   border-radius: 10px;
   padding: 10px;
@@ -344,8 +404,10 @@ nav.navbar {
 
 
 #training-plan .list-group-item {
-  background-color: #323232; /* Dark Grey */
-  color: #f7f7f7; /* Light Grey */
+  background-color: #323232;
+  /* Dark Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   border: none;
   border-radius: 5px;
   margin: 10px 0;
@@ -353,19 +415,22 @@ nav.navbar {
 }
 
 #training-plan h4 {
-  color: #f7f7f7; /* Light Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   font-size: 1.5em;
   margin-bottom: 10px;
 }
 
 #training-plan h5 {
-  color: #f7f7f7; /* Light Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   font-size: 1.5em;
   margin-bottom: 5px;
 }
 
 #training-plan p {
-  color: #f7f7f7; /* Light Grey */
+  color: #f7f7f7;
+  /* Light Grey */
   font-size: 1em;
   line-height: 1.5;
 }
@@ -385,23 +450,29 @@ nav.navbar {
 }
 
 #training-plan button:hover {
-  background-color: #f7f7f7; /* Light Grey */
-  color: #009688; /* Dark Teal */
+  background-color: #f7f7f7;
+  /* Light Grey */
+  color: #009688;
+  /* Dark Teal */
 }
 
 #training-plan .list-group-item {
   border: 2px solid transparent;
 }
+
 #training-plan .list-group-item:hover {
   border: 2px solid #009688;
 }
+
 #saveButton {
   background-color: #009688
 }
+
 #prevWeek {
   background-color: transparent;
   float: left;
 }
+
 #nextWeek {
   background-color: transparent;
   float: right;
@@ -424,7 +495,8 @@ nav.navbar {
 
 .warning-text {
   color: red;
-  display: none; /* Hidden by default */
+  display: none;
+  /* Hidden by default */
   margin-left: 10px;
 }
 
@@ -534,7 +606,8 @@ nav.navbar {
 .jsCalendar thead .jsCalendar-week-days th,
 .jsCalendar tbody td {
   border-radius: 18px;
-  border: 2px solid transparent; /* Set default border for all cells */
+  border: 2px solid transparent;
+  /* Set default border for all cells */
   box-sizing: border-box;
   cursor: default;
   display: inline-block;
@@ -770,31 +843,38 @@ nav.navbar {
 }
 
 .jsCalendar-RecoveryRun {
-  background-color: #1d8cf8; /* Darker Light Blue */
+  background-color: #1d8cf8;
+  /* Darker Light Blue */
 }
 
 .jsCalendar-EasyRun {
-  background-color: #acdc2b; /* Darker Yellow-Green */
+  background-color: #acdc2b;
+  /* Darker Yellow-Green */
 }
 
 .jsCalendar-LongRun {
-  background-color: #822abd; /* Darker Dark Blue */
+  background-color: #822abd;
+  /* Darker Dark Blue */
 }
 
 .jsCalendar-MarathonPace {
-  background-color: #f67b14; /* Darker Orange */
+  background-color: #f67b14;
+  /* Darker Orange */
 }
 
 .jsCalendar-IntervalTraining {
-  background-color: #01c038; /* Darker Bright Green */
+  background-color: #01c038;
+  /* Darker Bright Green */
 }
 
 .jsCalendar-TempoRun {
-  background-color: #b83215; /* Darker Red */
+  background-color: #b83215;
+  /* Darker Red */
 }
 
 .jsCalendar-VO2Max {
-  background-color: #f542ab; /* Darker Pink */
+  background-color: #f542ab;
+  /* Darker Pink */
 }
 
 .jsCalendar-RaceDay {
@@ -809,56 +889,76 @@ nav.navbar {
 .jsCalendar tbody td.jsCalendar-next {
   visibility: hidden;
 }
+
 /* End of Calendar CSS */
 /* End of Training View */
 
 /* Start of Tutorial View */
 
 #tutorial .intro-section {
-  background-color: #d86b11; /* Light blueish background for contrast */
-  padding: 20px 40px; /* Spacing inside the box */
-  border-radius: 15px; /* Rounded corners */
+  background-color: #d86b11;
+  /* Light blueish background for contrast */
+  padding: 20px 40px;
+  /* Spacing inside the box */
+  border-radius: 15px;
+  /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 25px; 
-  font-style: bold; /* Italicized text to emphasize the content */
+  margin-bottom: 25px;
+  font-style: bold;
+  /* Italicized text to emphasize the content */
   font-style: italic;
-  text-align: center; /* Centered text */
+  text-align: center;
+  /* Centered text */
 }
 
 #tutorial .intro-section p {
-  font-size: 18px; /* Increased font size for readability */
-  line-height: 1.6; /* Spaced out lines for better readability */
-  color: #000; 
+  font-size: 18px;
+  /* Increased font size for readability */
+  line-height: 1.6;
+  /* Spaced out lines for better readability */
+  color: #000;
 }
+
 #tutorial .workout-info {
-  border-radius: 20px;  /* Rounded corners */
-  padding: 15px;  /* Padding to space out content */
-  margin-bottom: 15px;  /* Space between each item */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
-  transition: all 0.3s;  /* Smooth transition effects */
+  border-radius: 20px;
+  /* Rounded corners */
+  padding: 15px;
+  /* Padding to space out content */
+  margin-bottom: 15px;
+  /* Space between each item */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  transition: all 0.3s;
+  /* Smooth transition effects */
 }
 
 #tutorial .workout-info:hover {
-  transform: scale(1.02);  /* Slightly enlarge when hovered */
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);  /* Increase shadow depth when hovered */
+  transform: scale(1.02);
+  /* Slightly enlarge when hovered */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  /* Increase shadow depth when hovered */
 }
 
 #tutorial .workout-info h4 {
   font-weight: bold;
-  margin-bottom: 10px;  /* Space between the title and the description */
-  color: #000;  /* Darker text color for the title */
+  margin-bottom: 10px;
+  /* Space between the title and the description */
+  color: #000;
+  /* Darker text color for the title */
 }
 
 #tutorial .workout-info p {
-  color: #000;  /* Medium color for paragraphs */
-  line-height: 1.5;  /* Spaced out lines for readability */
+  color: #000;
+  /* Medium color for paragraphs */
+  line-height: 1.5;
+  /* Spaced out lines for readability */
   font-size: large;
 }
 
 
 /* Start of Weather View */
 .weather-icon {
-  width: 200px; 
+  width: 200px;
   height: auto;
   display: block;
   margin: 0 auto;

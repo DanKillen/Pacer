@@ -6,7 +6,7 @@
     </div>
     <h1 class="mx-auto">Create Training Plan</h1>
 
-    <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post">
+    <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post" role="form">
 
         <input type="hidden" asp-for="RunningProfileId" />
 
@@ -26,17 +26,17 @@
         </div>
         <hr class="custom-hr">
         <div class="mt-3">
-            <label asp-for="TargetRace" class="form-label">Training Plan @await Component.InvokeAsync("Tooltip", new {
+            <label asp-for="TargetRace" class="form-label" id="raceTypeLabel">Training Plan @await Component.InvokeAsync("Tooltip", new {
                 key = "CreateTrainingPlan" })</label>
             <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
-                class="form-control" onchange="updateTargetTime();"></select>
+                class="form-control" aria-labelledby="raceTypeLabel" onchange="updateTargetTime();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="RaceDate" class="form-label">Date of Race @await Component.InvokeAsync("Tooltip", new { key
+            <label asp-for="RaceDate" class="form-label" id="raceDateLabel">Date of Race @await Component.InvokeAsync("Tooltip", new { key
                 = "CreateDateofRace" })</label>
-            <input type="date" asp-for="RaceDate" class="form-control" />
+            <input type="date" asp-for="RaceDate" class="form-control" aria-labelledby="raceDateLabel"/>
             <span asp-validation-for="RaceDate" class="text-danger"></span>
         </div>
 
@@ -44,7 +44,7 @@
             <label id="targetTimeLabel" class="form-label"></label>@await Component.InvokeAsync("Tooltip", new { key =
             "CreateTargetTime" })
             <input id="targetTimeInput" type="range" class="form-control" min="60" max="240" step="1"
-                oninput="displayTime(this.value)" />
+                aria-labelledby="targetTimeLabel" oninput="displayTime(this.value)" />
             <span id="targetTimeDisplay">@Model.EstimatedHalfMarathonTime.ToString("h\\:mm")</span>
             <span asp-validation-for="TargetTime" class="text-danger"></span>
         </div>

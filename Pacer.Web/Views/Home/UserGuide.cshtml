@@ -1,82 +1,112 @@
-<body id="user-guide">
+@{
+    bool isMobile = Context.Request.Headers["User-Agent"].ToString().Contains("Mobi");
+}
+
+<body id="user-guide" role="document">
     <div class="fixed-container">
-        <!-- Welcome Section -->
-        <div id="welcome-section" class="section fade-in">
-            <h1 class="display-3">How do I use Pacer?</h1>
-            <div id="scroll-indicator">
-                <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down">
-            </div>
-        </div>
+        @if (isMobile)
+        {
+            <!-- Welcome Section -->
+            <a asp-controller="TrainingPlan" asp-action="Index" style="text-decoration: none; color: inherit;"
+                aria-label="Get started with Pacer">
+                <div class="text-center">
+                    <div id="welcome-section-mobile" role="region" aria-label="Welcome Section">
+                        <h1 id="welcome-header-mobile">How do I use Pacer?</h1>
+                        <hr class="custom-hr">
+                    </div>
 
-        <div id="profile-section" class="section fade-out">
-            <h1>Your Running Profile</h1>
-            <p>
-                Upon joining Pacer, you'll be prompted to create your running profile.
-            </p>
-            <p>
-                This includes details about you and your current running habits.
-            </p>
-            <p>
-                This helps us recommend a training plan that is just right for you.
-            </p>
-            <div id="scroll-indicator">
-                <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down">
-            </div>
-        </div>
+                    <!-- Profile Section -->
+                    <div id="profile-section-mobile" role="region" aria-label="Profile Section">
+                        <h2 id="profile-header-mobile">Your Profile</h2>
+                        <p>Create your running profile.</p>
+                    </div>
 
-        <!-- Training Plan Section -->
-        <div id="training-section" class="section fade-out">
-            <h1>Bespoke Training Plan</h1>
-            <p>
-                Pacer will design a training plan tailored to your goals.
-            </p>
-            <p>
-                Whether you're a beginner looking to run your first half-marathon or an experienced runner aiming for
-                a new marathon personal best, Pacer has you covered.
-            </p>
-            <p>
-                Your plan is adaptable, ensuring optimal pacing and progression.
-            </p>
-            <div id="scroll-indicator">
-                <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down">
-            </div>
-        </div>
+                    <!-- Training Plan Section -->
+                    <div id="training-section-mobile" role="region" aria-labelledby="training-header-mobile">
+                        <h2 id="training-header-mobile">Training Plan</h2>
+                        <p>Get a tailored training plan for your goals.</p>
+                    </div>
 
-        <!-- Progress Tracking Section -->
-        <div id="tracking-section" class="section fade-out">
-            <h1>Progress Tracking</h1>
-            <p>
-                Log your workouts on Pacer to monitor your progress against your plan.
-            </p>
-            <p>
-                Pacer helps you save and visualize your weekly progress.
-            </p>
-            <p>
-                Stay motivated by seeing how well you're keeping up with your training goals.
-            </p>
-            <div id="scroll-indicator">
-                <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down">
-            </div>
-        </div>
+                    <!-- Progress Tracking Section -->
+                    <div id="tracking-section-mobile" role="region" aria-labelledby="tracking-header-mobile">
+                        <h2 id="tracking-header-mobile">Tracking</h2>
+                        <p>Log workouts and track your progress.</p>
+                    </div>
 
-        <!-- Achieving Goals Section -->
-        <div id="goals-section" class="section fade-out">
-            <h1>Achieve Your Goals</h1>            
-            <p>
-                With Pacer by your side, you're not just training; you're embarking on a journey.
-            </p>
-            <p>
-                By the end of your training plan, you'll be fully prepared to tackle your race,
-                and achieve the goals you've set for yourself.
-            </p>
-            <p>
-                So what are you waiting for? Click below to get started!
-            </p>
-            <a href="@Url.Action("GetStarted", "Home")">
-                <img src="/images/LogoBlack.png" height="100px" alt="Black Pacer Logo">
+                    <!-- Achieving Goals Section -->
+                    <div id="goals-section-mobile" role="region" aria-labelledby="goals-header-mobile">
+                        <h2 id="goals-header-mobile">Achieve Goals</h2>
+                        <p>Be race-ready and achieve your set goals.</p>
+                        <hr class="custom-hr">
+                        <p>Click anywhere to continue.</p>
+                    </div>
+                    <!-- Logo Centered -->
+                    <div style="text-align: center;">
+                        <img src="/images/LogoTrimWIP.png" height="100px" alt="Colored Pacer Logo" aria-label="Pacer Logo">
+                    </div>
+                </div>
+                <div class="mobile-footer">
+                    <p><i>Note: Mobile functionality is limited. Pacer is best experienced on a desktop computer.</i></p>
+                </div>
             </a>
 
-        </div>
+        }
+        else
+        {
+            <!-- Welcome Section -->
+            <div id="welcome-section" class="section fade-in" role="region" aria-labelledby="welcome-header">
+                <h1 class="display-3" id="welcome-header">How do I use Pacer?</h1>
+                <div id="scroll-indicator-welcome" role="navigation" aria-label="Scroll Indicator for Welcome Section">
+                    <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down" height="25px" tabindex="0">
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section fade-out" role="region" aria-labelledby="profile-header">
+                <h1 id="profile-header">Your Running Profile</h1>
+                <p>Upon joining Pacer, you'll be prompted to create your running profile.</p>
+                <p>This includes details about you and your current running habits.</p>
+                <p>This helps us recommend a training plan that is just right for you.</p>
+                <div id="scroll-indicator-profile" role="navigation" aria-label="Scroll Indicator for Profile Section">
+                    <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down" height="25px" tabindex="0">
+                </div>
+            </div>
+
+            <!-- Training Plan Section -->
+            <div id="training-section" class="section fade-out" role="region" aria-labelledby="training-header">
+                <h1 id="training-header">Bespoke Training Plan</h1>
+                <p>Pacer will design a training plan tailored to your goals.</p>
+                <p>Whether you're a beginner looking to run your first half-marathon or an experienced runner aiming for a
+                    new marathon personal best, Pacer has you covered.</p>
+                <p>Your plan is adaptable, ensuring optimal pacing and progression.</p>
+                <div id="scroll-indicator-training" role="navigation" aria-label="Scroll Indicator for Training Section">
+                    <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down" height="25px" tabindex="0">
+                </div>
+            </div>
+
+            <!-- Progress Tracking Section -->
+            <div id="tracking-section" class="section fade-out" role="region" aria-labelledby="tracking-header">
+                <h1 id="tracking-header">Progress Tracking</h1>
+                <p>Log your workouts on Pacer to monitor your progress against your plan.</p>
+                <p>Pacer helps you save and visualize your weekly progress.</p>
+                <p>Stay motivated by seeing how well you're keeping up with your training goals.</p>
+                <div id="scroll-indicator-tracking" role="navigation" aria-label="Scroll Indicator for Tracking Section">
+                    <img src="/images/arrow-down-border-bold.png" alt="Arrow pointing down" height="25px" tabindex="0">
+                </div>
+            </div>
+
+            <!-- Achieving Goals Section -->
+            <div id="goals-section" class="section fade-out" role="region" aria-labelledby="goals-header">
+                <h1 id="goals-header">Achieve Your Goals</h1>
+                <p>With Pacer by your side, you're not just training; you're embarking on a journey.</p>
+                <p>By the end of your training plan, you'll be fully prepared to tackle your race, and achieve the goals
+                    you've set for yourself.</p>
+                <p>So what are you waiting for? Click below to get started!</p>
+                <a href="@Url.Action("GetStarted", "Home")" aria-label="Get started with Pacer">
+                    <img src="/images/LogoBlack.png" height="100px" alt="Black Pacer Logo">
+                </a>
+            </div>
+        }
     </div>
 </body>
 <script src="~/js/scrollfade.js" asp-append-version="true"></script>

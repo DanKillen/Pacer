@@ -3,15 +3,15 @@
 <div class="card shadow p-4 mt-4 mx-auto w-75">
     <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"h\:mm")
         @Model.TargetRace.GetDisplayName()</h3>
-    <form method="post" action="/EditTargetTime">
-
+    <form method="post" action="/EditTargetTime" role="form">
         <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
 
         <div class="form-group mt-3 p-3">
-            <label for="targetTime">New Target Time:</label>
+            <label for="targetTime" aria-label="New Target Time">New Target Time:</label>
             <input class="form-control" type="range" id="targetTime" min="60" max="360"
-                value="@((int)Model.TargetTime.TotalMinutes)" oninput="displayTime(this.value)" />
-            <span id="targetTimeDisplay">@Model.TargetTime.ToString("h\\:mm")</span>
+                value="@((int)Model.TargetTime.TotalMinutes)" oninput="displayTime(this.value)" 
+                aria-label="Target Time Slider"/>
+            <span id="targetTimeDisplay" aria-label="Displayed Target Time">@Model.TargetTime.ToString("h\\:mm")</span>
         </div>
 
         <input type="hidden" asp-for="TargetTime" id="hiddenTargetTime" />
@@ -23,7 +23,7 @@
         </div>
 
         <div class="d-grid gap-2 mt-3">
-            <button type="submit" class="btn btn-primary btn-block">Save</button>
+            <button type="submit" class="btn btn-primary btn-block" aria-label="Save Changes">Save</button>
         </div>
     </form>
 </div>

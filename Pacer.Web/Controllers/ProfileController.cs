@@ -46,6 +46,12 @@ namespace Pacer.Web.Controllers
         public IActionResult CreateProfile(RunningProfileViewModel model)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.Sid));
+            var profileCheck = _runningProfileService.GetProfileByUserId(userId);
+            if (profileCheck != null)
+            {
+                Alert("You already have a profile", AlertType.info);
+                return RedirectToAction("ViewProfile", new { userId = profileCheck.UserId });
+            }
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
 
             if (!ModelState.IsValid)
@@ -55,7 +61,7 @@ namespace Pacer.Web.Controllers
                     if (ModelState[key].Errors.Any())
                     {
                         var errorMessages = ModelState[key].Errors.Select(error => error.ErrorMessage);
-                        Console.WriteLine($"Key: {key}, Errors: {string.Join(",", errorMessages)}");
+                        _logger.LogWarning($"Key: {key}, Errors: {string.Join(", ", errorMessages)}");
                     }
                 }
                 Alert("Error creating profile", AlertType.danger);
@@ -66,11 +72,13 @@ namespace Pacer.Web.Controllers
 
             if (profile == null)
             {
+                _logger.LogError($"Error creating profile for user {userId}");
                 Alert("Error creating profile", AlertType.danger);
                 return View();
             }
             else
             {
+                _logger.LogInformation($"Profile created for user {userId}");
                 Alert("Profile created successfully", AlertType.success);
                 return RedirectToAction("ViewProfile", new { userId = profile.UserId });
             }
@@ -118,7 +126,7 @@ namespace Pacer.Web.Controllers
 
             return View(model);
         }
-        
+
         [HttpGet]
         public IActionResult EditProfile()
         {
@@ -159,12 +167,11 @@ namespace Pacer.Web.Controllers
 
             if (currentUserId != userId.ToString())
             {
-                // Check if the current user is an admin
-                if (!User.IsInRole("Admin"))
-                {
-                    Alert("You do not have permission to edit this profile", AlertType.danger);
-                    return RedirectToAction("Index", "Home");
-                }
+
+                Alert("You do not have permission to edit this profile", AlertType.danger);
+                _logger.LogWarning($"User {currentUserId} attempted to edit profile for user {userId}");
+                return RedirectToAction("Index", "Home");
+
             }
 
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
@@ -173,11 +180,13 @@ namespace Pacer.Web.Controllers
             if (updatedProfile == null)
             {
                 Alert("Error updating profile", AlertType.danger);
+                _logger.LogError($"Error updating profile for user {userId}");
                 return View();
             }
             else
             {
                 Alert("Profile updated successfully", AlertType.success);
+                _logger.LogInformation($"Profile updated for user {userId}");
                 return RedirectToAction("ViewProfile", new { userId = updatedProfile.UserId });
             }
         }

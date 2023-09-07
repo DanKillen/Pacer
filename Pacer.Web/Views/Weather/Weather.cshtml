@@ -7,24 +7,29 @@
     <div class="card">
         <div class="card-body">
             <h2>@Model.Name, @Model.Country</h2>
-            <hr style="border-top: 5px solid #ccc;">
+            <hr class="custom-hr">
             <div class="row">
-                <div class="col-md-6 text-center"">
+                <section class="col-md-6 text-center" aria-label="Weather Icon and Description">
                     <p>
                         <img src=@($"https://openweathermap.org/img/wn/{Model.Icon}@2x.png") alt="@Model.Weather Icon"
                             class="weather-icon" />
                     </p>
-                    <p><h3>@Model.Description</h3></p>
-                </div>
-                <div class="col-md-6">
+                    <p>
+                    <h3>@Model.Description</h3>
+                    </p>
+                </section>
+                <section class="col-md-6" aria-label="Weather Details">
                     <p><strong>Temperature:</strong> @Model.Temperature °C</p>
                     <p><strong>Humidity:</strong> @Model.Humidity%</p>
                     <p><strong>Wind Speed:</strong> @Model.WindSpeed m/s</p>
-                    <p><strong>Sunset:</strong> @Model.Sunset @await Component.InvokeAsync("Tooltip", new { key = "Timezone" })</p>
-                 </div>
+                    <p><strong>Sunset:</strong> @Model.Sunset @await Component.InvokeAsync("Tooltip", new { key =
+                        "Timezone" })</p>
+                </section>
             </div>
-                <hr style="border-top: 5px solid #ccc;"> 
+            <hr class="custom-hr">
+            <section aria-label="Advice for the Weather">
                 <h3>@Model.Advice</h3>
+            </section>
         </div>
     </div>
 </div>

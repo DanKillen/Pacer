@@ -17,19 +17,19 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="mt-3" style="display: none;">
-            <label asp-for="UserId" class="form-label"><i class="bi-person-fill"></i> User ID</label>
+            <label asp-for="UserId" class="form-label"><i class="bi-person-fill" aria-hidden="true"></i> User ID</label>
             <input asp-for="UserId" class="form-control" value="@Model.UserId" type="hidden" />
             <span asp-validation-for="UserId" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="DateOfBirth" class="form-label"><i class="bi-calendar3"></i> Date of Birth</label>
+            <label asp-for="DateOfBirth" class="form-label"><i class="bi-calendar3" aria-hidden="true"></i> Date of Birth</label>
             <input asp-for="DateOfBirth" type="date" class="form-control" />
             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="Gender" class="form-label"><i class="bi-gender-ambiguous"></i> Gender</label>
+            <label asp-for="Gender" class="form-label"><i class="bi-gender-ambiguous" aria-hidden="true"></i> Gender</label>
             <select asp-for="Gender" class="form-control">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -38,13 +38,13 @@
         </div>
 
         <div class="mt-3">
-            <label asp-for="WeeklyMileage" class="form-label"><i class="bi-speedometer2"></i> Weekly Mileage @await Component.InvokeAsync("Tooltip", new { key = "WeeklyMileage" })</label>
+            <label asp-for="WeeklyMileage" class="form-label"><i class="bi-speedometer2" aria-hidden="true"></i> Weekly Mileage @await Component.InvokeAsync("Tooltip", new { key = "WeeklyMileage" })</label>
             <input asp-for="WeeklyMileage" type="number" class="form-control" />
             <span asp-validation-for="WeeklyMileage" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label for="FiveKTime" class="form-label"><i class="bi-stopwatch-fill"></i> 5K Time @await Component.InvokeAsync("Tooltip", new { key = "5KTime" })</label>
+            <label for="FiveKTime" class="form-label"><i class="bi-stopwatch-fill" aria-hidden="true"></i> 5K Time @await Component.InvokeAsync("Tooltip", new { key = "5KTime" })</label>
             <input id="slider-range" type="range" class="form-control" min="750" max="1800"/>
             <div class="d-flex mt-3">
                 <label for="FiveKTimeMinutes" class="form-label">Minutes:</label>

@@ -6,7 +6,7 @@
 
 <div id="calendar-plan" class="card shadow p-5 mt-4 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
-        <img src="\images\LogoTrimWIP.png" height="50px">
+        <img src="\images\LogoTrimWIP.png" alt="Logo" height="50px">
     </div>
     <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
         <i class="bi bi-list"></i> Week View</a>
@@ -52,7 +52,7 @@
                 <div id="calendar" class="material-theme" data-month-format="month YYYY" data-day-format="DD"></div>
             </div>
             <div class="col-md-6">
-                <div id="workout-details">
+                <div id="workout-details" aria-live="polite">
                     <h4 id="workout-date"></h4>
                     <h5 id="workout-type"></h5>
                     <h6 id="workout-pace"></h6>
@@ -78,7 +78,8 @@
                             <label for="actualDistance"><b>Actual Distance Ran:</b></label>
                         </div>
                         <div class="mb-1">
-                            <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" required>
+                            <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" 
+                                required aria-label="Actual Distance">
                             miles
                         </div>
                         <div>
@@ -87,7 +88,7 @@
                                 <div>
                                     <label for="actualHours">Hours:</label>
                                     <input type="number" id="actualHours" name="ActualHours" min="0" max="6" 
-                                        required value="0">
+                                        required value="0" aria-label="Actual Distance">
                                 </div>
                                 <div>
                                     <label for="actualMinutes">Minutes:</label>

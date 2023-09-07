@@ -1,11 +1,11 @@
 ﻿@model Paged<User>
 
-<h3 class="mb-3">User List</h3>
+<h3 id="userListTitle" class="mb-3">User List</h3>
   
-<table class="table table-hover">
+<table class="table table-hover" role="grid" aria-labelledby="userListTitle">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 Id
                 <a asp-action="Index" 
                     asp-route-order="id" 
@@ -14,9 +14,8 @@
                     asp-route-size=@Model.PageSize >
                         <vc:sort-order field="id" orderby=@Model.OrderBy direction=@Model.Direction />  
                 </a>  
-
             </th>
-            <th>
+            <th scope="col">
                 Name
                 <a asp-action="Index" 
                     asp-route-order="name" 
@@ -26,7 +25,7 @@
                     <vc:sort-order field="name" orderby=@Model.OrderBy direction=@Model.Direction />  
                 </a>  
             </th>
-            <th>
+            <th scope="col">
                 Email
                 <a asp-action="Index" 
                     asp-route-order="email" 
@@ -36,8 +35,8 @@
                     <vc:sort-order field="email" orderby=@Model.OrderBy direction=@Model.Direction />  
                 </a>      
             </th>
-            <th>Role</th>   
-            <th>Action</th>           
+            <th scope="col">Role</th>   
+            <th scope="col">Action</th>           
         </tr>
     </thead>
     <tbody>
@@ -52,12 +51,12 @@
                         @if ((User.IsInRole("admin")) || 
                              (User.IsInRole("manager") && u.Role != Role.admin))
                         {       
-                            <a asp-action="Update" asp-route-id="@u.Id" style="margin-right: 10px;"> 
+                            <a asp-action="Update" asp-route-id="@u.Id" aria-label="Edit User" style="margin-right: 10px;"> 
                                 <i class="bi bi-pencil-fill"></i>
                             </a>      
                         }
                         @if (User.HasOneOfRoles("admin") && u.Role != Role.admin) {
-                            <a asp-action="Delete" asp-route-id="@u.Id">
+                            <a asp-action="Delete" asp-route-id="@u.Id" aria-label="Delete User">
                                 <i class="bi bi-trash-fill" style="color: red;"></i>
                             </a>  
                             }       

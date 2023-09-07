@@ -12,11 +12,11 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-lg rounded mb-3">
+    <header role="banner">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-lg rounded mb-3" role="navigation" aria-label="Main navigation">
             <div class="container">
                 <a class="navbar-brand" href="#" style="display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="bi bi-exclude"
+                    <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pacer Logo" width="30" height="30" class="bi bi-exclude"
                         viewBox="0 0 40 40" style="margin-right: 5px;">
                         <image xlink:href="/images/LogoTrimWIP.png" width="50" height="50" />
                     </svg>
@@ -32,7 +32,7 @@
         <div class="container">
             <partial name="_Alert" />
 
-            <main role="main" class="pb-3">
+            <main role="main" aria-label="Main Content" class="pb-3">
                 @RenderBody()
             </main>
         </div>
@@ -53,7 +53,7 @@
                 </div>
                 <div>
                     <a href="mailto:feedback.pacer@outlook.com" style="color: inherit;">
-                        <i class="bi bi-envelope-fill"></i> Send Feedback
+                        <i class="bi bi-envelope-fill" aria-hidden="true"></i> Send Feedback
                     </a>
                 </div>
             </div>
@@ -68,3 +68,4 @@
 </body>
 
 </html>
+    

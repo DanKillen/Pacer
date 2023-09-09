@@ -129,7 +129,7 @@ namespace Pacer.Test
             DateTime dob = DateTime.Now.AddYears(-75);
 
             // Act
-            var result = _trainingPlanService.GetRecommendation(TimeSpan.FromHours(4), TimeSpan.FromHours(2), 30, dob);
+            var result = _trainingPlanService.GetRecommendation(TimeSpan.FromHours(4), TimeSpan.FromHours(2), 30, dob, TimeSpan.FromMinutes(30));
 
             // Assert
             Assert.Contains("Given your age, we would advise against", result[2]);

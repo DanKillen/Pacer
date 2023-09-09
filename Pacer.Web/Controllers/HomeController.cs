@@ -50,7 +50,7 @@ namespace Pacer.Web.Controllers
             }
             else
             {
-                return RedirectToAction("Login", "User");
+                return RedirectToAction("Register", "User");
             }
         }
         public IActionResult Privacy()

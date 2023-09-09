@@ -144,7 +144,7 @@ public class TrainingPlanController : BaseController
         // Otherwise, return whichever is available, or null if neither are.
         return minPace ?? maxPace;
     }
-    
+
     private bool ValidateTrainingPlan(TrainingPlan trainingPlan)
     {
         if (trainingPlan == null)
@@ -167,7 +167,7 @@ public class TrainingPlanController : BaseController
         }
         return true;
     }
-    
+
     // Controller Endpoints
     [HttpGet]
     public IActionResult Index()
@@ -227,7 +227,7 @@ public class TrainingPlanController : BaseController
         var model = new TrainingPlanCreateModel
         {
             RunningProfileId = runningProfile.Id,
-            Recommendation = _trainingPlanService.GetRecommendation(runningProfile.EstimatedMarathonTime, runningProfile.EstimatedHalfMarathonTime, runningProfile.WeeklyMileage, runningProfile.DateOfBirth),
+            Recommendation = _trainingPlanService.GetRecommendation(runningProfile.EstimatedMarathonTime, runningProfile.EstimatedHalfMarathonTime, runningProfile.WeeklyMileage, runningProfile.DateOfBirth, runningProfile.FiveKTime),
             RaceDate = suggestedDate,
             EstimatedMarathonTime = runningProfile.EstimatedMarathonTime,
             EstimatedHalfMarathonTime = runningProfile.EstimatedHalfMarathonTime
@@ -335,7 +335,7 @@ public class TrainingPlanController : BaseController
         };
         return View(tutorial);
     }
-    
+
     [HttpPost("SaveWorkoutActuals")]
     public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
     {
@@ -424,7 +424,7 @@ public class TrainingPlanController : BaseController
         Alert("New Target Time saved successfully!", AlertType.success);
         return RedirectToAction("ViewTrainingPlan", new { id = model.TrainingPlanId });
     }
-    
+
     [HttpGet("DeleteTrainingPlan")]
     public IActionResult DeleteTrainingPlan()
     {
@@ -466,4 +466,55 @@ public class TrainingPlanController : BaseController
         Alert("Training Plan deleted successfully.", AlertType.info);
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet]
+    public IActionResult GetAvailableDates(int workoutId)
+    {
+        try
+        {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return BadRequest("User is not authenticated.");
+            }
+
+            var availableDates = _trainingPlanService.GetAvailableDates(workoutId, userId.Value);
+            if (availableDates == null || !availableDates.Any())
+            {
+                return NotFound("No available dates found.");
+            }
+            return Ok(availableDates.Select(date => date.ToString("yyyy-MM-dd")).ToList());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error getting available dates: {e.Message}");
+            return BadRequest("Error getting available dates.");
+        }
+    }
+
+    [HttpPost]
+    public IActionResult UpdateWorkoutDate(int workoutId, DateTime newDate)
+    {
+        try
+        {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return BadRequest("User is not authenticated.");
+            }
+
+            var success = _trainingPlanService.UpdateWorkoutDate(workoutId, userId.Value, newDate);
+            if (success)
+            {
+                return Ok(new { success = true });
+            }
+            return NotFound(new { success = false, message = "Failed to update workout date." });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error updating workout date: {e.Message}");
+            return BadRequest(new { success = false, message = "Error updating workout date." });
+        }
+    }
 }
+

@@ -53,7 +53,10 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("ViewProfile", new { userId = profileCheck.UserId });
             }
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
-
+            if (fiveKTime.TotalMinutes > 30)
+            {
+                fiveKTime = TimeSpan.FromMinutes(30);
+            }
             if (!ModelState.IsValid)
             {
                 foreach (var key in ModelState.Keys)
@@ -167,14 +170,16 @@ namespace Pacer.Web.Controllers
 
             if (currentUserId != userId.ToString())
             {
-
                 Alert("You do not have permission to edit this profile", AlertType.danger);
                 _logger.LogWarning($"User {currentUserId} attempted to edit profile for user {userId}");
                 return RedirectToAction("Index", "Home");
-
             }
 
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
+            if (fiveKTime.TotalMinutes > 30)
+            {
+                fiveKTime = TimeSpan.FromMinutes(30);
+            }
             var updatedProfile = _runningProfileService.UpdateProfile(userId, model.DateOfBirth, model.Gender, model.WeeklyMileage, fiveKTime);
 
             if (updatedProfile == null)

@@ -12,9 +12,12 @@
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="mt-3 text-center">
-            Beginner Training Plans are designed to carefully build up your mileage and are less demanding overall than
-            Standard Plans. You will be more likely to hit your target time if you complete a Standard plan instead of
-            Beginner.
+            <p>Beginner Training Plans are designed to carefully build up your mileage and are less demanding overall
+                than Standard Plans.</p>
+            <p>You will be more likely to hit your target time if you complete a Standard plan instead of
+                Beginner.</p>
+            <p>Half-Marathon training plans last for twelve weeks, while Marathon training plans last for sixteen weeks.
+            </p>
         </div>
         <hr class="custom-hr">
         <div class="mt-3 text-center">
@@ -26,17 +29,17 @@
         </div>
         <hr class="custom-hr">
         <div class="mt-3">
-            <label asp-for="TargetRace" class="form-label" id="raceTypeLabel">Training Plan @await Component.InvokeAsync("Tooltip", new {
-                key = "CreateTrainingPlan" })</label>
+            <label asp-for="TargetRace" class="form-label" id="raceTypeLabel">Training Plan 
+                @await Component.InvokeAsync("Tooltip", new {key = "CreateTrainingPlan" })</label>
             <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
                 class="form-control" aria-labelledby="raceTypeLabel" onchange="updateTargetTime();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <label asp-for="RaceDate" class="form-label" id="raceDateLabel">Date of Race @await Component.InvokeAsync("Tooltip", new { key
-                = "CreateDateofRace" })</label>
-            <input type="date" asp-for="RaceDate" class="form-control" aria-labelledby="raceDateLabel"/>
+            <label asp-for="RaceDate" class="form-label" id="raceDateLabel">Date of Race 
+                @await Component.InvokeAsync("Tooltip", new { key = "CreateDateofRace" })</label>
+            <input type="date" asp-for="RaceDate" class="form-control" aria-labelledby="raceDateLabel" />
             <span asp-validation-for="RaceDate" class="text-danger"></span>
         </div>
 
@@ -53,7 +56,9 @@
 
 
         <div class="mt-3">
-            <input type="submit" value="Create Plan" class="btn btn-primary" />
+            <button type="submit" class="btn btn-primary btn-block loading-button">
+                Create Plan
+            </button>
             <a class="btn btn-link ms-3" asp-controller="Home" asp-action="Index">Cancel</a>
         </div>
 

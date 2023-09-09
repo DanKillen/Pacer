@@ -9,7 +9,6 @@ function validateForm(workoutId) {
     return true;
 
 
-
     function validateDistance(workoutId) {
         var distanceField = document.getElementById("actualDistance-" + workoutId);
         var warningField = document.getElementById("distanceWarning-" + workoutId);
@@ -68,4 +67,68 @@ $(document).on('click', '#nextWeek', function () {
         currentWeek++;
         showWeek(currentWeek);
     }
+});
+
+// Function to show the change date modal and populate it with available dates
+function showChangeDateModal(workoutId) {
+    // Show the loading icon
+    $(`#loadingIcon-${workoutId}`).show();
+
+    $.ajax({
+        url: '/TrainingPlan/GetAvailableDates',
+        method: 'GET',
+        data: { workoutId: workoutId },
+        success: function (availableDates) {
+            availableDates = availableDates.filter(date => date !== window.raceDate);
+
+            // Populate the modal body with available dates
+            let options = '';
+            availableDates.forEach(function (date) {
+                options += `<option value="${date}">${date}</option>`;
+            });
+            const newBodyHtml = `
+                <div>Please choose a new day for this workout:</div>
+                <select id="newDate-${workoutId}">${options}</select>
+            `;
+            $(`#changeDateModal-${workoutId} .modal-body`).html(newBodyHtml);
+
+            // Hide the loading icon
+            $(`#loadingIcon-${workoutId}`).hide();
+        }
+    });
+}
+
+// Function to update the workout date on the server
+function updateWorkoutDate(workoutId, newDate) {
+    $.ajax({
+        url: '/TrainingPlan/UpdateWorkoutDate',
+        method: 'POST',
+        data: { workoutId: workoutId, newDate: newDate },
+        success: function (response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert('Failed to update date');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error updating workout date:', error);
+        }
+    });
+}
+
+$(document).ready(function () {
+    $('[id^=changeDateModal-]').on('show.bs.modal', function (e) {
+        const workoutId = e.target.id.split('-')[1];
+        showChangeDateModal(workoutId);
+    });
+
+    $('[id^=confirmChange-]').click(function () {
+        const workoutId = this.id.split('-')[1];
+        const newDate = $(`#newDate-${workoutId}`).val();
+        updateWorkoutDate(workoutId, newDate);
+    });
+    $('.close-modal').click(function () {
+        $('.modal').modal('hide');
+    });
 });

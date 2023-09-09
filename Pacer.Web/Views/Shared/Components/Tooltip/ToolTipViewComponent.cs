@@ -19,10 +19,11 @@ public class TooltipViewComponent : ViewComponent
             {"CreateTrainingPlan","The Standard Half Marathon plan will begin at 10 miles a week and the Standard Marathon Plan will begin at 25 miles a week."},
             {"CreateDateofRace","This will update to the length of the selected training plan. Your race should be on this date or later."},
             {"CreateTargetTime","Times are given in hours and minutes. You may edit your target time if you like."},
+            {"ChangeDay","Choose a new date for this workout. Available dates are within four days before and after the current workout date, and only on days without an existing workout."},
 
             // Workout Type Tooltips
             { "RecoveryRun", "Very easy runs designed to allow your muscles to recover while still getting in some mileage." },
-            { "EasyRun", "These are typically longer runs done at a relaxed pace." },
+            { "EasyRun", "Runs to build your aerobic base, done at a relaxed pace." },
             { "LongRun", "This is usually the longest run of the week, designed to build up your endurance." },
             { "MarathonPace", "These runs are done at the pace you hope to maintain in your target race." },
             { "IntervalTraining", "These workouts involve periods of high-intensity running interspersed with periods of low-intensity recovery." },

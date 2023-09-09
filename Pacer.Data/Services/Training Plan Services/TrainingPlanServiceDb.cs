@@ -92,7 +92,7 @@ namespace Pacer.Data.Services
 
         public bool EditTargetTime(int trainingPlanId, TimeSpan targetTime)
         {
-            var trainingPlan = GetOnlyPlanById(trainingPlanId);
+            var trainingPlan = GetPlanById(trainingPlanId);
             if (trainingPlan == null)
             {
                 _logger.LogWarning($"No training plan found with id {trainingPlanId}");
@@ -139,40 +139,59 @@ namespace Pacer.Data.Services
             }
         }
 
-        public string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth)
+        public string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth, TimeSpan fiveKTime)
         {
-            int age = DateTime.Now.Year - dateOfBirth.Year;
-            string recommendation;
-            bool slowMarathonTime = estimatedMarathonTime.TotalHours > 5;
-            bool slowHalfMarathonTime = estimatedHalfMarathonTime.TotalHours > 2.5;
+            DateTime today = DateTime.Today;
+            int age = today.Year - dateOfBirth.Year;
+            if (dateOfBirth > today.AddYears(-age)) age--;
 
-            if (age > 70)
+            const int AgeLimit = 70;
+            const int SlowFiveKTime = 30;
+            const double SlowMarathonTime = 5.0;
+            const double SlowHalfMarathonTime = 2.5;
+            const double StrongMarathonTime = 3.5;
+            const double StrongHalfMarathonTime = 1.5;
+            const int StrongWeeklyMileage = 20;
+
+            string recommendation;
+
+            if (age > AgeLimit)
             {
                 recommendation = "Given your age, we would advise against the longer distances here. If you wish to continue, we suggest our Beginner Training Plans tailored for shorter distances.";
             }
-            else if (estimatedMarathonTime.TotalHours < 3.5 || estimatedHalfMarathonTime.TotalHours < 1.5)
+            else if (estimatedMarathonTime.TotalHours < StrongMarathonTime && estimatedHalfMarathonTime.TotalHours < StrongHalfMarathonTime)
             {
-                recommendation = weeklyMileage > 20 ?
+                recommendation = weeklyMileage >= StrongWeeklyMileage ?
                     "Your strong estimated times and weekly mileage make you a good candidate for our Standard Training Plans." :
                     "Your estimated times are promising, but we suggest increasing your weekly mileage for optimal results. Consider our Beginner Training Plans.";
             }
-            else if (slowMarathonTime || slowHalfMarathonTime)
+            else if (estimatedMarathonTime.TotalHours > SlowMarathonTime || estimatedHalfMarathonTime.TotalHours > SlowHalfMarathonTime)
             {
-                string raceTypeAdvice = slowMarathonTime ? "marathon" : "half-marathon";
-                if (slowMarathonTime && slowHalfMarathonTime) raceTypeAdvice = "both marathon and half-marathon";
+                string raceTypeAdvice = estimatedMarathonTime.TotalHours > SlowMarathonTime ? "marathon" : "half-marathon";
+                if (estimatedMarathonTime.TotalHours > SlowMarathonTime && estimatedHalfMarathonTime.TotalHours > SlowHalfMarathonTime)
+                {
+                    raceTypeAdvice = "both marathon and half-marathon";
+                }
                 recommendation = $"Your estimated times for the {raceTypeAdvice} suggest you could benefit from focusing on improving your fitness before attempting a longer race. If you wish to continue, we recommend our Beginner Training Plans.";
             }
             else
             {
                 recommendation = "Your current performance indicates that our Beginner Training Plans would be a suitable starting point.";
             }
-            return new string[]
+            List<string> recommendationsList = new();
+
+            if (fiveKTime.TotalMinutes == SlowFiveKTime)
             {
-                $"Estimated Marathon Time: {estimatedMarathonTime.Hours}:{estimatedMarathonTime.Minutes:D2}.",
-                $"Estimated Half Marathon Time: {estimatedHalfMarathonTime.Hours}:{estimatedHalfMarathonTime.Minutes:D2}.",
-                recommendation,
-                "Please note, these are estimations and actual race performance can vary."
-            };
+                recommendationsList.Add("Your estimations are based off a 5k time of 30 minutes.");
+                recommendationsList.Add("If you are much slower than this, your estimated times may be too challenging.");
+            }
+
+            recommendationsList.Add($"Estimated Marathon Time: {estimatedMarathonTime.Hours}:{estimatedMarathonTime.Minutes:D2}.");
+            recommendationsList.Add($"Estimated Half Marathon Time: {estimatedHalfMarathonTime.Hours}:{estimatedHalfMarathonTime.Minutes:D2}.");
+            recommendationsList.Add(recommendation);
+            recommendationsList.Add("Please note, these are optimistic estimations based on optimal conditions and actual race performance can vary.");
+
+            return recommendationsList.ToArray();
         }
 
         public TrainingPlan GetPlanById(int id)
@@ -182,11 +201,6 @@ namespace Pacer.Data.Services
                                     .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                     .FirstOrDefault(plan => plan.Id == id);
         }
-        private TrainingPlan GetOnlyPlanById(int id)
-        {
-            return _ctx.TrainingPlans.Find(id);
-        }
-
         // Get a training plan by user
         public TrainingPlan GetPlanByUserId(int userId)
         {
@@ -275,6 +289,74 @@ namespace Pacer.Data.Services
             catch (Exception e)
             {
                 _logger.LogError($"Error clearing workout actuals: {e.Message}");
+                return false;
+            }
+        }
+        public List<DateTime> GetAvailableDates(int workoutId, int userId)
+        {
+            try
+            {
+                var trainingPlan = GetPlanByUserId(userId);
+                if (trainingPlan == null)
+                {
+                    _logger.LogWarning($"No training plan found for user id: {userId}");
+                    return null;
+                }
+
+                var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
+                if (workout == null)
+                {
+                    _logger.LogWarning($"No workout found with id {workoutId}");
+                    return null;
+                }
+
+                var existingDate = workout.Date;
+                List<DateTime> availableDates = new List<DateTime>();
+
+                // Check 4 days before and after the existing workout date.
+                for (int i = -4; i <= 4; i++)
+                {
+                    var newDate = existingDate.AddDays(i);
+                    if (!trainingPlan.Workouts.Any(w => w.Date.Date == newDate.Date))
+                    {
+                        availableDates.Add(newDate);
+                    }
+                }
+
+                return availableDates;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error getting available dates: {e.Message}");
+                return null;
+            }
+        }
+        public bool UpdateWorkoutDate(int workoutId, int userId, DateTime newDate)
+        {
+            try
+            {
+                var trainingPlan = GetPlanByUserId(userId);
+                if (trainingPlan == null)
+                {
+                    _logger.LogWarning($"No training plan found for user id: {userId}");
+                    return false;
+                }
+
+                var workout = trainingPlan.Workouts.FirstOrDefault(w => w.Id == workoutId);
+                if (workout == null)
+                {
+                    _logger.LogWarning($"No workout found with id {workoutId}");
+                    return false;
+                }
+
+                workout.Date = newDate;
+                _ctx.SaveChanges();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error updating workout date: {e.Message}");
                 return false;
             }
         }

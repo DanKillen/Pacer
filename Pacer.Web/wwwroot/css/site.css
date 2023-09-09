@@ -50,7 +50,7 @@ body {
 }
 
 .custom-hr {
-  border-top: 3px solid #ccc;
+  border-top: 3px solid #ccc
 }
 
 .key-item {
@@ -184,6 +184,15 @@ nav.navbar {
   margin-top: 10px;
 }
 
+#index-page .section, 
+#user-guide .section{
+  pointer-events: none;  /* Disable all pointer events when hidden */
+  opacity: 0;
+  transition: opacity 0.75s;
+}
+
+
+
 #user-guide .scroll-indicator {
   position: absolute !important;
   bottom: 500px !important;
@@ -267,13 +276,10 @@ nav.navbar {
   height: 100%;
 }
 
-.section {
-  opacity: 0;
-  transition: opacity 0.75s;
-}
-
-.fade-in {
+#index-page .fade-in,
+#user-guide .fade-in {
   opacity: 1 !important;
+  pointer-events: auto; 
 }
 
 .fade-out {
@@ -313,7 +319,6 @@ nav.navbar {
   display: none;
 }
 
-
 /* Animation to make the header pop in */
 @keyframes popIn {
   0% {
@@ -329,32 +334,27 @@ nav.navbar {
 
 /* End of Index/About Page CSS */
 /* Training View  */
+.modal-content {
+  background-color: #333030;
+  color: #f7f7f7;
+}
 
-#detailsButton {
-  font-size: 1em;
-  /* Font size of text */
-  color: #009688;
-  /* Dark Teal */
-  cursor: pointer;
-  /* Change cursor to hand pointer on hover */
-  transition: all 0.3s;
-  /* Smooth transition for hover effects */
-  display: inline-block;
-  /* To apply padding correctly */
-  padding: 10px 10px;
-  /* Some padding to make it look more button-like */
+#changeButton {
   border-radius: 5px;
   /* Rounded corners */
+  padding: 10px 10px;
+  /* Some padding to make it look more button-like */
+  background-color: #a7754d;
   border: 2px solid #009688;
   /* Dark Teal */
+}
+
+#detailsButton {
   background-color: #009688;
 }
 
-#detailsButton:hover {
-  background-color: #f7f7f713;
-  /* Light background on hover */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  /* Slight shadow for depth */
+#detailsButton focus {
+  outline: none;
 }
 
 #detailsButton i {
@@ -729,104 +729,6 @@ nav.navbar {
 .jsCalendar.material-theme thead .jsCalendar-week-days th {
   font-size: 14px;
   text-shadow: none;
-}
-
-/* Classic Theme */
-/* Blue default */
-.jsCalendar.classic-theme table,
-.jsCalendar.classic-theme thead .jsCalendar-nav-left,
-.jsCalendar.classic-theme thead .jsCalendar-nav-right,
-.jsCalendar.classic-theme thead .jsCalendar-week-days th,
-.jsCalendar.classic-theme tbody td,
-.jsCalendar.classic-theme tbody td.jsCalendar-current {
-  border-radius: 0;
-}
-
-.jsCalendar.classic-theme thead {
-  background-color: #52C9FF;
-  margin: 0;
-  padding: 4px 4px 0 4px;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-title-row,
-.jsCalendar.classic-theme thead .jsCalendar-title {
-  display: block;
-  width: 100%;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-title {
-  position: relative;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-title-name {
-  color: #FFFFFF;
-  font-size: 16px;
-  left: 41px;
-  position: absolute;
-  right: 41px;
-  text-align: center;
-  text-shadow: none;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-title-left,
-.jsCalendar.classic-theme thead .jsCalendar-title-right {
-  position: absolute;
-  z-index: 1;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-title-right {
-  right: 0;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-nav-left,
-.jsCalendar.classic-theme thead .jsCalendar-nav-right {
-  color: #FFFFFF;
-  text-shadow: none;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-nav-left:hover,
-.jsCalendar.classic-theme thead .jsCalendar-nav-right:hover {
-  background-color: #03A9F4;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-week-days {
-  background-color: #FFFFFF;
-  display: block;
-  margin: 0 -4px;
-}
-
-.jsCalendar.classic-theme thead .jsCalendar-week-days th {
-  font-size: 10px;
-  height: 20px;
-  line-height: 20px;
-  text-shadow: none;
-}
-
-.jsCalendar.classic-theme tbody td {
-  border-left: 1px solid #DADADA;
-  border-top: 1px solid #DADADA;
-  margin: -1px 0 0 -1px;
-  padding: 1px 1px 0 1px;
-  width: 38px;
-}
-
-.jsCalendar.classic-theme tbody {
-  margin: 0;
-}
-
-.jsCalendar.classic-theme tbody td.jsCalendar-selected {
-  background-color: #CCEFFF;
-  border-bottom: 0;
-  border-left: 1px solid #DADADA;
-  border-right: 0;
-  border-top: 1px solid #DADADA;
-  height: 36px;
-  line-height: 36px;
-}
-
-.jsCalendar.classic-theme tbody td.jsCalendar-current.jsCalendar-selected {
-  background-color: #52C9FF;
-  text-shadow: 0 0 3px #000000;
 }
 
 .key {

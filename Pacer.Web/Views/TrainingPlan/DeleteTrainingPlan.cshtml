@@ -29,13 +29,15 @@
 
         <div class="alert alert-danger mt-4" role="alert">
             <h4 class="alert-heading">Warning!</h4>
-            <p>Are you sure you would like to delete this training plan?</p> 
+            <p>Are you sure you would like to delete this training plan?</p>
             <hr>
             <p class="mb-0">All completed workouts and targets will be deleted also.</p>
         </div>
 
         <div class="d-grid gap-2 mt-3">
-            <input type="submit" value="Delete Plan" class="btn btn-danger btn-block" />
+            <button type="submit" class="btn btn-danger btn-block loading-button">
+                Delete Plan
+            </button>
             <a class="btn btn-link btn-block ms-3" asp-controller="Home" asp-action="Index">Cancel</a>
         </div>
     </form>

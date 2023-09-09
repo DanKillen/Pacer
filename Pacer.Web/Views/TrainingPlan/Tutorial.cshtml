@@ -11,8 +11,8 @@
         <section class="intro-section" aria-label="Introduction">
             <p>
                 Training for a long-distance race is not just about clocking in the miles. It's
-                necessary to balance various types of workouts, each serving a unique purpose in preparing your body for
-                the rigors of race day.
+                necessary to balance various types of workouts, each serving a unique purpose in preparing 
+                your body for the rigors of race day.
             </p>
             <p>
                 Understanding the significance of each workout can not only elevate your
@@ -23,16 +23,15 @@
             <p>
                 Each workout has a pace range that you should aim to stay within. A perfect run would
                 begin at the lower end, with your second-half pace being at the higher end. This helps to build a habit
-                of
-                finishing strong.
+                of finishing strong.
             </p>
         </section>
-        <h2 class="mx-auto" role="navigation" aria-label="Navigation Buttons">
+        <div class="mx-auto" role="navigation" aria-label="Navigation Buttons">
             <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
-                <i class="bi bi-list"></i> Return to Week List</a>
+                <i class="bi bi-list" aria-hidden="true"></i> Return to Week List</a>
             <a href="@Url.Action("Calendar")" class="btn btn-info">
-                <i class="bi bi-calendar"></i> Return to Calendar</a>
-        </h2>
+                <i class="bi bi-calendar" aria-hidden="true"></i> Return to Calendar</a>
+        </div>
         <hr class="custom-hr">
         <!-- Recovery Run -->
         <article class="workout-info-section" aria-label="Workout Information">
@@ -56,8 +55,8 @@
                 <h4>Long Run</h4>
                 <p>Long runs are essential for building stamina and endurance. These runs are typically longer than your
                     regular runs and are done at a comfortable pace. They help your body adapt to longer distances,
-                    improving
-                    your cardiovascular system and muscle strength, and are a cornerstone of most training programs.</p>
+                    improving your cardiovascular system and muscle strength,
+                    and are a cornerstone of most training programs.</p>
             </div>
             @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
             {
@@ -65,10 +64,9 @@
                 <div class="workout-info jsCalendar-MarathonPace" aria-label="Race Pace">
                     <h4>Race Pace</h4>
                     <p>Race pace workouts are about practicing the pace you aim to achieve on race day. It helps you
-                        understand
-                        how it feels to run at that specific speed and builds both physical and mental confidence. These
-                        runs
-                        are typically shorter than the actual race but are important for building comfort at that pace.</p>
+                        understand how it feels to run at that specific speed and builds both physical and mental
+                        confidence. These runs are shorter than the actual race but are important for
+                        building comfort at that pace.</p>
                 </div>
             }
             <!-- Interval Training -->
@@ -83,10 +81,12 @@
             <!-- Tempo Run -->
             <div class="workout-info jsCalendar-TempoRun" aria-label="Tempo Run">
                 <h4>Tempo Run</h4>
-                <p>Tempo runs, also known as threshold runs, are comfortably hard runs where you push the pace but not
-                    so
-                    much that you can't sustain it. They train your body to sustain faster speeds over longer periods,
-                    improving metabolic fitness and teaching your body to use oxygen for metabolism more efficiently.
+                <p>Tempo runs, also known as lactate threshold runs, help you run faster and longer by improving your
+                    body's
+                    ability to handle lactic acid buildup This enables you to run faster and longer by
+                    increasing your metabolic efficiency and delaying the onset of fatigue.
+                    It's a challenging yet manageable pace, aiming to improve both your aerobic capacity and
+                    your body's ability to clear lactate, a byproduct of carbohydrate metabolism.
                 </p>
             </div>
             @if (Model.TargetRace != RaceType.BMarathon)
@@ -96,17 +96,16 @@
                     <h4>VO2 Max</h4>
                     <p>VO2 Max workouts aim to improve the maximum rate at which your body can take in and use oxygen during
                         exercise. These are high-intensity workouts that push your body to its limits. Enhancing your VO2
-                        Max
-                        can lead to improvements in race times and overall running economy.</p>
+                        Max can lead to improvements in race times and overall running economy.</p>
                 </div>
             }
-            <h2 class="mx-auto">
-                <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
-                    <i class="bi bi-list"></i> Return to Week List</a>
-                <a href="@Url.Action("Calendar")" class="btn btn-info">
-                    <i class="bi bi-calendar"></i> Return to Calendar</a>
-            </h2>
         </article>
-
+        <hr class="custom-hr">
+        <div class="mx-auto" role="navigation" aria-label="Navigation Buttons">
+            <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
+                <i class="bi bi-list" aria-hidden="true"></i> Return to Week List</a>
+            <a href="@Url.Action("Calendar")" class="btn btn-info">
+                <i class="bi bi-calendar" aria-hidden="true"></i> Return to Calendar</a>
+        </div>
     </div>
 </body>

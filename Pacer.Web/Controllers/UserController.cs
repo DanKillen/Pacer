@@ -213,12 +213,11 @@ namespace Pacer.Web.Controllers
                 Alert("There was a problem Updating. Please try again", AlertType.warning);
                 return View(m);
             }
-            _logger.LogInformation($"User {user.Id} successfully updated profile @ {DateTime.UtcNow}");
             Alert("Successfully Updated Account Details", AlertType.info);
 
             // sign the user in with updated details)
             await SignInCookieAsync(user);
-
+            _logger.LogInformation($"User {user.Id} successfully updated profile @ {DateTime.UtcNow}");
             return RedirectToAction("Index", "Home");
         }
 

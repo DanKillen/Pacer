@@ -12,7 +12,7 @@ $(function () {
     $("#FiveKTimeMinutes").val(minutes);
     $("#FiveKTimeSeconds").val(seconds);
 
-    if (totalSeconds == 1800) {
+    if (totalSeconds == 1800 || fiveKTime=="30:00") {
       $("#moreText").show();
     } else {
       $("#moreText").hide();
@@ -45,5 +45,18 @@ function confirmClear() {
 $(function () {
   $('[data-bs-toggle="tooltip"]').tooltip();
 });
+// Loading buttons
+$(document).ready(function() {
+  $(".loading-button").click(function() {
+      var $this = $(this);
+
+      // Change the button text to the loading GIF
+      $this.html('<img src="/images/LoadingGif.gif" width="20px" alt="Loading..." />');
+  });
+});
+
+
+
+
 
 

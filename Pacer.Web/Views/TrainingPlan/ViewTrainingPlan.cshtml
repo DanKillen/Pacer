@@ -104,12 +104,12 @@ else
         <!-- Week navigation buttons -->
         <div class="row align-items-center justify-content-center">
             <div class="col-12 col-md-6 text-center p-2">
-                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous
+                    Week</button>
             </div>
             <div class="col-12 col-md-6 text-center">
                 <button id="nextWeek" aria-label="Next Week">Next Week <i class="bi bi-caret-right-fill"></i></button>
             </div>
-            <hr class="custom-hr">
         </div>
 
         <!-- Week Content -->
@@ -129,6 +129,7 @@ else
             var week = Model.Weeks[i];
             <div class="week-content" id="week-@week.WeekNumber"
                 style="display: @(i + 1 == currentWeekToShow ? "block" : "none")">
+                <hr class="custom-hr">
                 <h3>Week @week.WeekNumber</h3>
                 <ul class="list-group mb-3">
                     @foreach (var workout in week.Workouts)
@@ -160,6 +161,32 @@ else
                                         <p>Distance: @workout.TargetDistance miles</p>
                                         <p>Target Pace: @workout.TargetPace per mile</p>
                                         <p>@workout.WorkoutDescription</p>
+                                        <!-- Button to trigger modal -->
+                                        <button id="changeButton" onclick="$('#changeDateModal-@workout.Id').modal('show')">
+                                            Change Day of Run
+                                        </button>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="changeDateModal-@workout.Id" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Change Day of Run @await                                                            Component.InvokeAsync("Tooltip", new { key = "ChangeDay" })</h5>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div id="loadingIcon-${workoutId}">
+                                                            <img src="/images/LoadingGif.gif" width="20px" alt="Loading..." />
+                                                        </div>
+                                                        <!-- Available dates will be listed here -->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary close-modal"
+                                                            data-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-primary loading-button"
+                                                            id="confirmChange-@workout.Id">Confirm</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </h6>
                                 </div>
 
@@ -223,7 +250,7 @@ else
                                                 </div>
 
                                             </div>
-                                            <button id="saveButton" type="submit">Save Workout</button>
+                                            <button id="saveButton" type="submit" class="loading-button">Save Workout</button>
                                         </form>
                                     </div>
                                 }
@@ -259,11 +286,12 @@ else
             }
 
         }
-         <!-- Week navigation buttons (repeated) -->
+        <!-- Week navigation buttons (repeated) -->
         <div class="row align-items-center justify-content-center">
             <hr class="custom-hr">
             <div class="col-md-6 text-center">
-                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous Week</button>
+                <button id="prevWeek" aria-label="Previous Week"><i class="bi bi-caret-left-fill"></i> Previous
+                    Week</button>
             </div>
             <div class="col-md-6 text-center">
                 <button id="nextWeek" aria-label="Next Week">Next Week <i class="bi bi-caret-right-fill"></i></button>
@@ -288,6 +316,7 @@ else
     <script>
         window.currentWeek = @currentWeekToShow;
         window.totalWeeks = @Model.Weeks.Count + 1;
+        window.raceDate = '@Model.RaceDate.ToString("yyyy-MM-dd")';
     </script>
     <script src="~/js/weeklist.js" asp-append-version="true"></script>
 }

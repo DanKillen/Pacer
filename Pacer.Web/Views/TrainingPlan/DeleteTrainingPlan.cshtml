@@ -1,10 +1,11 @@
 @model TrainingPlanDeleteModel
-
+<!-- Delete Training Plan View -->
 <div class="card shadow p-4 mt-4 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
         <img src="\images\LogoTrimWIP.png" height="50px" alt="Logo">
     </div>
     <h3 class="mx-auto">Delete Training Plan</h3>
+    <!-- Delete Training Plan Form -->
     <form asp-action="DeleteTrainingPlan" asp-controller="TrainingPlan" method="post" role="form">
         <input type="hidden" name="Id" value="@Model.Id" />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>

@@ -40,7 +40,7 @@ namespace Pacer.Data.Repositories
                         .Property(w => w.Id)
                         .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new Workout
 
-            // Relationship configuration
+            // Workout to TrainingPlan relationship
             modelBuilder.Entity<Workout>()
                         .HasOne(w => w.TrainingPlan)  // Workout has one TrainingPlan
                         .WithMany(tp => tp.Workouts)  // TrainingPlan has many Workouts
@@ -60,6 +60,8 @@ namespace Pacer.Data.Repositories
             modelBuilder.Entity<User>()
                         .Property(u => u.Id)
                         .ValueGeneratedOnAdd();  // Id is auto-generated on adding a new User
+
+            // User to RunningProfile relationship
             modelBuilder.Entity<User>()
                         .HasOne(u => u.RunningProfile)  // User has one RunningProfile
                         .WithOne(rp => rp.User)  // RunningProfile has one User

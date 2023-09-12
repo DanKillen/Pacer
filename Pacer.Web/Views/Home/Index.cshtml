@@ -9,7 +9,8 @@
         {
             <a asp-controller="TrainingPlan" asp-action="Index" style="text-decoration: none; color: inherit;"
                 aria-label="Go to Training Plan">
-                <div class="section fade-in" role="region" aria-label="Welcome Section">
+                <div class="section fade-in text-center d-flex justify-content-center align-items-center" role="region"
+                    aria-label="Welcome Section">
                     @if (User.Identity.IsAuthenticated)
                     {
                         <img src="/images/LogoTrimWIP.png" width="50%" alt="Logo">
@@ -32,6 +33,7 @@
         }
         else
         {
+            <!-- Welcome section -->
             <div id="welcome-section" class="section fade-in" role="region" aria-label="Welcome Section">
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -78,5 +80,7 @@
                     aria-label="How to use Pacer">How do I use Pacer?</a>
             </div>
         }
+    </div>
 </body>
+<!-- Script to handle scroll function -->
 <script src="~/js/scrollfade.js" asp-append-version="true"></script>

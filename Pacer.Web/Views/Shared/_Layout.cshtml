@@ -13,11 +13,12 @@
 
 <body>
     <header role="banner">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-lg rounded mb-3" role="navigation" aria-label="Main navigation">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-lg rounded mb-3" role="navigation"
+            aria-label="Main navigation">
             <div class="container">
                 <a class="navbar-brand" href="#" style="display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pacer Logo" width="30" height="30" class="bi bi-exclude"
-                        viewBox="0 0 40 40" style="margin-right: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pacer Logo" width="30" height="30"
+                        class="bi bi-exclude" viewBox="0 0 40 40" style="margin-right: 5px;">
                         <image xlink:href="/images/LogoTrimWIP.png" width="50" height="50" />
                     </svg>
                     <span>Pacer</span>
@@ -31,7 +32,6 @@
     <div class="wrapper">
         <div class="container">
             <partial name="_Alert" />
-
             <main role="main" aria-label="Main Content" class="pb-3">
                 @RenderBody()
             </main>
@@ -47,8 +47,8 @@
         <footer class="sticky-footer border-top footer text-muted">
             <div class="container d-flex justify-content-between align-items-center">
                 <div>
-                    &copy; @DateTime.Now.Year - Pacer - 
-                    <a asp-controller="Home" asp-action="Privacy" style="color: inherit;">Privacy</a> - 
+                    &copy; @DateTime.Now.Year - Pacer -
+                    <a asp-controller="Home" asp-action="Privacy" style="color: inherit;">Privacy</a> -
                     <a asp-controller="Home" asp-action="UserGuide" style="color: inherit;">User Guide</a>
                 </div>
                 <div>
@@ -68,4 +68,3 @@
 </body>
 
 </html>
-    

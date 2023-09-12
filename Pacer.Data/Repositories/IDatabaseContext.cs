@@ -14,9 +14,7 @@ namespace Pacer.Data.Repositories
         DbSet<TrainingPlanPace> Paces { get; set; }
 
         DatabaseFacade Database { get; }
-
         int SaveChanges();
-
         void SetEntityState<TEntity>(TEntity entity, EntityState state) where TEntity : class;
 
     }

@@ -102,13 +102,13 @@ public static class DateTimeExtensions
     }
 
 
-    public static int GetWeekStartingSunday(this DateTime date)
+    public static int GetWeekStartingMonday(this DateTime date)
     {
         CultureInfo cultureInfo = CultureInfo.CurrentCulture;
         Calendar calendar = cultureInfo.Calendar;
 
         // Using FirstDayOfWeek.Sunday to ensure weeks start on Sunday
-        int weekNo = calendar.GetWeekOfYear(date, cultureInfo.DateTimeFormat.CalendarWeekRule, DayOfWeek.Sunday);
+        int weekNo = calendar.GetWeekOfYear(date, cultureInfo.DateTimeFormat.CalendarWeekRule, DayOfWeek.Monday);
         return weekNo;
     }
 }

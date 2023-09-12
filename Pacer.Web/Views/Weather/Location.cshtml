@@ -6,7 +6,7 @@
     <hr class="custom-hr">
     <p>We will use weather data to give you clothing recommendations for running.</p>
     <p>If you are comfortable with sharing your Geolocation data you can proceed with the button below.</p>
-
+    <!-- Geolocation form -->
     <form asp-controller="Weather" asp-action="Weather" method="post" id="location-form">
         <input type="button" value="Request Geolocation Data" id="request-geo-button" />
         <input type="submit" value="Proceed with Geolocation Data" id="geo-button" disabled />        
@@ -14,6 +14,7 @@
         <input type="hidden" name="longitude" id="longitude" value="">
     </form>
     <hr class="custom-hr">
+    <!-- Manual location form -->
     <form asp-controller="Weather" asp-action="WeatherByLocation" method="get" id="manual-form">
         <p>Alternatively, you can enter a location here.</p>
         <p>To make it more precise put the city's name followed by the 2-letter country code @await Component.InvokeAsync("Tooltip", new { key = "CountryCode" }). </p>

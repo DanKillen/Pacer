@@ -3,7 +3,7 @@
 <div class="container mt-5">
 
     <h1 class="mb-4">Weather Information @await Component.InvokeAsync("Tooltip", new { key = "Weather" })</h1>
-
+    <!-- Weather Result -->
     <div class="card">
         <div class="card-body">
             <h2>@Model.Name, @Model.Country</h2>
@@ -27,6 +27,7 @@
                 </section>
             </div>
             <hr class="custom-hr">
+            <!-- Clothing Advice -->
             <section aria-label="Advice for the Weather">
                 <h3>@Model.Advice</h3>
             </section>

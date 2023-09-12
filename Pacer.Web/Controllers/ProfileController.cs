@@ -53,6 +53,11 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("ViewProfile", new { userId = profileCheck.UserId });
             }
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
+            if (fiveKTime < TimeSpan.FromMinutes(12) + TimeSpan.FromSeconds(30))
+            {
+                Alert("5k time cannot be less than 12 minutes 30 seconds", AlertType.danger);
+                return View(model);
+            }
             if (fiveKTime.TotalMinutes > 30)
             {
                 fiveKTime = TimeSpan.FromMinutes(30);
@@ -176,6 +181,11 @@ namespace Pacer.Web.Controllers
             }
 
             var fiveKTime = TimeSpan.FromMinutes(model.FiveKTimeMinutes) + TimeSpan.FromSeconds(model.FiveKTimeSeconds);
+            if (fiveKTime < TimeSpan.FromMinutes(12) + TimeSpan.FromSeconds(30))
+            {
+                Alert("5k time cannot be less than 12 minutes 30 seconds", AlertType.danger);
+                return View(model);
+            }
             if (fiveKTime.TotalMinutes > 30)
             {
                 fiveKTime = TimeSpan.FromMinutes(30);

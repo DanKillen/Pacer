@@ -1,6 +1,8 @@
 using Pacer.Data.Entities;
 using Pacer.Utilities;
 
+namespace Pacer.Data.Services;
+
 public class RaceTimePredictor : IRaceTimePredictor
 {
     // Known distances in miles

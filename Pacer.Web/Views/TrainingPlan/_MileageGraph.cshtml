@@ -1,8 +1,10 @@
 @model List<Pacer.Web.Models.TrainingPlan.WeekDistance>
 
 <div class="container">
+    <!-- Line chart for weekly distances -->
     <canvas id="weekDistancesChart" aria-label="Line chart showing weekly distances" role="img" height="100" width="300"></canvas>
     <h2>Week Distances</h2>
+    <!-- Table displaying weekly distances -->
     <table class="table" aria-labelledby="weekDistancesTitle">
         <thead>
             <tr>
@@ -27,6 +29,7 @@
 
     </table>
 </div>
+<!-- Script to create the chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var ctx = document.getElementById('weekDistancesChart').getContext('2d');

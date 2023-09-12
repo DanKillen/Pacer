@@ -2,6 +2,7 @@ using Xunit;
 using Pacer.Utilities;
 using System;
 using Pacer.Data.Entities;
+using Pacer.Data.Services;
 
 namespace Pacer.Test
 {

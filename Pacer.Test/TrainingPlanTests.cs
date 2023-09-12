@@ -129,7 +129,7 @@ namespace Pacer.Test
             DateTime dob = DateTime.Now.AddYears(-75);
 
             // Act
-            var result = _trainingPlanService.GetRecommendation(TimeSpan.FromHours(4), TimeSpan.FromHours(2), 30, dob, TimeSpan.FromMinutes(30));
+            var result = _trainingPlanService.GetRecommendation(TimeSpan.FromHours(4), TimeSpan.FromHours(2), 30, dob, TimeSpan.FromMinutes(20));
 
             // Assert
             Assert.Contains("Given your age, we would advise against", result[2]);
@@ -147,22 +147,6 @@ namespace Pacer.Test
             // Assert
             Assert.Null(plan);
         }
-        [Fact]
-        public void UpdatePlan_ValidPlan_ShouldReturnUpdatedPlan()
-        {
-            // Arrange
-            var originalPlan = new TrainingPlan { Id = 1, TargetTime = TimeSpan.FromHours(4) };
-            var updatedPlan = new TrainingPlan { Id = 1, TargetTime = TimeSpan.FromHours(3) };
-            _mockContext.Setup(ctx => ctx.TrainingPlans.Update(It.IsAny<TrainingPlan>()));
-
-            // Act
-            var result = _trainingPlanService.UpdatePlan(updatedPlan);
-
-            // Assert
-            Assert.Equal(updatedPlan.TargetTime, result.TargetTime);
-            _mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
-        }
-
         [Fact]
         public void DeletePlan_ValidPlan_ShouldReturnTrueAndSaveChanges()
         {

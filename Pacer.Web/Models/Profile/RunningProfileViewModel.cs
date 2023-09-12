@@ -23,6 +23,8 @@ public class RunningProfileViewModel
     [Range(0, 250, ErrorMessage = "Weekly Mileage must be between 0 and 250.")]
     public int WeeklyMileage { get; set; }
     
+    [Required]
+    [Range(12, 30, ErrorMessage = "Five K Time must be between 12 minutes 30 seconds and 30 minutes.")]
     public int FiveKTimeMinutes { get; set; }
     
     public int FiveKTimeSeconds { get; set; }

@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pacer.Web.AgeValidationAttribute;
-
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 public class AgeValidationAttribute : ValidationAttribute
 {
@@ -16,20 +14,24 @@ public class AgeValidationAttribute : ValidationAttribute
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        if (value is DateTime birthDate)
+        if (value is not DateTime birthDate)
         {
-            int age = DateTime.Now.Year - birthDate.Year;
-
-            if (age < MinAge)
-            {
-                return new ValidationResult($"You must be at least {MinAge} years old.");
-            }
-
-            if (age > MaxAge)
-            {
-                return new ValidationResult($"You must be less than {MaxAge} years old.");
-            }
+            return new ValidationResult("Invalid date format.");
         }
+
+        int age = DateTime.UtcNow.Year - birthDate.Year;
+        if (birthDate > DateTime.UtcNow.AddYears(-age)) age--;
+
+        if (age < MinAge)
+        {
+            return new ValidationResult($"You must be at least {MinAge} years old.");
+        }
+
+        if (age > MaxAge)
+        {
+            return new ValidationResult($"You must be less than {MaxAge} years old.");
+        }
+
         return ValidationResult.Success;
     }
 }

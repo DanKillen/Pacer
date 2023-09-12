@@ -10,42 +10,42 @@
     </div>
     <a href="@Url.Action("ViewTrainingPlan")" class="btn btn-success">
         <i class="bi bi-list"></i> Week List</a>
+    <!-- Training plan header & Details Partials-->
     <partial name="_TrainingPlanHeader" model="Model" />
     <partial name="_DetailsButton" model="Model" />
-    <div class="col-md-12">
-        <div class="key">
-            <div class="key-item jsCalendar-RecoveryRun">
-                Recovery Run @await Component.InvokeAsync("Tooltip", new { key = "RecoveryRun" })
-            </div>
-            <div class="key-item jsCalendar-EasyRun">
-                Easy Run @await Component.InvokeAsync("Tooltip", new { key = "EasyRun" })
-            </div>
+    <!-- Training plan key -->
+    <div class="col-md-12 key">
+        <div class="key-item jsCalendar-RecoveryRun">
+            Recovery Run @await Component.InvokeAsync("Tooltip", new { key = "RecoveryRun" })
+        </div>
+        <div class="key-item jsCalendar-EasyRun">
+            Easy Run @await Component.InvokeAsync("Tooltip", new { key = "EasyRun" })
+        </div>
 
-            <div class="key-item jsCalendar-LongRun">
-                Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
+        <div class="key-item jsCalendar-LongRun">
+            Long Run @await Component.InvokeAsync("Tooltip", new { key = "LongRun" })
+        </div>
+        @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
+        {
+            <div class="key-item jsCalendar-MarathonPace">
+                Race Pace @await Component.InvokeAsync("Tooltip", new { key = "MarathonPace" })
             </div>
-            @if (Model.TargetRace == RaceType.Marathon || Model.TargetRace == RaceType.BMarathon)
-            {
-                <div class="key-item jsCalendar-MarathonPace">
-                    Race Pace @await Component.InvokeAsync("Tooltip", new { key = "MarathonPace" })
-                </div>
-            }
-            <div class="key-item jsCalendar-IntervalTraining">
-                Interval Training @await Component.InvokeAsync("Tooltip", new { key = "IntervalTraining" })
-            </div>
-            <div class="key-item jsCalendar-TempoRun">
-                Tempo Run @await Component.InvokeAsync("Tooltip", new { key = "TempoRun" })
-            </div>
-            @if (Model.TargetRace == RaceType.HalfMarathon || Model.TargetRace == RaceType.BHalfMarathon)
-            {
+        }
+        <div class="key-item jsCalendar-IntervalTraining">
+            Interval Training @await Component.InvokeAsync("Tooltip", new { key = "IntervalTraining" })
+        </div>
+        <div class="key-item jsCalendar-TempoRun">
+            Tempo Run @await Component.InvokeAsync("Tooltip", new { key = "TempoRun" })
+        </div>
+        @if (Model.TargetRace == RaceType.HalfMarathon || Model.TargetRace == RaceType.BHalfMarathon)
+        {
             <div class="key-item jsCalendar-VO2Max">
                 VO2 Max @await Component.InvokeAsync("Tooltip", new { key = "VO2Max" })
             </div>
-            }
-        </div>
-        <hr class="custom-hr">
-
+        }
     </div>
+    <hr class="custom-hr">
+    <!-- Calendar -->
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -63,33 +63,38 @@
                         <p id="prev-distance">Distance Ran: </p>
                         <p id="prev-time">Duration: </p>
                         <p id="prev-pace">Pace: </p>
+                        <!-- Clear form -->
                         <form id="clear-form" method="post" action="@Url.Action("ClearWorkoutActuals", "TrainingPlan")"
                             onsubmit="return confirmClear();">
                             <input type="hidden" id="clearWorkoutId" name="WorkoutId" value="@Model.Id">
                             <input type="hidden" name="returnUrl" value="Calendar" />
                             <button type="submit">Clear</button>
                         </form>
-
                     </div>
+                    <!-- Entry form -->
                     <form id="entry-form" method="post" style="display: none;"
                         action="@Url.Action("SaveWorkoutActuals", "TrainingPlan")">
                         <input type="hidden" id="workoutId" name="WorkoutId" value="@Model.Id">
                         <input type="hidden" name="returnUrl" value="Calendar" />
                         <div>
-                            <label for="actualDistance"><h5>Actual Distance Ran:</h5></label>
+                            <label for="actualDistance">
+                                <h5>Actual Distance Ran:</h5>
+                            </label>
                         </div>
                         <div class="mb-1">
-                            <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" 
-                                required aria-label="Actual Distance">
+                            <input type="number" id="actualDistance" name="ActualDistance" min="0" max="50" required
+                                aria-label="Actual Distance">
                             miles
                         </div>
                         <div>
-                            <label for="actualTime"><h5>Actual Duration:</h5></label>
+                            <label for="actualTime">
+                                <h5>Actual Duration:</h5>
+                            </label>
                             <div style="display: flex; justify-content: space-between; max-width: 200px;">
                                 <div>
                                     <label for="actualHours">Hours:</label>
-                                    <input type="number" id="actualHours" name="ActualHours" min="0" max="6" 
-                                        required value="0" aria-label="Actual Distance">
+                                    <input type="number" id="actualHours" name="ActualHours" min="0" max="6" required
+                                        value="0" aria-label="Actual Distance">
                                 </div>
                                 <div>
                                     <label for="actualMinutes">Minutes:</label>
@@ -114,21 +119,21 @@
     </div>
 </div>
 
+<!-- Mileage graph -->
 <partial name="_MileageGraph" model="@Model.WeekDistances" />
-
 
 <script src="https://unpkg.com/simple-jscalendar@1.4.4/source/jsCalendar.min.js"></script>
 
 @section Scripts {
     @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
-<script>
-    var viewModel = @Html.Raw(viewModelJson); 
-    var targetRaceDisplayName = '@Model.TargetRaceDisplayName';
-    var targetTime = '@Model.TargetTime';
-    var targetPace = '@Model.TargetPace';
-</script>
-<script src="~/js/calendar.js"></script>
+    <script>
+        var viewModel = @Html.Raw(viewModelJson);
+        var targetRaceDisplayName = '@Model.TargetRaceDisplayName';
+        var targetTime = '@Model.TargetTime';
+        var targetPace = '@Model.TargetPace';
+    </script>
+    <script src="~/js/calendar.js"></script>
 }

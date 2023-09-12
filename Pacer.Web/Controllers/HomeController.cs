@@ -21,7 +21,7 @@ namespace Pacer.Web.Controllers
             _userService = userService;
             _logger = logger;
         }
-
+        // This is the default route for the application.
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -35,12 +35,12 @@ namespace Pacer.Web.Controllers
             }
 
         }
-
+        // This is the route for the User Guide page.
         public IActionResult UserGuide()
         {
             return View();
         }
-
+        // This will move the user to the register page if they are not authenticated.
         public IActionResult GetStarted()
         {
             // Check if the user is authenticated
@@ -53,11 +53,12 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("Register", "User");
             }
         }
+        // This is the route for the Privacy page.
         public IActionResult Privacy()
         {
             return View();
         }
-
+        // This is the route for the Error page.
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

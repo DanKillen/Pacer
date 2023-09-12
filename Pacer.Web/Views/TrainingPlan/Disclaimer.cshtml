@@ -1,8 +1,11 @@
+<!-- Main card container -->
 <div class="card shadow p-4 mt-4 mx-auto w-75">
     <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-dark">
         <img src="\images\LogoTrimWIP.png" height="50px" alt="Logo">
     </div>
+    <!-- Card title -->
     <h1 class="mx-auto">Disclaimer</h1>
+    <!-- Form container -->
     <div role="form">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <hr class="custom-hr">
@@ -14,23 +17,22 @@
             <p><b>The content offered by Pacer is intended for informational and educational purposes only and should
                     not be interpreted as a substitute for professional medical advice, diagnosis, or treatment.</b></p>
             <p><b>Consult your Doctor:</b> Before beginning this or any other fitness program, consult your Doctor to
-                    ensure that this or any other fitness program will not put you at
-                    risk.</p>
+                ensure that this or any other fitness program will not put you at
+                risk.</p>
             <p><b>Not Medical Advice:</b> This program does not provide medical advice. It is intended for general
-                    informational purposes only and does not address individual circumstances or medical conditions.</p>
+                informational purposes only and does not address individual circumstances or medical conditions.</p>
             <p><b>Experiencing Symptoms:</b> If you experience any adverse or worrying symptoms, including but not
-                    limited to chest pain, nausea, or dizziness stop exercising immediately and consult a healthcare
-                    professional.</p>
+                limited to chest pain, nausea, or dizziness stop exercising immediately and consult a healthcare
+                professional.</p>
             <p><b>Agreement:</b> By using this training program, you acknowledge that you have read, understood, and
-                    agreed to the terms and conditions contained within this disclaimer. </p>
+                agreed to the terms and conditions contained within this disclaimer. </p>
         </section>
 
         <hr class="custom-hr">
 
         <section class="mt-3 text-center">
-            <button onclick="window.location.href='/TrainingPlan/CreateTrainingPlan'" class="btn btn-success loading-button"
-                aria-label="I Agree to the Disclaimer">I
-                Agree</button>
+            <a class="btn btn-success loading-button" asp-controller="TrainingPlan" asp-action="CreateTrainingPlan" 
+            aria-label="I Agree to the Disclaimer">I Agree</a>
             <a class="btn btn-link ms-3" asp-controller="Home" asp-action="Index"
                 aria-label="Cancel and go back home">Cancel</a>
         </section>

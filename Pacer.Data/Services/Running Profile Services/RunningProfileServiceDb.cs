@@ -6,8 +6,8 @@ using Pacer.Data.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
-namespace Pacer.Data.Services
-{
+namespace Pacer.Data.Services;
+
     public class RunningProfileServiceDb : IRunningProfileService
     {
         private readonly IDatabaseContext _ctx;
@@ -23,12 +23,14 @@ namespace Pacer.Data.Services
         // Create a new running profile
         public RunningProfile CreateProfile(int userId, DateTime dateOfBirth, string gender, int weeklyMileage, TimeSpan fiveKTime)
         {
-            // First, confirm that a User with the given userId exists
+            // Confirm that a User with the given userId exists
             User user = _ctx.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
+                
                 return null;
             }
+            // 
             var age = DateTime.Now.Year - dateOfBirth.Year;
             if (age < 18 || age > 85)
             {
@@ -68,7 +70,7 @@ namespace Pacer.Data.Services
             return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.User.Id == userId);
         }
 
-        // Get a running profile by id
+        // Get a running profile by profile id
         public RunningProfile GetProfileByProfileId(int profileId)
         {
             return _ctx.RunningProfiles.Include(rp => rp.User).FirstOrDefault(rp => rp.Id == profileId);
@@ -110,4 +112,3 @@ namespace Pacer.Data.Services
 
     }
 
-}

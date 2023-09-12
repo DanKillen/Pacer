@@ -135,13 +135,13 @@ namespace Pacer.Web.Controllers
             Alert("Invalid verification token, have you requested a new token since?", AlertType.warning);
             return RedirectToAction(nameof(Login));
         }
-
+        // HTTP GET - Display Resend Verification Email page (Functionality currently disabled)
         [HttpGet]
         public IActionResult ResendVerificationEmail()
         {
             return View();
         }
-
+        // HTTP POST - Resend Verification Email action (Functionality currently disabled)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ResendVerificationToken(string email)
@@ -155,19 +155,21 @@ namespace Pacer.Web.Controllers
                 return View();
             }
 
-            var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
-            var emailSubject = "Email Verification for Pacer - Resend";
-            var emailMessage = @$" 
-                                    <h3>Email Verification for Pacer</h3>
-                                    <p>Please click the link below to verify your email address:</p>
-                                    <a href='{verificationUrl}'>
-                                    {verificationUrl}</a>. 
-                                    <p>If you didn't request this email, please ignore it.</p>
-                                ";
-            _mailer.SendMail(emailSubject, emailMessage, user.Email);
+            // var verificationUrl = $"{Request.Scheme}://{Request.Host}/User/VerifyEmail?userId={user.Id}&token={user.EmailVerificationToken}";
+            // var emailSubject = "Email Verification for Pacer - Resend";
+            // var emailMessage = @$" 
+            //                         <h3>Email Verification for Pacer</h3>
+            //                         <p>Please click the link below to verify your email address:</p>
+            //                         <a href='{verificationUrl}'>
+            //                         {verificationUrl}</a>. 
+            //                         <p>If you didn't request this email, please ignore it.</p>
+            //                     ";
+            // _mailer.SendMail(emailSubject, emailMessage, user.Email);
 
-            _logger.LogInformation($"Verification email sent to {email} @ {DateTime.UtcNow}");
-            Alert("Verification email resent. Please check your inbox.", AlertType.info);
+            // _logger.LogInformation($"Verification email sent to {email} @ {DateTime.UtcNow}");
+            // Alert("Verification email resent. Please check your inbox.", AlertType.info);
+            _logger.LogWarning($"User {email} attempted to resend verification email @ {DateTime.UtcNow}");
+            Alert("Verification email functionality is currently disabled.", AlertType.warning);
             return RedirectToAction(nameof(Login));
         }
 
@@ -288,6 +290,7 @@ namespace Pacer.Web.Controllers
                 Role = user.Role
             });
         }
+        
         // HTTP POST - Delete User action
         [Authorize(Roles = "admin")]
         [HttpPost]
@@ -405,12 +408,11 @@ namespace Pacer.Web.Controllers
             Alert("Password Reset Token sent to your registered email account", AlertType.info);
             return RedirectToAction(nameof(PasswordResetSent));
         }
-
+        // HTTP GET - Display Password Reset Sent page
         public IActionResult PasswordResetSent()
         {
             return View();
         }
-
 
         // HTTP GET - Display Reset password page
         public IActionResult ResetPassword(string token = null, string email = null)
@@ -424,7 +426,7 @@ namespace Pacer.Web.Controllers
         }
 
 
-        // HTTP POST - ResetPassword action
+        // HTTP POST - ResetPassword action (Currently disabled)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ResetPassword([Bind("Email,Password,Token")] ResetPasswordViewModel m)

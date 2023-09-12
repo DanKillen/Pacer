@@ -5,6 +5,7 @@ using Pacer.Data.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Pacer.Data.Services;
 
 namespace Pacer.Test
 {

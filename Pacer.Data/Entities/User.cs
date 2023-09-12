@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Pacer.Data.Entities;
-// Add User roles relevant to your application
+
 public enum Role { admin, manager, guest }
 
 public class User

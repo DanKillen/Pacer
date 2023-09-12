@@ -40,7 +40,7 @@ public class WeatherController : BaseController
             return RedirectToAction(nameof(Location));
         }
 
-        if (weatherResponse.Name == "Londonderry County Borough")
+        if (weatherResponse.Name.Contains("Londonderry"))
         {
             weatherResponse.Name = "Derry City";
         }

@@ -5,7 +5,7 @@
         <img src="\images\LogoTrimWIP.png" height="50px">
     </div>
     <h1 class="mx-auto">Create Training Plan</h1>
-
+    <!-- Form to create a training plan -->
     <form asp-action="CreateTrainingPlan" asp-controller="TrainingPlan" method="post" role="form">
 
         <input type="hidden" asp-for="RunningProfileId" />
@@ -20,8 +20,8 @@
             </p>
         </div>
         <hr class="custom-hr">
+        <!-- Recommendations based on running profile-->
         <div class="mt-3 text-center">
-
             @foreach (var recommendationPart in Model.Recommendation)
             {
                 <p><b>@recommendationPart</b></p>
@@ -32,7 +32,7 @@
             <label asp-for="TargetRace" class="form-label" id="raceTypeLabel">Training Plan 
                 @await Component.InvokeAsync("Tooltip", new {key = "CreateTrainingPlan" })</label>
             <select id="raceTypeDropdown" asp-for="TargetRace" asp-items="Html.GetEnumSelectList<RaceType>()"
-                class="form-control" aria-labelledby="raceTypeLabel" onchange="updateTargetTime();"></select>
+                class="form-control" aria-labelledby="raceTypeLabel" onchange="updateTargetDate();"></select>
             <span asp-validation-for="TargetRace" class="text-danger"></span>
         </div>
 
@@ -76,7 +76,7 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
+<!-- Scripts to handle the RaceTime slider and auto-updating of Race Date-->
     <script>
         function displayTime(minutes) {
             // Convert the minutes into a TimeSpan or similar format
@@ -84,14 +84,11 @@
             minutes %= 60;
             var timeString = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
 
-            // Display the time in your span
             document.getElementById('targetTimeDisplay').textContent = timeString;
 
-            // Set the value of the hidden input
             document.getElementById('hiddenTargetTime').value = timeString;
         }
-
-        function updateTargetTime() {
+        function updateTargetDate() {
             var raceTypeDropdown = document.getElementById('raceTypeDropdown');
             var targetTimeSlider = document.getElementById('targetTimeInput');
             var targetTimeLabel = document.getElementById('targetTimeLabel');
@@ -119,7 +116,7 @@
             raceDateInput.value = dateString;
             displayTime(targetTimeSlider.value);
         }
-        updateTargetTime();
+        updateTargetDate();
 
     </script>
 }

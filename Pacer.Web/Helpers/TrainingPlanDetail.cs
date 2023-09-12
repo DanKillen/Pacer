@@ -1,3 +1,5 @@
+namespace Pacer.Web;
+// This is a helper class that returns a string of HTML to be displayed for the relevant training plan page.
 public static class TrainingPlanDetails
 {
     public static string GetTrainingDetails(string targetRace)

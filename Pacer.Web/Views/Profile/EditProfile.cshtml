@@ -12,7 +12,7 @@
 
     <h1 class="mx-auto">Edit Running Profile @await Component.InvokeAsync("Tooltip", new { key = "EditProfile"})</h1>
     <hr class="custom-hr">
-
+    <!-- Edit Running Profile Form-->
     <form asp-action="EditProfile" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -63,6 +63,7 @@
         </div>
     </form>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

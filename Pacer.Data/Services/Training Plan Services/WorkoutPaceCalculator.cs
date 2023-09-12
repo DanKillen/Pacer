@@ -1,6 +1,8 @@
 using Pacer.Data.Entities;
 using Pacer.Data.Utilities;
 
+namespace Pacer.Data.Services;
+
 public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 {
     private readonly IRaceTimePredictor _raceTimePredictor;
@@ -9,7 +11,7 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
     {
         _raceTimePredictor = raceTimePredictor ?? throw new ArgumentNullException(nameof(raceTimePredictor));
     }
-
+    // Calculates maximum and minumum paces for each workout type, done at training plan creation, or when target time is updated
     public ICollection<TrainingPlanPace> CalculatePaces(TimeSpan targetTime, RaceType raceType, int age, string gender)
     {
 
@@ -39,7 +41,8 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 
         return paces;
     }
-    
+
+    // Calculates the pace range for a given workout type
     private Tuple<PaceTime, PaceTime> CalculatePace(WorkoutType type, TimeSpan equivalentMarathonPace)
     {
         double minMultiplier, maxMultiplier;
@@ -83,7 +86,8 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 
         return Tuple.Create(ConvertToPaceTime(minPace), ConvertToPaceTime(maxPace));
     }
-
+    
+    // Converts a TimeSpan to a PaceTime
     private PaceTime ConvertToPaceTime(TimeSpan timeSpan)
     {
         return new PaceTime(timeSpan);

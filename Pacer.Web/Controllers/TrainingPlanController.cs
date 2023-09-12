@@ -46,7 +46,7 @@ public class TrainingPlanController : BaseController
             TargetTime = formattedTargetTime,
             TargetPace = trainingPlan.TargetPace,
             RaceDate = trainingPlan.RaceDate,
-            Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetWeekStartingSunday())
+            Weeks = trainingPlan.Workouts.GroupBy(w => w.Date.GetWeekStartingMonday())
                              .Select(g => new WeekViewModel
                              {
                                  WeekNumber = currentWeek++,
@@ -299,7 +299,7 @@ public class TrainingPlanController : BaseController
         }
 
         var grouped = viewModel.Workouts
-            .GroupBy(x => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.Date, CalendarWeekRule.FirstDay, DayOfWeek.Sunday))
+            .GroupBy(x => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(x.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
             .Select(g => new WeekDistance
             {
                 Week = 0, // placeholder value

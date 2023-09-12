@@ -3,6 +3,7 @@
 <div class="card shadow p-4 mt-4 mx-auto w-75">
     <h3 class="text-center my-3">Edit Target Time for @Model.TargetTime.ToString(@"h\:mm")
         @Model.TargetRace.GetDisplayName()</h3>
+    <!-- Edit Target Time Form -->
     <form method="post" action="/EditTargetTime" role="form">
         <input type="hidden" name="TrainingPlanId" value="@Model.TrainingPlanId" />
 

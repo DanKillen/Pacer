@@ -20,10 +20,10 @@ namespace Pacer.Data.Strategies
             M  // Race Pace
 
         }
-
-        protected readonly RunningProfile RunningProfile;
+        protected string[] WeekPlans;
         protected readonly DateTime RaceDate;
         protected readonly TimeSpan TargetTime;
+        protected readonly ILogger _logger;
 
 
         protected BasePlanStrategy(DateTime raceDate, TimeSpan targetTime)
@@ -32,7 +32,29 @@ namespace Pacer.Data.Strategies
             TargetTime = targetTime;
         }
 
-        public abstract Workout[] GenerateWorkouts();
+        // Generates the workouts for the selected training plan
+        public virtual Workout[] GenerateWorkouts()
+        {
+            var workouts = new List<Workout>();
+            DateTime currentWeekStart = RaceDate.AddDays(-7 * WeekPlans.Length);
+
+            for (int week = 0; week < WeekPlans.Length; week++)
+            {
+                try
+                {
+                    workouts.AddRange(CreateWorkoutsForWeek(WeekPlans[week], currentWeekStart));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"An error occurred during the parsing of week {week + 1}: {ex.Message}");
+                }
+
+                currentWeekStart = currentWeekStart.AddDays(7);
+            }
+
+            return workouts.ToArray();
+        }
+        // Creates a workout object
         protected Workout CreateWorkout(WorkoutType type, DateTime date, double targetDistance, string description = null)
         {
             description ??= $"Run {targetDistance} miles at target pace";
@@ -44,7 +66,7 @@ namespace Pacer.Data.Strategies
                 WorkoutDescription = description
             };
         }
-
+        // Creates a list of workouts for a given week
         protected IEnumerable<Workout> CreateWorkoutsForWeek(string weekPlan, DateTime weekStart)
         {
             var workouts = new List<Workout>();
@@ -53,14 +75,14 @@ namespace Pacer.Data.Strategies
             for (int i = 0; i < dailyPlans.Length; i++)
             {
                 string dailyPlan = dailyPlans[i].Trim();
-                
+
                 if (dailyPlan == "X")
                 {
                     continue;
                 }
                 if (!TryParseDailyPlan(dailyPlan, out RunType runType, out double distance, out string description))
                 {
-                    Console.WriteLine($"Invalid daily plan: {dailyPlan}");
+                    _logger.LogWarning($"Invalid daily plan: {dailyPlan}");
                     continue;
                 }
 
@@ -73,7 +95,7 @@ namespace Pacer.Data.Strategies
             }
             return workouts;
         }
-
+        // Parses a daily plan string into a RunType, distance, and description
         private bool TryParseDailyPlan(string dailyPlan, out RunType runType, out double distance, out string description)
         {
             runType = default;
@@ -100,7 +122,7 @@ namespace Pacer.Data.Strategies
 
             return true;
         }
-
+        // Converts a RunType to a WorkoutType
         protected WorkoutType GetWorkoutTypeFromRunType(RunType runType)
         {
             return runType switch

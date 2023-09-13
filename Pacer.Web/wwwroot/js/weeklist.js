@@ -91,8 +91,12 @@ function showChangeDateModal(workoutId) {
             // Populate the modal body with available dates
             let options = '';
             availableDates.forEach(function (date) {
-                options += `<option value="${date}">${date}</option>`;
+                const jsDate = new Date(date);
+                const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const dayName = dayNames[jsDate.getDay()];
+                options += `<option value="${date}">${date} (${dayName})</option>`;
             });
+
             const newBodyHtml = `
                 <div>Please choose a new day for this workout:</div>
                 <select id="newDate-${workoutId}">${options}</select>

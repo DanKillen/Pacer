@@ -94,6 +94,7 @@ namespace Pacer.Data.Services;
             {
                 throw new ArgumentException("WeeklyMileage must be between 0 and 200.");
             }
+            // Calculate the estimated marathon and half marathon times
             TimeSpan estimatedMarathonTime = _raceTimePredictor.CalculateEstimatedMarathonTime(age, fiveKTime, gender);
             TimeSpan estimatedHalfMarathonTime = _raceTimePredictor.CalculateEstimatedHalfMarathonTime(age, fiveKTime, gender);
 

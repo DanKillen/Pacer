@@ -11,6 +11,7 @@ public class WeatherService : IWeatherService
         _httpClient = httpClient;
         _apiKey = settings.Value.ApiKey;
     }
+    // This method is used to get weather data by latitude and longitude.
     public async Task<WeatherResponse> GetWeather(decimal latitude, decimal longitude)
     {
         string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric";
@@ -32,7 +33,7 @@ public class WeatherService : IWeatherService
             throw new Exception($"Failed to get weather: {response.StatusCode}");
         }
     }
-
+    // This method is used to get weather data by location name.
     public async Task<WeatherResponse> GetWeatherByLocation(string location)
     {
         string openWeatherUrl = $"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}&units=metric";
@@ -53,7 +54,7 @@ public class WeatherService : IWeatherService
             return null;
         }
     }
-
+    // This method is used to get clothing advice based on weather data.
     public string GetClothingAdvice(decimal temperature, decimal windSpeed, decimal humidity, string weather)
     {
         // Basic clothing advice based on temperature.

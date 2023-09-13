@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Pacer.Data.Utilities;
-
+// PaceTime is a struct that represents a pace in minutes and seconds per mile.
 public readonly struct PaceTime
 {
     public PaceTime(int minutes, int seconds)
@@ -21,7 +21,7 @@ public readonly struct PaceTime
     public PaceTime(TimeSpan timeSpan)
     {
         if (timeSpan.TotalMinutes < 0)
-            throw new ArgumentException("TimeSpan represents a negative duration.", nameof(timeSpan));
+            throw new ArgumentException("TimeSpan represents a negative pace.", nameof(timeSpan));
         if (timeSpan.Hours > 0)
             throw new ArgumentException("TimeSpan represents more than an hour.", nameof(timeSpan));
 

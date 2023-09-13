@@ -18,7 +18,7 @@ namespace Pacer.Web.Controllers
         {
             _runningProfileService = runningProfileService;
         }
-
+        // This is the GET route for the Create Profile page.
         [HttpGet]
         public IActionResult CreateProfile()
         {
@@ -41,7 +41,7 @@ namespace Pacer.Web.Controllers
             // Otherwise, proceed with profile creation
             return View();
         }
-
+        // This is the POST route for the Create Profile page.
         [HttpPost]
         public IActionResult CreateProfile(RunningProfileViewModel model)
         {
@@ -91,7 +91,7 @@ namespace Pacer.Web.Controllers
                 return RedirectToAction("ViewProfile", new { userId = profile.UserId });
             }
         }
-
+        // This is the GET route for the View Profile page.
         [HttpGet]
         public IActionResult ViewProfile()
         {
@@ -134,7 +134,7 @@ namespace Pacer.Web.Controllers
 
             return View(model);
         }
-
+        // This is the GET route for the Edit Profile page.
         [HttpGet]
         public IActionResult EditProfile()
         {
@@ -163,7 +163,7 @@ namespace Pacer.Web.Controllers
 
             return View(model);
         }
-
+        // This is the POST route for the Edit Profile page.
         [HttpPost]
         public IActionResult EditProfile(int userId, EditProfileViewModel model)
         {

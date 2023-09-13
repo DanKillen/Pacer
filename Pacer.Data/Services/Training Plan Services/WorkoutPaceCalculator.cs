@@ -5,6 +5,21 @@ namespace Pacer.Data.Services;
 
 public class WorkoutPaceCalculator : IWorkoutPaceCalculator
 {
+    const double RecoveryRunMin = 1.3;
+    const double RecoveryRunMax = 1.5;
+    const double EasyRunMin = 1.15;
+    const double EasyRunMax = 1.25;
+    const double LongRunMin = 1.1;
+    const double LongRunMax = 1.2;
+    const double VO2MaxMin = 0.85;
+    const double VO2MaxMax = 0.9;
+    const double IntervalTrainingMin = 5.0 / 6.0;
+    const double IntervalTrainingMax = 14.0 / 15.0;
+    const double TempoRunMin = 0.91;
+    const double TempoRunMax = 0.94;
+    const double MarathonPaceMin = 0.99;
+    const double MarathonPaceMax = 1;
+
     private readonly IRaceTimePredictor _raceTimePredictor;
 
     public WorkoutPaceCalculator(IRaceTimePredictor raceTimePredictor)
@@ -50,32 +65,32 @@ public class WorkoutPaceCalculator : IWorkoutPaceCalculator
         switch (type)
         {
             case WorkoutType.RecoveryRun:
-                minMultiplier = 1.3;
-                maxMultiplier = 1.5;
+                minMultiplier = RecoveryRunMin;
+                maxMultiplier = RecoveryRunMax;
                 break;
             case WorkoutType.EasyRun:
-                minMultiplier = 1.15;
-                maxMultiplier = 1.25;
+                minMultiplier = EasyRunMin;
+                maxMultiplier = EasyRunMax;
                 break;
             case WorkoutType.LongRun:
-                minMultiplier = 1.1;
-                maxMultiplier = 1.2;
+                minMultiplier = LongRunMin;
+                maxMultiplier = LongRunMax;
                 break;
             case WorkoutType.VO2Max:
-                minMultiplier = 0.85;
-                maxMultiplier = 0.9;
+                minMultiplier = VO2MaxMin;
+                maxMultiplier = VO2MaxMax;
                 break;
             case WorkoutType.IntervalTraining:
-                minMultiplier = 5.0 / 6.0;
-                maxMultiplier = 14.0 / 15.0;
+                minMultiplier = IntervalTrainingMin;
+                maxMultiplier = IntervalTrainingMax;
                 break;
             case WorkoutType.TempoRun:
-                minMultiplier = 0.91;
-                maxMultiplier = 0.94;
+                minMultiplier = TempoRunMin;
+                maxMultiplier = TempoRunMax;
                 break;
             case WorkoutType.MarathonPace:
-                minMultiplier = 0.99;
-                maxMultiplier = 1;
+                minMultiplier = MarathonPaceMin;
+                maxMultiplier = MarathonPaceMax;
                 break;
             default:
                 throw new ArgumentException("Unsupported workout type", nameof(type));

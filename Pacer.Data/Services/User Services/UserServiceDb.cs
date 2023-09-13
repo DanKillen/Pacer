@@ -58,7 +58,7 @@ namespace Pacer.Data.Services
                 return null;
             }
 
-            // Capitalize the first letter of the name if it's a letter
+            // Capitalize the first character of the name if it's a letter
             if (char.IsLetter(name[0]))
             {
                 name = char.ToUpper(name[0]) + name[1..];
@@ -86,7 +86,7 @@ namespace Pacer.Data.Services
             _ctx.SaveChanges();
             return user; // return newly added User
         }
-
+        // Add a new User checking a User with same email does not exist
         public User AddUser(string name, string email, string password)
         {
             var existing = GetUserByEmail(email);
@@ -136,6 +136,7 @@ namespace Pacer.Data.Services
             }
             return null;
         }
+        // Resend the verification token to the user
         public User ResendVerificationToken(string email)
         {
             var user = _ctx.Users.FirstOrDefault(u => u.Email == email && !u.EmailVerified);

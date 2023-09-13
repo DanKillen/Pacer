@@ -8,11 +8,11 @@ $(function () {
     var totalSeconds = slider.val();
     var minutes = Math.floor(totalSeconds / 60);
     var seconds = totalSeconds - (minutes * 60);
-
+  
     $("#FiveKTimeMinutes").val(minutes);
     $("#FiveKTimeSeconds").val(seconds);
-
-    if (totalSeconds == 1800 || fiveKTime=="30:00") {
+  
+    if (minutes == 30) {
       $("#moreText").show();
     } else {
       $("#moreText").hide();
@@ -28,6 +28,7 @@ $(function () {
     if (totalSeconds >= 750 && totalSeconds <= 1800) {
       slider.val(totalSeconds);
     }
+
   }
 
   slider.on("input", updateMinutesAndSeconds);

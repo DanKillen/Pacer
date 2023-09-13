@@ -1,3 +1,4 @@
+// Form validation for the submit workout button
 function validateForm(workoutId) {
 
     if (!validateDistance(workoutId)) {
@@ -40,35 +41,41 @@ function validateForm(workoutId) {
         return true;
     }
 }
-
+// Function to show the week that is passed in
 function showWeek(weekNumber) {
     $(".week-content").hide();
     $("#week-" + weekNumber).show();
 }
-
-function checkForIncompleteWorkouts(weekElement) {
-    let totalWorkouts = $(weekElement).find(".list-group-item").length;
-    let notFullyCompleteWorkouts = $(weekElement).find(".not-fully-complete").length;
-
-    if (notFullyCompleteWorkouts > totalWorkouts / 2) { // More than half are not fully complete
-        alert("You have several workouts that are not fully complete this week. Consider adjusting your race target time to make workouts easier.");
-    }
-}
-
+// Function for button to show the previous week
 $(document).on('click', '#prevWeek', function () {
     if (currentWeek > 1) {
         currentWeek--;
         showWeek(currentWeek);
     }
 });
-
+// Function for button to show the next week
 $(document).on('click', '#nextWeek', function () {
     if (currentWeek < totalWeeks) {
         currentWeek++;
         showWeek(currentWeek);
     }
 });
+// Function that handles whole process of chaning the date of a workout
+$(document).ready(function () {
+    $('[id^=changeDateModal-]').on('show.bs.modal', function (e) {
+        const workoutId = e.target.id.split('-')[1];
+        showChangeDateModal(workoutId);
+    });
 
+    $('[id^=confirmChange-]').click(function () {
+        const workoutId = this.id.split('-')[1];
+        const newDate = $(`#newDate-${workoutId}`).val();
+        updateWorkoutDate(workoutId, newDate);
+    });
+    $('.close-modal').click(function () {
+        $('.modal').modal('hide');
+    });
+});
 // Function to show the change date modal and populate it with available dates
 function showChangeDateModal(workoutId) {
     // Show the loading icon
@@ -117,18 +124,3 @@ function updateWorkoutDate(workoutId, newDate) {
     });
 }
 
-$(document).ready(function () {
-    $('[id^=changeDateModal-]').on('show.bs.modal', function (e) {
-        const workoutId = e.target.id.split('-')[1];
-        showChangeDateModal(workoutId);
-    });
-
-    $('[id^=confirmChange-]').click(function () {
-        const workoutId = this.id.split('-')[1];
-        const newDate = $(`#newDate-${workoutId}`).val();
-        updateWorkoutDate(workoutId, newDate);
-    });
-    $('.close-modal').click(function () {
-        $('.modal').modal('hide');
-    });
-});

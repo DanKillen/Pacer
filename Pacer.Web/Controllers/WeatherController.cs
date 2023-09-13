@@ -18,14 +18,14 @@ public class WeatherController : BaseController
     {
         _weatherService = weatherService;
     }
-
+    // This is the GET route for the Location page.
     [HttpGet]
     public IActionResult Location()
     {
         // Show a page asking for the user's permission to use their location.
         return View();
     }
-
+    // This is the POST route for the Location page passing geolocation data.
     [HttpPost]
     public async Task<IActionResult> Weather(decimal latitude, decimal longitude)
     {
@@ -67,7 +67,7 @@ public class WeatherController : BaseController
         }
         return View(weatherViewModel);
     }
-
+    // This is the POST route for the Location page passing city name.
     [HttpGet]
     public async Task<IActionResult> WeatherByLocation(string location)
     {

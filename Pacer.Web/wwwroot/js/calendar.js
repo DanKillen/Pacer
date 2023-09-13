@@ -7,7 +7,7 @@ var workoutTypeNames = {
     5: 'Tempo Run',
     6: 'VO2 Max'
 };
-
+// Function to get the day suffix
 function getDaySuffix(day) {
     let suffix = '';
     if (day > 3 && day < 21) return 'th';
@@ -18,7 +18,7 @@ function getDaySuffix(day) {
         default: return 'th';
     }
 }
-
+// Function to handle calendar population
 $(function () {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

@@ -22,16 +22,17 @@ public enum RaceType
 public class TrainingPlan
 {
     public int Id { get; set; }
-
+    // RunningProfile entity reference
     [Required]
     public int RunningProfileId { get; set; }
-    // RunningProfile entity reference
     public RunningProfile RunningProfile { get; set; }
+
     // Training plan specific properties
     public RaceType TargetRace { get; set; }
     public TimeSpan TargetTime { get; set; }
     public string TargetPace { get; set; }
     public DateTime RaceDate { get; set; }
+    
     // Collection of workouts for this training plan
     public ICollection<Workout> Workouts { get; set; }
     // Collection of paces for this training plan

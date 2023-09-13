@@ -3,9 +3,10 @@
     public class RunningProfile
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
         // User entity reference - to link a user to a running profile
+        public int UserId { get; set; }
         public User User { get; set; }
+
         // Running specific properties
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }

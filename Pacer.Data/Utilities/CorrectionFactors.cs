@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 
 
-namespace Pacer.Utilities
-{
-    // The correction factors are derived from Elmer Sterken's research paper, 'Endurance and Age: Evidence from Long-Distance Running Data'.
-    // The paper provides a scientifically reliable estimate for performance changes based on age and gender.
-    // For more details, refer to https://core.ac.uk/download/pdf/6909056.pdf
+namespace Pacer.Utilities;
 
-    public static class CorrectionFactors
-    {
-        public static readonly Dictionary<int, (double FiveKFactor, double HalfMarathonFactor, double MarathonFactor)> MaleFactors = new()
+// The correction factors are derived from Elmer Sterken's research paper, 'Endurance and Age: Evidence from Long-Distance Running Data'.
+// The paper provides a scientifically reliable estimate for performance changes based on age and gender.
+// For more details, refer to https://core.ac.uk/download/pdf/6909056.pdf
+
+public static class CorrectionFactors
+{
+    public static readonly Dictionary<int, (double FiveKFactor, double HalfMarathonFactor, double MarathonFactor)> MaleFactors = new()
     {
         {18, (0.946, 0.854, 0.801)},
         {19, (0.958, 0.866, 0.815)},
@@ -81,7 +81,7 @@ namespace Pacer.Utilities
         {85, (0.506, 0.417, 0.370)}
     };
 
-        public static readonly Dictionary<int, (double FiveKFactor, double HalfMarathonFactor, double MarathonFactor)> FemaleFactors = new()
+    public static readonly Dictionary<int, (double FiveKFactor, double HalfMarathonFactor, double MarathonFactor)> FemaleFactors = new()
     {
         {18, (0.953, 0.847, 0.802)},
         {19, (0.963, 0.858, 0.815)},
@@ -152,6 +152,5 @@ namespace Pacer.Utilities
         {84, (0.463, 0.363, 0.325)},
         {85, (0.447, 0.345, 0.305)}
     };
-    }
-
 }
+

@@ -20,7 +20,7 @@
 
     <div class="mt-3" style="display: flex; align-items: center;">
         <h4 class="form-label"><i class="bi-stopwatch-fill" aria-hidden="true"></i> 5K Time: @Model.FiveKTimeFormatted 
-        <span id="moreText" style="align-self: center;">or more</span></h4>
+        <span id="plusText" style="align-self: center; display: none;">or more</span></h4>
     </div>
 
     <hr class="custom-hr">
@@ -31,6 +31,12 @@
     </div>
 </div>
 
-<script>
+@section Scripts {
+    <script>
     var fiveKTime = "@Model.FiveKTimeFormatted";
-</script>
+    if (fiveKTime =="30:00")
+    {
+      $("#plusText").show();
+    }
+    </script>
+}

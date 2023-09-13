@@ -2,7 +2,6 @@ using Pacer.Data.Entities;
 
 namespace Pacer.Data.Services;
 
-
 // This interface describes the operations that a RunningProfileService class implementation should provide
 public interface ITrainingPlanService
 {

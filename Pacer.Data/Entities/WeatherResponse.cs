@@ -1,4 +1,5 @@
 namespace Pacer.Weather;
+// Weather response fields that are populated for weather data
 public class WeatherResponse
 {
     public Main Main { get; set; }

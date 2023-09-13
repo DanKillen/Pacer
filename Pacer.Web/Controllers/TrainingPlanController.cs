@@ -19,6 +19,7 @@ public class TrainingPlanController : BaseController
         _runningProfileService = runningProfileService;
     }
     // Private Training Plan Methods
+    // This method is used to get the user ID from the claims.
     private int? GetUserId()
     {
         if (!User.Identity.IsAuthenticated)
@@ -36,6 +37,7 @@ public class TrainingPlanController : BaseController
 
         return userId;
     }
+    // This method is used to get the Training Plan View Model for the Week List.
     private TrainingPlanViewModel ConstructTrainingPlanViewModel(TrainingPlan trainingPlan, string formattedTargetTime)
     {
         int currentWeek = 1;
@@ -66,7 +68,7 @@ public class TrainingPlanController : BaseController
         };
         return viewModel;
     }
-
+    // This method is used to get the Training Plan Calendar View Model.
     private TrainingPlanCalendarViewModel GetTrainingPlanCalendarViewModel()
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
@@ -105,17 +107,17 @@ public class TrainingPlanController : BaseController
             Workouts = workouts
         };
     }
-
+    // This method is used to get the first workout date.
     private DateTime GetFirstWorkoutDate(TrainingPlan trainingPlan)
     {
         return trainingPlan.Workouts.OrderBy(w => w.Date).First().Date;
     }
-
+    // This method is used to format the target time.
     private string FormatTargetTime(TimeSpan targetTime)
     {
         return targetTime.ToString(@"h\:mm");
     }
-
+    // This method is used to create the workout view models.
     private List<WorkoutViewModel> CreateWorkoutViewModels(TrainingPlan trainingPlan)
     {
         return trainingPlan.Workouts.Select(w => new WorkoutViewModel
@@ -130,7 +132,7 @@ public class TrainingPlanController : BaseController
             ActualPace = w.ActualDistance > 0 ? TimeSpan.FromMinutes(w.ActualTime.TotalMinutes / w.ActualDistance).ToString(@"mm\:ss") : null
         }).ToList();
     }
-
+    // This method is used to lookup the target pace for a workout.
     private string LookupTargetPaceForWorkout(WorkoutType type, ICollection<TrainingPlanPace> paces)
     {
         var minPace = paces.FirstOrDefault(p => p.WorkoutType == type && p.PaceType == PaceType.Min)?.PaceString;
@@ -144,7 +146,7 @@ public class TrainingPlanController : BaseController
         // Otherwise, return whichever is available, or null if neither are.
         return minPace ?? maxPace;
     }
-
+    // This method is used to validate the training plan.
     private bool ValidateTrainingPlan(TrainingPlan trainingPlan)
     {
         if (trainingPlan == null)
@@ -169,6 +171,7 @@ public class TrainingPlanController : BaseController
     }
 
     // Controller Endpoints
+    // This is the GET route for the Training Plan Index page.
     [HttpGet]
     public IActionResult Index()
     {
@@ -193,12 +196,13 @@ public class TrainingPlanController : BaseController
 
         return RedirectToAction("Disclaimer");
     }
-
+    // This is the GET route for the Disclaimer page.
     [HttpGet]
     public IActionResult Disclaimer()
     {
         return View();
     }
+    // This is the GET for the Create Training Plan page.
     [HttpGet]
     public IActionResult CreateTrainingPlan()
     {
@@ -235,6 +239,7 @@ public class TrainingPlanController : BaseController
 
         return View(model);
     }
+    // This is the POST route for the Create Training Plan page.
     [HttpPost]
     public IActionResult CreateTrainingPlan(TrainingPlanCreateModel model)
     {
@@ -268,7 +273,7 @@ public class TrainingPlanController : BaseController
         return RedirectToAction("ViewTrainingPlan");
 
     }
-
+    // This is the GET route for the View Training Plan page.
     [HttpGet]
     public IActionResult ViewTrainingPlan()
     {
@@ -287,6 +292,7 @@ public class TrainingPlanController : BaseController
         var viewModel = ConstructTrainingPlanViewModel(trainingPlan, formattedTargetTime);
         return View(viewModel);
     }
+    // This is the GET route for the Training Plan Calendar page.
     [HttpGet]
     public IActionResult Calendar()
     {
@@ -318,7 +324,7 @@ public class TrainingPlanController : BaseController
 
         return View("Calendar", viewModel);
     }
-
+    // This is the GET route for the Training Plan Tutorial page.
     [HttpGet]
     public IActionResult Tutorial(int id)
     {
@@ -335,7 +341,7 @@ public class TrainingPlanController : BaseController
         };
         return View(tutorial);
     }
-
+    // This is the POST route to save completed workout data.
     [HttpPost("SaveWorkoutActuals")]
     public IActionResult SaveWorkoutActuals(int WorkoutId, double ActualDistance, int ActualHours, int ActualMinutes, int ActualSeconds, string returnUrl)
     {
@@ -365,6 +371,7 @@ public class TrainingPlanController : BaseController
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving data: " + ex.Message });
         }
     }
+    // This is the POST route to clear completed workout data.
     [HttpPost("ClearWorkoutActuals")]
     public IActionResult ClearWorkoutActuals(int WorkoutId, string returnUrl)
     {
@@ -383,7 +390,7 @@ public class TrainingPlanController : BaseController
             return RedirectToAction(returnUrl);
         }
     }
-
+    // This is the GET route for the Edit Target Time page.
     [HttpGet("EditTargetTime/{id}")]
     public ActionResult EditTargetTime(int id)
     {
@@ -407,6 +414,7 @@ public class TrainingPlanController : BaseController
         // Pass the view model to the view.
         return View(viewModel);
     }
+    // This is the POST route for the Edit Target Time page.
     [HttpPost("EditTargetTime")]
     public IActionResult EditTargetTime(EditTargetTimeViewModel model)
     {
@@ -424,7 +432,7 @@ public class TrainingPlanController : BaseController
         Alert("New Target Time saved successfully!", AlertType.success);
         return RedirectToAction("ViewTrainingPlan", new { id = model.TrainingPlanId });
     }
-
+    // This is the GET route for Deleting a Training Plan.
     [HttpGet("DeleteTrainingPlan")]
     public IActionResult DeleteTrainingPlan()
     {
@@ -443,6 +451,7 @@ public class TrainingPlanController : BaseController
         };
         return View(model);
     }
+    // This is the POST route for Deleting a Training Plan.
     [HttpPost("DeleteTrainingPlan")]
     public IActionResult DeleteTrainingPlan(TrainingPlanDeleteModel model)
     {
@@ -466,7 +475,7 @@ public class TrainingPlanController : BaseController
         Alert("Training Plan deleted successfully.", AlertType.info);
         return RedirectToAction("Index", "Home");
     }
-
+    // This is the GET route to return the available dates for a workout date change.
     [HttpGet]
     public IActionResult GetAvailableDates(int workoutId)
     {
@@ -491,7 +500,7 @@ public class TrainingPlanController : BaseController
             return BadRequest("Error getting available dates.");
         }
     }
-
+    // This is the POST route to update a workout date.
     [HttpPost]
     public IActionResult UpdateWorkoutDate(int workoutId, DateTime newDate)
     {
@@ -506,9 +515,11 @@ public class TrainingPlanController : BaseController
             var success = _trainingPlanService.UpdateWorkoutDate(workoutId, userId.Value, newDate);
             if (success)
             {
+                Alert("Workout date updated successfully.", AlertType.success);
                 return Ok(new { success = true });
             }
-            return NotFound(new { success = false, message = "Failed to update workout date." });
+            Alert("Failed to update workout date.", AlertType.danger);
+            return BadRequest(new { success = false, message = "Failed to update workout date." });
         }
         catch (Exception e)
         {

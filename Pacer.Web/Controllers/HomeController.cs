@@ -11,15 +11,12 @@ using Pacer.Data.Services;
 
 namespace Pacer.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly IUserService _userService;
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IUserService userService, ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger) : base(logger)
         {
-            _userService = userService;
-            _logger = logger;
+
         }
         // This is the default route for the application.
         public IActionResult Index()

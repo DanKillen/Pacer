@@ -4,6 +4,7 @@ public class WeekDistance
     public int Week { get; set; }
     public double TargetDistance { get; set; }
     public double ActualDistance { get; set; }
+    // Used for the progress table
     public double PercentageComplete 
     { 
         get 

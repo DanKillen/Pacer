@@ -48,7 +48,6 @@ namespace Pacer.Web.Controllers
         {
             return View();
         }
-
         // HTTP POST - Login action
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -74,7 +73,6 @@ namespace Pacer.Web.Controllers
             // No Alert as it will redirect to a welcome page
             return Redirect("/");
         }
-
 
         // HTTP GET - Display Register page
         public IActionResult Register()

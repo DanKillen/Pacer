@@ -3,6 +3,8 @@ using Pacer.Data.Entities;
 using Pacer.Data.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using Pacer.Data.Utilities;
 
 namespace Pacer.Data.Services;
 public class TrainingPlanServiceDb : ITrainingPlanService
@@ -46,6 +48,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
         {
             throw new ArgumentException("Target time must be between 1 and 5 hours.");
         }
+        // Set the running profile state to unchanged to avoid creating a new profile
         _ctx.SetEntityState(runningProfile, EntityState.Unchanged);
         var workouts = _workoutFactory.AssignWorkouts(targetRace, raceDate, targetTime);
         var targetPace = CalculateTargetPace(targetRace, targetTime);
@@ -72,7 +75,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
         _ctx.SaveChanges();
         return newTrainingPlan;
     }
-    
+
     // Calculate the target pace for a training plan
     private string CalculateTargetPace(RaceType targetRace, TimeSpan targetTime)
     {
@@ -80,16 +83,12 @@ public class TrainingPlanServiceDb : ITrainingPlanService
         {
             throw new ArgumentException("Invalid race type", nameof(targetRace));
         }
-
         double timeInMinutes = targetTime.TotalMinutes;
         double pace = timeInMinutes / distanceInMiles;
-
-        TimeSpan paceTimeSpan = TimeSpan.FromMinutes(pace);
-
-        // Format the pace in mm:ss per mile
-        return string.Format("{0}:{1:D2}", paceTimeSpan.Minutes, paceTimeSpan.Seconds);
+        // One liner to convert pace in minutes per mile as double to PaceTime string
+        return new PaceTime(TimeSpan.FromMinutes(pace)).ToString();
     }
-   
+
     // Edit the target time of a training plan
     public bool EditTargetTime(int trainingPlanId, TimeSpan targetTime)
     {
@@ -139,7 +138,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
             return false;
         }
     }
-    
+
     // Get a recommendation based on the user's running profile
     public string[] GetRecommendation(TimeSpan estimatedMarathonTime, TimeSpan estimatedHalfMarathonTime, double weeklyMileage, DateTime dateOfBirth, TimeSpan fiveKTime)
     {
@@ -195,7 +194,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
 
         return recommendationsList.ToArray();
     }
-    
+
     // Get a training plan by id
     public TrainingPlan GetPlanById(int id)
     {
@@ -204,7 +203,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
                                 .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                 .FirstOrDefault(plan => plan.Id == id);
     }
-    
+
     // Get a training plan by user
     public TrainingPlan GetPlanByUserId(int userId)
     {
@@ -220,7 +219,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
                                 .Include(plan => plan.Paces)  // Eager load the related TrainingPlanPaces
                                 .FirstOrDefault(plan => plan.RunningProfileId == profile.Id);
     }
-    
+
     // Delete a training plan
     public bool DeletePlan(TrainingPlan plan)
     {
@@ -228,7 +227,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
         _ctx.SaveChanges();
         return true;
     }
-    
+
     // ---------------- Workout Management --------------
     // Save workout actuals
     public bool SaveWorkoutActuals(int workoutId, int userId, double actualDistance, TimeSpan actualTime)
@@ -310,13 +309,15 @@ public class TrainingPlanServiceDb : ITrainingPlanService
             }
 
             var existingDate = workout.Date;
-            List<DateTime> availableDates = new List<DateTime>();
+            int existingWeek = GetWeekStartingMonday(existingDate);
+            List<DateTime> availableDates = new();
 
-            // Check 4 days before and after the existing workout date.
-            for (int i = -4; i <= 4; i++)
+            for (int i = -6; i <= 6; i++)
             {
                 var newDate = existingDate.AddDays(i);
-                if (!trainingPlan.Workouts.Any(w => w.Date.Date == newDate.Date))
+                int newWeek = GetWeekStartingMonday(newDate);
+
+                if (newWeek == existingWeek && !trainingPlan.Workouts.Any(w => w.Date.Date == newDate.Date))
                 {
                     availableDates.Add(newDate);
                 }
@@ -330,6 +331,7 @@ public class TrainingPlanServiceDb : ITrainingPlanService
             return null;
         }
     }
+    // Update the date of a workout   
     public bool UpdateWorkoutDate(int workoutId, int userId, DateTime newDate)
     {
         try
@@ -347,7 +349,6 @@ public class TrainingPlanServiceDb : ITrainingPlanService
                 _logger.LogWarning($"No workout found with id {workoutId}");
                 return false;
             }
-
             workout.Date = newDate;
             _ctx.SaveChanges();
 
@@ -359,6 +360,14 @@ public class TrainingPlanServiceDb : ITrainingPlanService
             return false;
         }
     }
+    // Private method to get the week number of a date, starting on Monday
+    private int GetWeekStartingMonday(DateTime date)
+    {
+        CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+        Calendar calendar = cultureInfo.Calendar;
 
+        int weekNo = calendar.GetWeekOfYear(date, cultureInfo.DateTimeFormat.CalendarWeekRule, DayOfWeek.Monday);
+        return weekNo;
+    }
 }
 

@@ -26,9 +26,11 @@ public enum WorkoutType
 public class Workout
 {
     public int Id { get; set; }
+    
     // TrainingPlan entity reference - to link a workout to a training plan
     public TrainingPlan TrainingPlan { get; set; }
     public int TrainingPlanId { get; set; }
+
     // Workout specific properties
     public WorkoutType Type { get; set; }
     public DateTime Date { get; set; }

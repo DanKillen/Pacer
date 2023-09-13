@@ -7,7 +7,7 @@ public static class TrainingPlanDetails
         return targetRace switch
         {
             "BHalfMarathon" => @"
-                <li>This plan starts at 7 miles in the first week and peaks at 18 miles before tapering.</li>
+                <li>This plan starts at 8 miles in the first week and peaks at 18 miles before tapering.</li>
                 <li>It gradually introduces different types of workouts to not overwhelm a beginner.</li>
                 <li>It is designed to be completed in 10 whole weeks.</li>",
             "HalfMarathon" => @"

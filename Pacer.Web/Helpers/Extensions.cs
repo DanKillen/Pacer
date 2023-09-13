@@ -107,7 +107,6 @@ public static class DateTimeExtensions
         CultureInfo cultureInfo = CultureInfo.CurrentCulture;
         Calendar calendar = cultureInfo.Calendar;
 
-        // Using FirstDayOfWeek.Sunday to ensure weeks start on Sunday
         int weekNo = calendar.GetWeekOfYear(date, cultureInfo.DateTimeFormat.CalendarWeekRule, DayOfWeek.Monday);
         return weekNo;
     }

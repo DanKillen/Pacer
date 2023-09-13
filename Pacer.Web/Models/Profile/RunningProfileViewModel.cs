@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Pacer.Web.AgeValidationAttribute;
 
 public class RunningProfileViewModel
 {
@@ -30,6 +29,4 @@ public class RunningProfileViewModel
     public int FiveKTimeSeconds { get; set; }
     
     public string FiveKTimeFormatted => (TimeSpan.FromMinutes(FiveKTimeMinutes) + TimeSpan.FromSeconds(FiveKTimeSeconds)).ToString("m\\:ss");
-
-
 }

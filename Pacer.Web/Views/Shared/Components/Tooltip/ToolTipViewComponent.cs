@@ -31,7 +31,7 @@ public class TooltipViewComponent : ViewComponent
             { "VO2Max", "These workouts are as fast as you can go, designed to improve your maximum oxygen uptake, an important measure of aerobic fitness." },
             
             // Weather Tooltips
-            {"Timezone", "All times are in your local timezone."},
+            {"Timezone", "All displayed times are local to the selected location."},
             {"Weather", "Weather data is provided by OpenWeatherMap."},
             {"CountryCode", "Country codes are checked against ISO 3166-1 alpha-2. Eg. GB = Great Britain, IE = Ireland"}
 

@@ -84,6 +84,27 @@ body {
   transform: translateY(-2px);
 }
 
+/* Modern style for secondary buttons */
+.btn-secondary {
+  background-color: #525d67;
+  /* Keeping it grey */
+  border: none;
+  border-radius: 25px;
+  /* Rounded corners */
+  padding: 10px 20px;
+  /* A bit more padding */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+  transition: all 0.3s;
+  /* Smooth transition for hover effects */
+}
+
+.btn-secondary:hover {
+  background-color: #44484a;
+  transform: translateY(-2px);
+}
+
+
 /* Styles for link buttons */
 .btn-link {
   color: #007BFF;

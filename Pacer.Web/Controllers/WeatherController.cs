@@ -53,7 +53,7 @@ public class WeatherController : BaseController
             Temperature = weatherResponse.Main.Temp,
             Humidity = weatherResponse.Main.Humidity,
             WindSpeed = weatherResponse.Wind.Speed,
-            Sunset = DateTimeOffset.FromUnixTimeSeconds(weatherResponse.Sys.Sunset).UtcDateTime.ToString("h:mm tt"),
+            Sunset = DateTimeOffset.FromUnixTimeSeconds(weatherResponse.Sys.Sunset + weatherResponse.Timezone).DateTime.ToString("h:mm tt"),
             Name = weatherResponse.Name,
             Country = weatherResponse.Sys?.Country,
             Advice = _weatherService.GetClothingAdvice(weatherResponse.Main.Temp, weatherResponse.Wind.Speed, weatherResponse.Main.Humidity, weatherResponse.Weather[0].Main)
@@ -100,7 +100,7 @@ public class WeatherController : BaseController
             Temperature = weatherResponse.Main.Temp,
             Humidity = weatherResponse.Main.Humidity,
             WindSpeed = weatherResponse.Wind.Speed,
-            Sunset = DateTimeOffset.FromUnixTimeSeconds(weatherResponse.Sys.Sunset).UtcDateTime.ToString("h:mm tt"),
+            Sunset = DateTimeOffset.FromUnixTimeSeconds(weatherResponse.Sys.Sunset + weatherResponse.Timezone).DateTime.ToString("h:mm tt"),
             Name = weatherResponse.Name,
             Country = weatherResponse.Sys?.Country,
             Advice = _weatherService.GetClothingAdvice(weatherResponse.Main.Temp, weatherResponse.Wind.Speed, weatherResponse.Main.Humidity, weatherResponse.Weather[0].Main)

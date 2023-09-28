@@ -7,6 +7,7 @@ public class WeatherResponse
     public Wind Wind { get; set; }
     public Sys Sys { get; set; }
     public string Name { get; set; }
+    public long Timezone { get; set; }
 }
 
 public class Main

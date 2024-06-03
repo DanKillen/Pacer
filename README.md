@@ -43,6 +43,6 @@ For a comprehensive understanding of the methodologies employed, refer to the "D
 
 The project is conducted under academic guidelines and is not licensed for external use.
 
-## Access
+~~## Access~~
 
-Project is currently live at www.pacer.page
+~~Project is currently live at www.pacer.page~~
